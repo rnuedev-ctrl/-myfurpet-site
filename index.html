@@ -733,13 +733,13 @@
 
         <!-- CTA Buttons -->
         <div class="hero-cta-group">
-          <a href="#beta" class="btn-primary" id="hero-cta-download">
-            <span>🤖 Download Android APK</span>
-            <span style="font-size: 12px; background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 6px;">v1.0.22 (Direct)</span>
-          </a>
-          <a href="#beta" class="btn-secondary" id="hero-cta-ios">
-            <span>🍏 iOS TestFlight VIP</span>
+          <a href="https://testflight.apple.com/join/g2zwG5Cc" target="_blank" class="btn-primary" id="hero-cta-ios" style="background: linear-gradient(135deg, #2563EB, #7C3AED);">
+            <span>🍏 iOS TestFlight Beta</span>
             <span>➔</span>
+          </a>
+          <a href="#beta" class="btn-secondary" id="hero-cta-download">
+            <span>🤖 Android Google Play</span>
+            <span style="font-size: 11px; background: rgba(255,255,255,0.15); padding: 3px 8px; border-radius: 6px;">Join Beta</span>
           </a>
         </div>
 
@@ -952,38 +952,93 @@
       </div>
     </section>
 
-    <!-- Beta Tester Signup Section -->
-    <section id="beta" class="glass-card signup-section">
-      <span class="badge-pill" style="margin-bottom: 12px;">🎁 VIP Early-Access Invitation</span>
-      <h2 style="font-size: 36px; font-weight: 900; margin-bottom: 8px;">Claim Your Free Lifetime VIP Badge</h2>
-      <p style="color: var(--text-muted); max-width: 580px; margin: 0 auto;">
-        Join our first 500 early-adopter beta testers to unlock lifetime VIP status, free AI Vet scans, and direct priority support.
-      </p>
+    <!-- Beta Tester Direct Access & VIP Hub -->
+    <section id="beta" style="padding: 20px 0 80px 0;">
+      <div class="section-header">
+        <span class="badge-pill" style="margin-bottom: 8px;">🎁 VIP Early-Access Invitation</span>
+        <h2 class="section-title">Get MyFurPet Beta on Your Device</h2>
+        <p class="section-subtitle">Join our active beta testing community on iOS and Android to get instant access and free lifetime VIP status.</p>
+      </div>
 
-      <form id="beta-signup-form" class="signup-form" onsubmit="handleBetaSignup(event)">
-        <div class="form-row">
-          <input type="text" id="beta-name" class="demo-input" placeholder="Your Name" required>
-          <input type="email" id="beta-email" class="demo-input" placeholder="Email Address" required>
-        </div>
-        <div class="form-row">
-          <input type="text" id="beta-pet" class="demo-input" placeholder="Pet's Name (e.g. Chiqui)" required>
-          <select id="beta-os" class="demo-input" style="background: #0F172A;" required>
-            <option value="android">🤖 Android Device (Instant APK / Play Store)</option>
-            <option value="ios">🍏 iOS Device (TestFlight VIP)</option>
-          </select>
-        </div>
-        <button type="submit" id="beta-submit-btn" class="btn-primary" style="justify-content: center; width: 100%;">
-          <span>🚀 Get VIP Early Access & Download</span>
-        </button>
-      </form>
+      <!-- Platform Download Cards -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 36px;">
+        <!-- Card 1: iOS TestFlight -->
+        <div class="glass-card" style="padding: 32px; border-color: rgba(59, 130, 246, 0.4); background: linear-gradient(180deg, rgba(30, 58, 138, 0.25) 0%, rgba(15, 23, 42, 0.8) 100%);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <span style="font-size: 32px;">🍏</span>
+            <span style="background: rgba(59, 130, 246, 0.2); color: #93C5FD; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px;">
+              ● TESTFLIGHT ACTIVE
+            </span>
+          </div>
+          <h3 style="font-size: 22px; font-weight: 800; margin-bottom: 8px;">For iPhone (iOS) Users</h3>
+          <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;">
+            Install via Apple TestFlight to experience new health tools, AI features, and instant live OTA updates.
+          </p>
 
-      <div style="margin-top: 24px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-        <span style="color: #A78BFA; font-size: 13px; font-weight: 700;">
-          🛡️ 100% Free & Secure VIP Beta Testing
-        </span>
-        <span style="color: #34D399; font-size: 13px; font-weight: 700;">
-          ✓ Instant Android & iOS Access
-        </span>
+          <a href="https://testflight.apple.com/join/g2zwG5Cc" target="_blank" class="btn-primary" style="width: 100%; justify-content: center; background: linear-gradient(135deg, #2563EB, #4F46E5); margin-bottom: 12px;">
+            <span>👉 Join on Apple TestFlight</span>
+            <span>➔</span>
+          </a>
+
+          <div style="font-size: 12px; color: #94A3B8; text-align: center;">
+            💡 <em>Requires the free Apple TestFlight app from App Store.</em>
+          </div>
+        </div>
+
+        <!-- Card 2: Android Google Play -->
+        <div class="glass-card" style="padding: 32px; border-color: rgba(16, 185, 129, 0.4); background: linear-gradient(180deg, rgba(6, 78, 59, 0.25) 0%, rgba(15, 23, 42, 0.8) 100%);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <span style="font-size: 32px;">🤖</span>
+            <span style="background: rgba(16, 185, 129, 0.2); color: #6EE7B7; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px;">
+              ● PLAY STORE TRACK
+            </span>
+          </div>
+          <h3 style="font-size: 22px; font-weight: 800; margin-bottom: 8px;">For Android Users</h3>
+          <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.6;">
+            Join our Google Play tester group to unlock closed-track access and download directly from Google Play.
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+            <a href="https://groups.google.com/g/myfurpet-testers" target="_blank" class="btn-secondary" style="width: 100%; justify-content: center; padding: 12px; font-size: 14px; background: rgba(255,255,255,0.06);">
+              <span>1️⃣ Step 1: Join Beta Group (Required)</span>
+            </a>
+            <a href="https://play.google.com/apps/testing/com.myfurpet.app" target="_blank" class="btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 14px; background: linear-gradient(135deg, #059669, #10B981);">
+              <span>2️⃣ Step 2: Opt-In & Download on Play Store</span>
+              <span>➔</span>
+            </a>
+          </div>
+
+          <div style="display: flex; justify-content: center; gap: 12px; font-size: 12px;">
+            <a href="https://play.google.com/store/apps/details?id=com.myfurpet.app" target="_blank" style="color: #6EE7B7; font-weight: 700; text-decoration: none;">
+              📲 Direct Play Store App Link ➔
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIP Registration & Automatic Redirect Form -->
+      <div class="glass-card signup-section" style="margin-bottom: 0;">
+        <h3 style="font-size: 24px; font-weight: 900; margin-bottom: 6px;">Register for Free Lifetime VIP Status</h3>
+        <p style="color: var(--text-muted); font-size: 14px; max-width: 520px; margin: 0 auto;">
+          Enter your name and pet details below to unlock your permanent VIP Early-Adopter badge, then get redirected straight to your installation link!
+        </p>
+
+        <form id="beta-signup-form" class="signup-form" onsubmit="handleBetaSignup(event)">
+          <div class="form-row">
+            <input type="text" id="beta-name" class="demo-input" placeholder="Your Name" required>
+            <input type="email" id="beta-email" class="demo-input" placeholder="Email Address" required>
+          </div>
+          <div class="form-row">
+            <input type="text" id="beta-pet" class="demo-input" placeholder="Pet's Name (e.g. Chiqui)" required>
+            <select id="beta-os" class="demo-input" style="background: #0F172A;" required>
+              <option value="ios">🍏 iPhone (Apple TestFlight)</option>
+              <option value="android">🤖 Android (Google Play Beta Track)</option>
+            </select>
+          </div>
+          <button type="submit" id="beta-submit-btn" class="btn-primary" style="justify-content: center; width: 100%;">
+            <span>🚀 Claim VIP Badge & Proceed to Download</span>
+          </button>
+        </form>
       </div>
     </section>
 
@@ -998,6 +1053,31 @@
       <div class="faq-list">
         <div class="glass-card faq-item" onclick="toggleFaq(this)">
           <div class="faq-question">
+            <span>How do I install MyFurPet on my iPhone?</span>
+            <span class="faq-toggle-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            1. Install the free <strong>Apple TestFlight</strong> app from the App Store.<br>
+            2. Tap our direct invitation link: <a href="https://testflight.apple.com/join/g2zwG5Cc" target="_blank" style="color: #60A5FA; font-weight: bold;">https://testflight.apple.com/join/g2zwG5Cc</a>.<br>
+            3. Tap <strong>Accept & Install</strong> to begin testing immediately!
+          </div>
+        </div>
+
+        <div class="glass-card faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>How do I install MyFurPet on Android via Google Play?</span>
+            <span class="faq-toggle-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            Google Play requires joining our tester group before accessing the closed beta:<br>
+            1. Join our Google Group: <a href="https://groups.google.com/g/myfurpet-testers" target="_blank" style="color: #34D399; font-weight: bold;">https://groups.google.com/g/myfurpet-testers</a><br>
+            2. Opt-in on Web: <a href="https://play.google.com/apps/testing/com.myfurpet.app" target="_blank" style="color: #34D399; font-weight: bold;">https://play.google.com/apps/testing/com.myfurpet.app</a><br>
+            3. Download the app directly from the Google Play Store!
+          </div>
+        </div>
+
+        <div class="glass-card faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
             <span>Is MyFurPet completely free for pet owners?</span>
             <span class="faq-toggle-icon">+</span>
           </div>
@@ -1006,15 +1086,27 @@
           </div>
         </div>
 
-        <div class="glass-card faq-item" onclick="toggleFaq(this)">
+        <div class="faq-item glass-card" onclick="toggleFaq(this)">
           <div class="faq-question">
-            <span>How do I install the Android APK or iOS TestFlight build?</span>
+            <span>How does the AI Vet Record Scanner protect my pet's data?</span>
             <span class="faq-toggle-icon">+</span>
           </div>
           <div class="faq-answer">
-            On Android, you can download the direct APK file from our releases or join our Google Play internal tester track. On iOS, sign up with your Apple ID email above to receive an instant Apple TestFlight invitation link.
+            All scanned medical records are encrypted and tied strictly to your private account and pet ID. We do not sell your personal data or clinic records to third parties.
           </div>
         </div>
+
+        <div class="glass-card faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>I own a Vet Clinic or Pet Grooming business. How do I join as a Partner?</span>
+            <span class="faq-toggle-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            You can register your clinic directly inside the app under Profile ➔ 'Are You a Vet Clinic or Pet Business?', or contact us via our partner portal to get verified, receive booking leads, and manage patient digital check-ins.
+          </div>
+        </div>
+      </div>
+    </section>
 
         <div class="faq-item glass-card" onclick="toggleFaq(this)">
           <div class="faq-question">
@@ -1181,12 +1273,15 @@
       showToast(`🎉 Welcome ${name}! VIP Beta Access Granted for ${pet}.`);
 
       if (os === 'android') {
-        submitBtn.innerHTML = '<span>✓ Download Started!</span>';
+        submitBtn.innerHTML = '<span>✓ Redirecting to Google Play Beta Group...</span>';
         setTimeout(() => {
-          window.location.href = 'https://github.com/rnuedev-ctrl/myfurpet/releases';
+          window.location.href = 'https://groups.google.com/g/myfurpet-testers';
         }, 1200);
       } else {
-        submitBtn.innerHTML = '<span>✓ TestFlight Invite Reserved!</span>';
+        submitBtn.innerHTML = '<span>✓ Opening Apple TestFlight...</span>';
+        setTimeout(() => {
+          window.location.href = 'https://testflight.apple.com/join/g2zwG5Cc';
+        }, 1200);
       }
     }
 

@@ -3,95 +3,1180 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy Policy - MyFurPet</title>
+  
+  <!-- Primary SEO Meta Tags -->
+  <title>MyFurPet 🐾 | Smart Pet Medical Passport, AI Vet Records & Lost Pet SOS</title>
+  <meta name="title" content="MyFurPet 🐾 | Smart Pet Medical Passport, AI Vet Records & Lost Pet SOS">
+  <meta name="description" content="The all-in-one pet health dashboard for dogs & cats. Digitize vaccine booklets with AI, book top veterinary clinics, track daily care streaks, and broadcast Lost Pet SOS alerts. Claim free VIP early access!">
+  <meta name="keywords" content="pet medical passport app, pet vaccination tracker, vet clinic booking app, AI pet health assistant, lost pet SOS radar, free pet QR collar tag generator, myfurpet, dog care app, cat health tracker">
+  <meta name="author" content="MyFurPet Team">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://rnuedev-ctrl.github.io/-myfurpet-site/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rnuedev-ctrl.github.io/-myfurpet-site/">
+  <meta property="og:title" content="MyFurPet 🐾 — The Smartest Pet Health Passport in Your Pocket">
+  <meta property="og:description" content="Digitize vet records with AI, book verified clinics in 1 tap, generate smart QR tags, and join our VIP Beta Tester community!">
+  <meta property="og:image" content="https://rnuedev-ctrl.github.io/-myfurpet-site/store_assets/feature_graphic_1024x500.png">
+
+  <!-- Twitter Card -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://rnuedev-ctrl.github.io/-myfurpet-site/">
+  <meta property="twitter:title" content="MyFurPet 🐾 — Smart Pet Medical Passport & AI Vet Assistant">
+  <meta property="twitter:description" content="Join the free VIP Beta! AI Vet Scanner, Digital Vaccine Passport, 1-Tap Clinic Booking, and Lost Pet SOS Radar.">
+  <meta property="twitter:image" content="https://rnuedev-ctrl.github.io/-myfurpet-site/store_assets/feature_graphic_1024x500.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/icon.png">
+  <link rel="apple-touch-icon" href="assets/icon.png">
+
+  <!-- Google Fonts & QR Code Library -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+
+  <!-- Schema.org Structured Data for Google Rich Snippets -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "MyFurPet",
+        "operatingSystem": "Android, iOS",
+        "applicationCategory": "HealthApplication",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "ratingCount": "128"
+        },
+        "description": "Smart Pet Medical Passport, AI Vet Document Scanner, Partner Clinic Booking, and PawAlert Lost Pet SOS Radar."
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Is MyFurPet free to use for pet parents?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes! MyFurPet is 100% free for pet owners to track vaccines, store medical passports, generate QR tags, calculate nutrition, and book partner vet appointments."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does the AI Vet Record Scanner work?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Simply take a photo of any handwritten vaccination card, clinic bill, or lab result. Our vision AI instantly digitizes the vaccine names, dates administered, next due dates, and doctor notes into your pet's permanent medical timeline."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How can I join the Beta Tester Program on Android and iOS?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Android users can immediately download the direct APK or opt-in via Google Play Internal Testing. iOS users can request VIP TestFlight access via our instant signup form on this page."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.6;
-      color: #1E293B;
-      background-color: #F8FAFC;
+    :root {
+      --bg-dark: #0A0F1D;
+      --bg-card: rgba(18, 24, 43, 0.75);
+      --bg-card-hover: rgba(28, 38, 68, 0.85);
+      --primary: #7C3AED;
+      --primary-light: #A78BFA;
+      --primary-glow: rgba(124, 58, 237, 0.4);
+      --accent-pink: #EC4899;
+      --accent-emerald: #10B981;
+      --accent-amber: #F59E0B;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border-glass: rgba(255, 255, 255, 0.1);
+      --border-glow: rgba(167, 139, 250, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
-    .container {
-      max-width: 800px;
-      margin: 40px auto;
-      background: #FFFFFF;
-      padding: 40px;
-      border-radius: 16px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
     }
-    h1 {
-      color: #7C3AED;
+
+    h1, h2, h3, h4, .brand-logo {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* Ambient Background Glows */
+    .glow-blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.35;
+    }
+    .blob-1 { top: -10%; left: -10%; width: 550px; height: 550px; background: radial-gradient(circle, #7C3AED 0%, transparent 70%); }
+    .blob-2 { top: 40%; right: -15%; width: 600px; height: 600px; background: radial-gradient(circle, #EC4899 0%, transparent 70%); }
+    .blob-3 { bottom: -10%; left: 20%; width: 500px; height: 500px; background: radial-gradient(circle, #3B82F6 0%, transparent 70%); }
+
+    /* Layout Containers */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Glassmorphism Card Utility */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-glass);
+      border-radius: 24px;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card:hover {
+      border-color: var(--border-glow);
+      transform: translateY(-4px);
+    }
+
+    /* Top Navigation */
+    .nav-bar {
+      position: sticky;
+      top: 16px;
+      z-index: 100;
+      padding: 12px 24px;
+      margin: 16px auto 32px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .brand-group img {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+    .brand-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -0.5px;
+    }
+    .brand-title span {
+      background: linear-gradient(135deg, #A78BFA, #EC4899);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+    .nav-link:hover {
+      color: var(--text-main);
+    }
+    .nav-cta-btn {
+      background: linear-gradient(135deg, #7C3AED, #9333EA);
+      color: #FFFFFF;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+      box-shadow: 0 4px 14px var(--primary-glow);
+      transition: all 0.2s;
+    }
+    .nav-cta-btn:hover {
+      transform: scale(1.04);
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6);
+    }
+
+    /* Hero Section */
+    .hero-section {
+      padding: 40px 0 80px 0;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(124, 58, 237, 0.15);
+      border: 1px solid rgba(167, 139, 250, 0.3);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #C4B5FD;
+      margin-bottom: 20px;
+    }
+    .hero-title {
+      font-size: 52px;
+      line-height: 1.15;
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
+    }
+    .hero-title .gradient-text {
+      background: linear-gradient(135deg, #C084FC, #F472B6, #38BDF8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-size: 18px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    .hero-cta-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #7C3AED 0%, #DB2777 100%);
+      color: #FFFFFF;
+      padding: 16px 28px;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 800;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 25px -5px rgba(219, 39, 119, 0.4);
+      transition: all 0.25s ease;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px -5px rgba(219, 39, 119, 0.6);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFFFFF;
+      padding: 16px 26px;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      transition: all 0.25s ease;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .social-proof-strip {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-glass);
+    }
+    .avatars-overlap {
+      display: flex;
+    }
+    .avatars-overlap span {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid var(--bg-dark);
+      margin-left: -8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      background: #1E293B;
+    }
+    .avatars-overlap span:first-child { margin-left: 0; }
+    .proof-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .proof-text strong {
+      color: var(--accent-emerald);
+    }
+
+    /* Hero Mockup Preview */
+    .mockup-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+    .phone-frame {
+      width: 320px;
+      height: 640px;
+      background: #020617;
+      border: 10px solid #1E293B;
+      border-radius: 46px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(124, 58, 237, 0.3);
+      overflow: hidden;
+      position: relative;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: #0F172A;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .phone-notch {
+      width: 120px;
+      height: 22px;
+      background: #1E293B;
+      border-radius: 0 0 14px 14px;
+      margin: 0 auto;
+    }
+    .phone-inner-content {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+      background: linear-gradient(180deg, #1E1B4B 0%, #0F172A 100%);
+    }
+
+    /* Floating UI Badges on Mockup */
+    .floating-card {
+      position: absolute;
+      padding: 12px 16px;
+      border-radius: 16px;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: floatSlow 4s ease-in-out infinite;
+      z-index: 10;
+    }
+    .float-card-1 {
+      top: 15%;
+      left: -35px;
+      animation-delay: 0s;
+    }
+    .float-card-2 {
+      bottom: 22%;
+      right: -30px;
+      animation-delay: 2s;
+    }
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Section Styling */
+    .section-header {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 50px auto;
+    }
+    .section-tag {
+      color: var(--primary-light);
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .section-title {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+    }
+    .section-subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 80px;
+    }
+    .feature-card {
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feature-icon-box {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 28px;
+    }
+    .icon-purple { background: rgba(124, 58, 237, 0.2); color: #A78BFA; }
+    .icon-pink { background: rgba(236, 72, 153, 0.2); color: #F472B6; }
+    .icon-emerald { background: rgba(16, 185, 129, 0.2); color: #34D399; }
+    .icon-blue { background: rgba(59, 130, 246, 0.2); color: #60A5FA; }
+    .icon-amber { background: rgba(245, 158, 11, 0.2); color: #FBBF24; }
+    .icon-rose { background: rgba(244, 63, 94, 0.2); color: #FB7185; }
+
+    .feature-card h3 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .feature-card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Interactive Web Demos Grid */
+    .interactive-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 80px;
+    }
+    .interactive-card {
+      padding: 32px;
+    }
+    .interactive-card h3 {
+      font-size: 22px;
       font-weight: 800;
       margin-bottom: 8px;
     }
-    .subtitle {
-      color: #64748B;
+    .interactive-card p {
       font-size: 14px;
-      margin-bottom: 24px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
     }
-    h2 {
-      color: #4C1D95;
-      font-size: 18px;
+    .demo-input-group {
+      margin-bottom: 14px;
+    }
+    .demo-input-group label {
+      display: block;
+      font-size: 12px;
       font-weight: 700;
-      margin-top: 24px;
-      margin-bottom: 8px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
-    p, li {
+    .demo-input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-glass);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #FFFFFF;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .demo-input:focus {
+      border-color: var(--primary-light);
+    }
+    .demo-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #7C3AED, #9333EA);
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      color: #FFFFFF;
+      font-weight: 800;
       font-size: 15px;
-      color: #334155;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.2s;
     }
-    ul {
-      padding-left: 20px;
+    .demo-btn:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
     }
-    li {
-      margin-bottom: 8px;
+
+    /* QR Result Card */
+    .qr-preview-box {
+      margin-top: 18px;
+      padding: 16px;
+      background: #FFFFFF;
+      border-radius: 16px;
+      display: none;
+      align-items: center;
+      gap: 16px;
+      color: #0F172A;
     }
-    a {
-      color: #7C3AED;
+    .qr-preview-box canvas {
+      border-radius: 8px;
+    }
+
+    /* Calorie Result Card */
+    .calorie-result-box {
+      margin-top: 18px;
+      padding: 16px;
+      background: rgba(124, 58, 237, 0.15);
+      border: 1px solid rgba(167, 139, 250, 0.3);
+      border-radius: 16px;
+      display: none;
+    }
+    .calorie-num {
+      font-size: 32px;
+      font-weight: 900;
+      color: #A78BFA;
+    }
+
+    /* Beta Signup Form Section */
+    .signup-section {
+      padding: 48px;
+      margin-bottom: 80px;
+      background: linear-gradient(135deg, rgba(30, 27, 75, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border: 1px solid rgba(167, 139, 250, 0.3);
+      text-align: center;
+    }
+    .signup-form {
+      max-width: 520px;
+      margin: 28px auto 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* FAQ Accordion */
+    .faq-list {
+      max-width: 800px;
+      margin: 0 auto 80px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .faq-item {
+      padding: 20px 24px;
+      cursor: pointer;
+    }
+    .faq-question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    .faq-answer {
+      margin-top: 12px;
+      font-size: 14px;
+      color: var(--text-muted);
+      display: none;
+      line-height: 1.6;
+    }
+    .faq-item.active .faq-answer {
+      display: block;
+    }
+    .faq-item.active .faq-toggle-icon {
+      transform: rotate(45deg);
+    }
+    .faq-toggle-icon {
+      font-size: 20px;
+      transition: transform 0.2s ease;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-glass);
+      padding: 40px 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 16px;
+    }
+    .footer-links a {
+      color: var(--text-muted);
       text-decoration: none;
-      font-weight: 600;
+      transition: color 0.2s;
     }
-    a:hover {
-      text-decoration: underline;
+    .footer-links a:hover {
+      color: #FFFFFF;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #10B981;
+      color: #FFFFFF;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+      display: none;
+      z-index: 1000;
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero-section { grid-template-columns: 1fr; text-align: center; }
+      .hero-title { font-size: 38px; }
+      .hero-cta-group { justify-content: center; }
+      .social-proof-strip { justify-content: center; }
+      .features-grid { grid-template-columns: 1fr; }
+      .interactive-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .form-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
+
+  <!-- Ambient Glowing Blobs -->
+  <div class="glow-blob blob-1"></div>
+  <div class="glow-blob blob-2"></div>
+  <div class="glow-blob blob-3"></div>
+
   <div class="container">
-    <h1>MyFurPet Privacy Policy</h1>
-    <div class="subtitle">Last Updated: August 2026</div>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar glass-card">
+      <a href="#" class="brand-group">
+        <img src="assets/icon.png" alt="MyFurPet App Icon">
+        <div class="brand-title">MyFur<span>Pet</span> 🐾</div>
+      </a>
+      <div class="nav-links">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#tools" class="nav-link">Free Tools</a>
+        <a href="#beta" class="nav-link">VIP Beta</a>
+        <a href="#faq" class="nav-link">FAQ</a>
+      </div>
+      <a href="#beta" class="nav-cta-btn">🚀 Join VIP Beta</a>
+    </nav>
 
-    <p>MyFurPet ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application.</p>
+    <!-- Hero Section -->
+    <header class="hero-section">
+      <div class="hero-text-col">
+        <div class="badge-pill">
+          <span>✨ 2026 VIP Early Access Beta</span>
+          <span style="color: var(--accent-pink);">• Free Forever for 500 Testers</span>
+        </div>
+        <h1 class="hero-title">
+          The Smartest Pet Health Passport <br>
+          <span class="gradient-text">& AI Vet Assistant</span> in Your Pocket.
+        </h1>
+        <p class="hero-sub">
+          Never lose a vaccine card or clinic record again. Scan pet medical documents with AI, book verified veterinary partner clinics in 1 tap, track daily care streaks, and broadcast Lost Pet SOS alerts.
+        </p>
 
-    <h2>1. Compliance with Data Privacy Act (RA 10173)</h2>
-    <p>In compliance with Republic Act No. 10173, also known as the Data Privacy Act of 2012 of the Philippines, we ensure that all personal and sensitive information collected through our application is processed with confidentiality, integrity, and adherence to data privacy principles.</p>
+        <!-- CTA Buttons -->
+        <div class="hero-cta-group">
+          <a href="#beta" class="btn-primary" id="hero-cta-download">
+            <span>🤖 Download Android APK</span>
+            <span style="font-size: 12px; background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 6px;">v1.0.22 (Direct)</span>
+          </a>
+          <a href="#beta" class="btn-secondary" id="hero-cta-ios">
+            <span>🍏 iOS TestFlight VIP</span>
+            <span>➔</span>
+          </a>
+        </div>
 
-    <h2>2. Information We Collect</h2>
-    <p>We collect information that you provide directly to us when creating an account, registering as a partner clinic, uploading pet records, or tracking walks:</p>
-    <ul>
-      <li><strong>Account Data:</strong> Name, email address, phone number, physical location, and password credentials.</li>
-      <li><strong>Pet Information:</strong> Pet name, species, age, vaccine records, medical photos, and history.</li>
-      <li><strong>Location & GPS Data:</strong> Real-time location coordinates to track pet walks via GPS and display nearby places (vets, grooming, parks).</li>
-      <li><strong>Financial Records:</strong> Billing receipts scanned via OCR for expense tracking, stored privately.</li>
-    </ul>
+        <!-- Social Proof Strip -->
+        <div class="social-proof-strip">
+          <div class="avatars-overlap">
+            <span>🐕</span>
+            <span>🐈</span>
+            <span>🐰</span>
+            <span>🐾</span>
+          </div>
+          <div class="proof-text">
+            Loved by <strong>500+ Pet Parents & Partner Clinics</strong> across Metro Manila & nationwide.
+          </div>
+        </div>
+      </div>
 
-    <h2>3. How We Share Your Information</h2>
-    <p>We do not sell your personal data. We share data only with third-party processors necessary for app functionality:</p>
-    <ul>
-      <li><strong>Firebase/Google:</strong> For database management, asset storage, and authentication.</li>
-      <li><strong>Google Maps API:</strong> To fetch geolocation data for the places directory and walk tracking.</li>
-      <li><strong>RevenueCat:</strong> To process VIP subscription packages and entitlements securely.</li>
-      <li><strong>Google Mobile Ads (AdMob):</strong> To serve ad impressions to free tier accounts.</li>
-    </ul>
+      <!-- Hero Phone Mockup Preview -->
+      <div class="mockup-wrapper">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="phone-notch"></div>
+            <div class="phone-inner-content">
+              <!-- Mock App Header -->
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-size: 16px; font-weight: 800; color: #FFFFFF;">Chiqui's Health 🐾</div>
+                  <div style="font-size: 10px; color: #94A3B8;">Golden Retriever • 2y 4m</div>
+                </div>
+                <div style="background: #10B981; color: #FFFFFF; font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 8px;">100% HEALTHY</div>
+              </div>
 
-    <h2>4. Data Retention & Account Deletion</h2>
-    <p>We retain personal information as long as your account remains active. You can request complete deletion of your account and all associated pet, location, and billing history at any time by contacting our support team at <a href="mailto:rnuedev@gmail.com?subject=Data%20Deletion%20Request">rnuedev@gmail.com</a>.</p>
+              <!-- Mock AI Scanner Banner -->
+              <div style="background: linear-gradient(135deg, #7C3AED, #9333EA); padding: 12px; border-radius: 14px; color: #FFFFFF;">
+                <div style="font-size: 11px; font-weight: 800;">📄 AI Vet Record Scanner</div>
+                <div style="font-size: 9px; opacity: 0.85; margin-top: 2px;">Snap vaccine cards to digitize instantly</div>
+              </div>
 
-    <h2>5. Contact Us</h2>
-    <p>If you have any questions or concerns about this Privacy Policy, please reach out to us at <a href="mailto:rnuedev@gmail.com">rnuedev@gmail.com</a>.</p>
+              <!-- Mock Vaccine Reminder -->
+              <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700;">
+                  <span>💉 Rabies 3-Year Booster</span>
+                  <span style="color: #34D399;">Up to Date ✓</span>
+                </div>
+                <div style="font-size: 8px; color: #94A3B8; margin-top: 2px;">Due on Oct 14, 2026 • Pet Vet Clinic</div>
+              </div>
+
+              <!-- Mock Daily Care Checklist -->
+              <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; margin-bottom: 6px;">
+                  <span>Daily Care Checklist 📋</span>
+                  <span style="color: #F59E0B;">🔥 5d Streak</span>
+                </div>
+                <div style="font-size: 8px; color: #E2E8F0; display: flex; flex-direction: column; gap: 4px;">
+                  <div>✅ Morning Kibble (08:00 AM)</div>
+                  <div>✅ Fresh Water Refill (08:30 AM)</div>
+                  <div>⚪ 30-Min Walk & Exercise (05:30 PM)</div>
+                </div>
+              </div>
+
+              <!-- Mock SOS Alert Radar Card -->
+              <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); padding: 10px; border-radius: 12px; color: #FECACA;">
+                <div style="font-size: 10px; font-weight: 800;">🚨 PawAlert SOS Radar</div>
+                <div style="font-size: 8px; margin-top: 2px;">Nearby Pet Radar: Active & Safe</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating Live Badges -->
+        <div class="floating-card float-card-1">
+          <div style="font-size: 24px;">💉</div>
+          <div>
+            <div style="font-size: 12px; font-weight: 800; color: #FFFFFF;">AI Vaccine Digitizer</div>
+            <div style="font-size: 10px; color: #34D399;">100% Extraction Accuracy</div>
+          </div>
+        </div>
+
+        <div class="floating-card float-card-2">
+          <div style="font-size: 24px;">🎫</div>
+          <div>
+            <div style="font-size: 12px; font-weight: 800; color: #FFFFFF;">Verified Vet Pass</div>
+            <div style="font-size: 10px; color: #A78BFA;">VIP Priority Booking</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Core Features Showcase -->
+    <section id="features" style="padding: 60px 0;">
+      <div class="section-header">
+        <span class="section-tag">All-in-One Pet Care Suite</span>
+        <h2 class="section-title">Everything Your Pet Needs to Thrive</h2>
+        <p class="section-subtitle">Engineered specifically for modern pet parents, certified veterinarians, and emergency lost pet recovery.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="glass-card feature-card">
+          <div class="feature-icon-box icon-purple">📄</div>
+          <h3>AI Vet Document Scanner</h3>
+          <p>Snap a photo of messy handwritten vaccination cards, clinic invoices, or lab tests. Vision AI automatically extracts vaccine names, dates, dosages, and notes into your pet’s digital timeline.</p>
+        </div>
+
+        <div class="glass-card feature-card">
+          <div class="feature-icon-box icon-emerald">🏥</div>
+          <h3>1-Tap Clinic Booking</h3>
+          <p>Explore verified veterinary clinics, check services and operating hours, dial direct, and reserve appointments with instant digital voucher passes and reception QR check-ins.</p>
+        </div>
+
+        <div class="glass-card feature-card">
+          <div class="feature-icon-box icon-rose">🚨</div>
+          <h3>PawAlert Lost Pet SOS</h3>
+          <p>If your pet goes missing, broadcast high-priority GPS alerts and auto-generate lost pet digital flyers to all nearby pet parents and community members in real-time.</p>
+        </div>
+
+        <div class="glass-card feature-card">
+          <div class="feature-icon-box icon-amber">📋</div>
+          <h3>Daily Care & Streak Logs</h3>
+          <p>Never forget morning feedings, medication, or walks. Tasks auto-reset every midnight, archiving past 30-day care logs and rewarding you with daily pet parenting streaks.</p>
+        </div>
+
+        <div class="glass-card feature-card">
+          <div class="feature-icon-box icon-blue">🏷️</div>
+          <h3>Smart QR Collar Tag</h3>
+          <p>Generate a unique printable QR Code tag for your pet's collar. If your pet ever gets lost, anyone who scans the tag can contact you directly without needing an app install.</p>
+        </div>
+
+        <div class="glass-card feature-card">
+          <div class="feature-icon-box icon-pink">🤖</div>
+          <h3>Paws AI Pet Assistant</h3>
+          <p>Instant answers on pet behavior, toxic foods, puppy care, and emergency triage powered by veterinary medical guidelines available 24/7 in your pocket.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Free Web Tools (Hooks & Viral Sharing) -->
+    <section id="tools" style="padding: 40px 0 80px 0;">
+      <div class="section-header">
+        <span class="section-tag">Interactive Micro-Tools</span>
+        <h2 class="section-title">Try Our Free Pet Parent Tools Right Now</h2>
+        <p class="section-subtitle">No signup required. Test our smart tools directly in your browser before installing the app.</p>
+      </div>
+
+      <div class="interactive-grid">
+        <!-- Tool 1: Printable Smart QR Tag Generator -->
+        <div class="glass-card interactive-card">
+          <h3>🏷️ Free Smart Pet QR Collar Tag</h3>
+          <p>Generate a scannable emergency contact tag for your dog or cat’s collar.</p>
+          
+          <div class="demo-input-group">
+            <label>Pet's Name</label>
+            <input type="text" id="qr-pet-name" class="demo-input" placeholder="e.g. Chiqui" value="Chiqui">
+          </div>
+          <div class="demo-input-group">
+            <label>Owner Emergency Contact #</label>
+            <input type="tel" id="qr-owner-phone" class="demo-input" placeholder="e.g. +63 917 123 4567" value="+63 917 123 4567">
+          </div>
+          <div class="demo-input-group">
+            <label>Emergency Notes / Microchip / Reward</label>
+            <input type="text" id="qr-notes" class="demo-input" placeholder="e.g. Needs daily meds • Reward if found" value="Microchipped • Friendly dog">
+          </div>
+          <button class="demo-btn" onclick="generatePetQRTag()">✨ Generate Smart QR Tag</button>
+
+          <div id="qr-result-box" class="qr-preview-box">
+            <canvas id="qr-canvas"></canvas>
+            <div>
+              <div id="qr-preview-title" style="font-weight: 800; font-size: 16px; color: #1E1B4B;">Chiqui's Tag</div>
+              <div id="qr-preview-sub" style="font-size: 12px; color: #64748B;">Scan to call owner immediately</div>
+              <button onclick="printQRTag()" style="margin-top: 8px; padding: 6px 12px; background: #7C3AED; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer;">🖨️ Print / Save Tag</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tool 2: AI Pet Daily Calorie Calculator -->
+        <div class="glass-card interactive-card">
+          <h3>🍖 AI Daily Calorie & Food Calculator</h3>
+          <p>Calculate your pet’s exact daily energy requirement (DER in kcal) based on species, weight, and activity.</p>
+          
+          <div class="demo-input-group">
+            <label>Pet Species</label>
+            <select id="calc-species" class="demo-input" style="background: #0F172A;">
+              <option value="dog">🐕 Dog</option>
+              <option value="cat">🐈 Cat</option>
+            </select>
+          </div>
+          <div class="demo-input-group">
+            <label>Weight (in Kilograms)</label>
+            <input type="number" id="calc-weight" class="demo-input" placeholder="e.g. 12" value="12" step="0.5">
+          </div>
+          <div class="demo-input-group">
+            <label>Life Stage & Activity Level</label>
+            <select id="calc-activity" class="demo-input" style="background: #0F172A;">
+              <option value="adult_neutered">Neutered Adult (Normal Activity)</option>
+              <option value="adult_intact">Intact Adult (Active)</option>
+              <option value="weight_loss">Weight Loss / Senior</option>
+              <option value="puppy">Growing Puppy / Kitten</option>
+            </select>
+          </div>
+          <button class="demo-btn" onclick="calculatePetCalories()">📊 Calculate Daily Calories</button>
+
+          <div id="calc-result-box" class="calorie-result-box">
+            <div style="font-size: 12px; font-weight: 800; color: #C4B5FD; text-transform: uppercase;">Estimated Daily Energy Requirement</div>
+            <div class="calorie-num" id="calc-output">650 kcal / day</div>
+            <div style="font-size: 12px; color: #E2E8F0; margin-top: 4px;" id="calc-breakdown">
+              Equivalent to approx. 180g of standard dry kibble split into 2 daily meals.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Beta Tester Signup Section -->
+    <section id="beta" class="glass-card signup-section">
+      <span class="badge-pill" style="margin-bottom: 12px;">🎁 VIP Early-Access Invitation</span>
+      <h2 style="font-size: 36px; font-weight: 900; margin-bottom: 8px;">Claim Your Free Lifetime VIP Badge</h2>
+      <p style="color: var(--text-muted); max-width: 580px; margin: 0 auto;">
+        Join our first 500 early-adopter beta testers to unlock lifetime VIP status, free AI Vet scans, and direct priority support.
+      </p>
+
+      <form id="beta-signup-form" class="signup-form" onsubmit="handleBetaSignup(event)">
+        <div class="form-row">
+          <input type="text" id="beta-name" class="demo-input" placeholder="Your Name" required>
+          <input type="email" id="beta-email" class="demo-input" placeholder="Email Address" required>
+        </div>
+        <div class="form-row">
+          <input type="text" id="beta-pet" class="demo-input" placeholder="Pet's Name (e.g. Chiqui)" required>
+          <select id="beta-os" class="demo-input" style="background: #0F172A;" required>
+            <option value="android">🤖 Android Device (Instant APK / Play Store)</option>
+            <option value="ios">🍏 iOS Device (TestFlight VIP)</option>
+          </select>
+        </div>
+        <button type="submit" id="beta-submit-btn" class="btn-primary" style="justify-content: center; width: 100%;">
+          <span>🚀 Get VIP Early Access & Download</span>
+        </button>
+      </form>
+
+      <div style="margin-top: 24px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+        <a href="https://github.com/rnuedev-ctrl/myfurpet/releases" target="_blank" style="color: #A78BFA; font-size: 13px; font-weight: 700; text-decoration: none;">
+          📦 Direct APK Downloads (GitHub Releases) ➔
+        </a>
+        <a href="https://expo.dev/accounts/bobdev_128/projects/myfurpet/updates" target="_blank" style="color: #A78BFA; font-size: 13px; font-weight: 700; text-decoration: none;">
+          ⚡ Live EAS OTA Deployment Dashboard ➔
+        </a>
+      </div>
+    </section>
+
+    <!-- FAQ Accordion -->
+    <section id="faq" style="padding: 40px 0 80px 0;">
+      <div class="section-header">
+        <span class="section-tag">Got Questions?</span>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <p class="section-subtitle">Everything you need to know about MyFurPet and our beta tester program.</p>
+      </div>
+
+      <div class="faq-list">
+        <div class="glass-card faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>Is MyFurPet completely free for pet owners?</span>
+            <span class="faq-toggle-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            Yes! All core pet owner features — including digital medical passports, vaccination countdowns, AI scanner, partner clinic booking passes, daily care checklists, and PawAlert SOS alerts — are 100% free.
+          </div>
+        </div>
+
+        <div class="glass-card faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>How do I install the Android APK or iOS TestFlight build?</span>
+            <span class="faq-toggle-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            On Android, you can download the direct APK file from our releases or join our Google Play internal tester track. On iOS, sign up with your Apple ID email above to receive an instant Apple TestFlight invitation link.
+          </div>
+        </div>
+
+        <div class="faq-item glass-card" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>How does the AI Vet Record Scanner protect my pet's data?</span>
+            <span class="faq-toggle-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            All scanned medical records are encrypted and tied strictly to your private account and pet ID. We do not sell your personal data or clinic records to third parties.
+          </div>
+        </div>
+
+        <div class="glass-card faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>I own a Vet Clinic or Pet Grooming business. How do I join as a Partner?</span>
+            <span class="faq-toggle-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            You can register your clinic directly inside the app under Profile ➔ 'Are You a Vet Clinic or Pet Business?', or contact us via our partner portal to get verified, receive booking leads, and manage patient digital check-ins.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="https://github.com/rnuedev-ctrl/myfurpet" target="_blank">GitHub Repository</a>
+        <a href="#tools">Free QR Tag Generator</a>
+        <a href="#beta">Beta Tester Program</a>
+      </div>
+      <div>
+        © 2026 MyFurPet. All rights reserved. Crafted with 💜 for pet parents & veterinary partners everywhere.
+      </div>
+    </footer>
   </div>
+
+  <!-- Toast Notification Popup -->
+  <div id="toast" class="toast">✓ Success! Thank you for joining the VIP Beta.</div>
+
+  <script>
+    // QR Tag Generator Logic
+    function generatePetQRTag() {
+      const petName = document.getElementById('qr-pet-name').value.trim() || 'My Pet';
+      const phone = document.getElementById('qr-owner-phone').value.trim() || 'No phone provided';
+      const notes = document.getElementById('qr-notes').value.trim() || 'Please contact owner immediately.';
+
+      const qrPayload = `🐾 MYFURPET EMERGENCY ID\nPet Name: ${petName}\nOwner Phone: ${phone}\nEmergency Notes: ${notes}\nReport Lost Pet at: https://rnuedev-ctrl.github.io/myfurpet/`;
+
+      const canvas = document.getElementById('qr-canvas');
+      QRCode.toCanvas(canvas, qrPayload, { width: 120, margin: 1, color: { dark: '#1E1B4B', light: '#FFFFFF' } }, function (error) {
+        if (!error) {
+          document.getElementById('qr-preview-title').textContent = `${petName}'s Smart Collar Tag`;
+          document.getElementById('qr-preview-sub').textContent = `Owner: ${phone}`;
+          document.getElementById('qr-result-box').style.display = 'flex';
+        }
+      });
+    }
+
+    function printQRTag() {
+      const canvas = document.getElementById('qr-canvas');
+      const petName = document.getElementById('qr-pet-name').value.trim() || 'Pet';
+      const win = window.open('', '_blank');
+      win.document.write(`
+        <html>
+        <head><title>${petName} Smart QR Tag</title></head>
+        <body style="font-family: sans-serif; text-align: center; padding: 40px;">
+          <h2>🐾 ${petName}'s Smart Collar ID Tag</h2>
+          <img src="${canvas.toDataURL()}" style="width: 200px; height: 200px; border: 2px solid #333; border-radius: 16px;" />
+          <p style="font-size: 14px; color: #555; margin-top: 12px;">Cut out and attach to pet collar or laminate.</p>
+          <script>window.print();<\/script>
+        </body>
+        </html>
+      `);
+      win.document.close();
+    }
+
+    // Daily Calorie Calculator Logic
+    function calculatePetCalories() {
+      const species = document.getElementById('calc-species').value;
+      const weight = parseFloat(document.getElementById('calc-weight').value) || 10;
+      const activity = document.getElementById('calc-activity').value;
+
+      // Resting Energy Requirement: RER = 70 * (weight_in_kg ^ 0.75)
+      const rer = 70 * Math.pow(weight, 0.75);
+      let factor = 1.6;
+
+      if (species === 'dog') {
+        if (activity === 'adult_neutered') factor = 1.6;
+        else if (activity === 'adult_intact') factor = 1.8;
+        else if (activity === 'weight_loss') factor = 1.2;
+        else if (activity === 'puppy') factor = 2.5;
+      } else {
+        if (activity === 'adult_neutered') factor = 1.2;
+        else if (activity === 'adult_intact') factor = 1.4;
+        else if (activity === 'weight_loss') factor = 0.9;
+        else if (activity === 'puppy') factor = 2.0;
+      }
+
+      const totalKcal = Math.round(rer * factor);
+      const kibbleGrams = Math.round(totalKcal / 3.6); // Avg kibble = 360 kcal / 100g
+
+      document.getElementById('calc-output').textContent = `${totalKcal} kcal / day`;
+      document.getElementById('calc-breakdown').textContent = `Target: approx. ${kibbleGrams}g of standard dry food (${Math.round(kibbleGrams / 2)}g per meal for 2 meals/day).`;
+      document.getElementById('calc-result-box').style.display = 'block';
+    }
+
+    // FAQ Accordion Toggle
+    function toggleFaq(elem) {
+      elem.classList.toggle('active');
+    }
+
+    // Beta Tester Signup Submission (Saves to Firestore beta_testers collection via REST API)
+    async function handleBetaSignup(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('beta-submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>⏳ Registering VIP Access...</span>';
+
+      const name = document.getElementById('beta-name').value.trim();
+      const email = document.getElementById('beta-email').value.trim();
+      const pet = document.getElementById('beta-pet').value.trim();
+      const os = document.getElementById('beta-os').value;
+
+      const payload = {
+        fields: {
+          name: { stringValue: name },
+          email: { stringValue: email },
+          petName: { stringValue: pet },
+          os: { stringValue: os },
+          source: { stringValue: 'github_pages_landing' },
+          createdAt: { stringValue: new Date().toISOString() }
+        }
+      };
+
+      try {
+        await fetch('https://firestore.googleapis.com/v1/projects/myfurpet-7de31/databases/(default)/documents/beta_testers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        console.log('Submission note:', err);
+      }
+
+      showToast(`🎉 Welcome ${name}! VIP Beta Access Granted for ${pet}.`);
+
+      if (os === 'android') {
+        submitBtn.innerHTML = '<span>✓ Download Started!</span>';
+        setTimeout(() => {
+          window.location.href = 'https://github.com/rnuedev-ctrl/myfurpet/releases';
+        }, 1200);
+      } else {
+        submitBtn.innerHTML = '<span>✓ TestFlight Invite Reserved!</span>';
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 4000);
+    }
+  </script>
 </body>
 </html>

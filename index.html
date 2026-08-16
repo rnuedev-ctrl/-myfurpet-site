@@ -903,12 +903,13 @@
           </div>
           <button class="demo-btn" onclick="generatePetQRTag()">✨ Generate Smart QR Tag</button>
 
-          <div id="qr-result-box" class="qr-preview-box">
-            <canvas id="qr-canvas"></canvas>
-            <div>
+          <div id="qr-result-box" class="qr-preview-box" style="display: none; background: #FFFFFF; border-radius: 16px; padding: 18px; color: #0F172A; align-items: center; gap: 16px; margin-top: 18px;">
+            <img id="qr-preview-img" src="" alt="Pet QR Tag" style="width: 110px; height: 110px; border-radius: 8px; border: 1px solid #E2E8F0; background: #FFF;" />
+            <div style="flex: 1;">
               <div id="qr-preview-title" style="font-weight: 800; font-size: 16px; color: #1E1B4B;">Chiqui's Tag</div>
-              <div id="qr-preview-sub" style="font-size: 12px; color: #64748B;">Scan to call owner immediately</div>
-              <button onclick="printQRTag()" style="margin-top: 8px; padding: 6px 12px; background: #7C3AED; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer;">🖨️ Print / Save Tag</button>
+              <div id="qr-preview-sub" style="font-size: 12px; font-weight: 700; color: #7C3AED; margin-top: 2px;">Owner: +63 917 123 4567</div>
+              <div id="qr-preview-notes" style="font-size: 11px; color: #64748B; margin-top: 2px;">Microchipped • Friendly dog</div>
+              <button onclick="printQRTag()" style="margin-top: 8px; padding: 6px 14px; background: #7C3AED; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer;">🖨️ Print / Save Tag</button>
             </div>
           </div>
         </div>
@@ -977,12 +978,12 @@
       </form>
 
       <div style="margin-top: 24px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-        <a href="https://github.com/rnuedev-ctrl/myfurpet/releases" target="_blank" style="color: #A78BFA; font-size: 13px; font-weight: 700; text-decoration: none;">
-          📦 Direct APK Downloads (GitHub Releases) ➔
-        </a>
-        <a href="https://expo.dev/accounts/bobdev_128/projects/myfurpet/updates" target="_blank" style="color: #A78BFA; font-size: 13px; font-weight: 700; text-decoration: none;">
-          ⚡ Live EAS OTA Deployment Dashboard ➔
-        </a>
+        <span style="color: #A78BFA; font-size: 13px; font-weight: 700;">
+          🛡️ 100% Free & Secure VIP Beta Testing
+        </span>
+        <span style="color: #34D399; font-size: 13px; font-weight: 700;">
+          ✓ Instant Android & iOS Access
+        </span>
       </div>
     </section>
 
@@ -1041,7 +1042,7 @@
     <footer>
       <div class="footer-links">
         <a href="privacy.html">Privacy Policy</a>
-        <a href="https://github.com/rnuedev-ctrl/myfurpet" target="_blank">GitHub Repository</a>
+        <a href="#features">App Features</a>
         <a href="#tools">Free QR Tag Generator</a>
         <a href="#beta">Beta Tester Program</a>
       </div>
@@ -1061,30 +1062,48 @@
       const phone = document.getElementById('qr-owner-phone').value.trim() || 'No phone provided';
       const notes = document.getElementById('qr-notes').value.trim() || 'Please contact owner immediately.';
 
-      const qrPayload = `🐾 MYFURPET EMERGENCY ID\nPet Name: ${petName}\nOwner Phone: ${phone}\nEmergency Notes: ${notes}\nReport Lost Pet at: https://rnuedev-ctrl.github.io/myfurpet/`;
+      const qrPayload = `tel:${phone}`;
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=1&data=${encodeURIComponent(qrPayload)}`;
 
-      const canvas = document.getElementById('qr-canvas');
-      QRCode.toCanvas(canvas, qrPayload, { width: 120, margin: 1, color: { dark: '#1E1B4B', light: '#FFFFFF' } }, function (error) {
-        if (!error) {
-          document.getElementById('qr-preview-title').textContent = `${petName}'s Smart Collar Tag`;
-          document.getElementById('qr-preview-sub').textContent = `Owner: ${phone}`;
-          document.getElementById('qr-result-box').style.display = 'flex';
-        }
-      });
+      const img = document.getElementById('qr-preview-img');
+      img.src = qrApiUrl;
+      document.getElementById('qr-preview-title').textContent = `${petName}'s Smart Collar Tag`;
+      document.getElementById('qr-preview-sub').textContent = `📞 Owner: ${phone}`;
+      document.getElementById('qr-preview-notes').textContent = `📝 ${notes}`;
+      document.getElementById('qr-result-box').style.display = 'flex';
     }
 
     function printQRTag() {
-      const canvas = document.getElementById('qr-canvas');
       const petName = document.getElementById('qr-pet-name').value.trim() || 'Pet';
+      const phone = document.getElementById('qr-owner-phone').value.trim() || '';
+      const notes = document.getElementById('qr-notes').value.trim() || '';
+      const imgSrc = document.getElementById('qr-preview-img').src;
+
       const win = window.open('', '_blank');
       win.document.write(`
+        <!DOCTYPE html>
         <html>
-        <head><title>${petName} Smart QR Tag</title></head>
-        <body style="font-family: sans-serif; text-align: center; padding: 40px;">
-          <h2>🐾 ${petName}'s Smart Collar ID Tag</h2>
-          <img src="${canvas.toDataURL()}" style="width: 200px; height: 200px; border: 2px solid #333; border-radius: 16px;" />
-          <p style="font-size: 14px; color: #555; margin-top: 12px;">Cut out and attach to pet collar or laminate.</p>
-          <script>window.print();<\/script>
+        <head>
+          <title>${petName} Smart QR Collar Tag</title>
+          <style>
+            body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: #f8fafc; }
+            .card { border: 2px dashed #7C3AED; padding: 24px; border-radius: 20px; text-align: center; background: white; max-width: 280px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+            h2 { color: #1E1B4B; margin: 0 0 4px 0; font-size: 20px; }
+            .phone { color: #7C3AED; font-weight: bold; font-size: 14px; margin-bottom: 12px; }
+            img { width: 160px; height: 160px; border-radius: 12px; border: 1px solid #ddd; }
+            .note { font-size: 11px; color: #64748B; margin-top: 8px; }
+            .instructions { font-size: 10px; color: #94A3B8; margin-top: 14px; border-top: 1px solid #eee; padding-top: 8px; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <h2>🐾 ${petName}</h2>
+            <div class="phone">📞 ${phone}</div>
+            <img src="${imgSrc}" alt="QR Code" />
+            <div class="note">${notes}</div>
+            <div class="instructions">Scan to dial owner • Cut & attach to collar / laminate</div>
+          </div>
+          <script>window.onload = function() { window.print(); }<\/script>
         </body>
         </html>
       `);

@@ -1226,9 +1226,10 @@
 
       const totalKcal = Math.round(rer * factor);
       const kibbleGrams = Math.round(totalKcal / 3.6); // Avg kibble = 360 kcal / 100g
+      const mealGrams = Math.round(kibbleGrams / 2);
 
-      document.getElementById('calc-output').textContent = `${totalKcal} kcal / day`;
-      document.getElementById('calc-breakdown').textContent = `Target: approx. ${kibbleGrams}g of standard dry food (${Math.round(kibbleGrams / 2)}g per meal for 2 meals/day).`;
+      document.getElementById('calc-output').textContent = `${totalKcal.toLocaleString()} kcal / day`;
+      document.getElementById('calc-breakdown').textContent = `Target: approx. ${kibbleGrams.toLocaleString()}g of standard dry food (${mealGrams.toLocaleString()}g per meal for 2 meals/day).`;
       document.getElementById('calc-result-box').style.display = 'block';
     }
 

@@ -3,96 +3,478 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Google Site Verification -->
   <meta name="google-site-verification" content="FB1ZNyWdNdcct7kV5eTIZtYH66eTnlgQb4VC7btWPlU" />
-  <title>Privacy Policy - MyFurPet</title>
+
+  <!-- Primary SEO Meta Tags -->
+  <title>Privacy Policy | MyFurPet 🐾 — Secure Pet Health Passport & AI Vet Records</title>
+  <meta name="title" content="Privacy Policy | MyFurPet 🐾 — Secure Pet Health Passport & AI Vet Records">
+  <meta name="description" content="Learn how MyFurPet protects your pet medical records, personal data, GPS location, and privacy in compliance with RA 10173 Data Privacy Act.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://rnuedev-ctrl.github.io/-myfurpet-site/privacy.html">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rnuedev-ctrl.github.io/-myfurpet-site/privacy.html">
+  <meta property="og:title" content="Privacy Policy | MyFurPet 🐾">
+  <meta property="og:description" content="Learn how MyFurPet protects your pet health records and personal information.">
+  <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/myfurpet-7de31.firebasestorage.app/o/branding%2Fog_preview.png?alt=media&token=myfurpet-public-og-token">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/icon.png">
+  <link rel="apple-touch-icon" href="assets/icon.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.6;
-      color: #1E293B;
-      background-color: #F8FAFC;
+    :root {
+      --bg-dark: #090614;
+      --bg-card: rgba(22, 16, 42, 0.75);
+      --primary-purple: #7C3AED;
+      --primary-purple-hover: #6D28D9;
+      --primary-glow: rgba(124, 58, 237, 0.4);
+      --accent-pink: #EC4899;
+      --accent-blue: #38BDF8;
+      --accent-green: #10B981;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border-glass: rgba(255, 255, 255, 0.1);
+      --border-purple: rgba(167, 139, 250, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.7;
+      overflow-x: hidden;
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(124, 58, 237, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.12) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(56, 189, 248, 0.08) 0px, transparent 50%);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Outfit', sans-serif;
+    }
+
     .container {
-      max-width: 800px;
-      margin: 40px auto;
-      background: #FFFFFF;
-      padding: 40px;
-      border-radius: 16px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 24px;
     }
-    h1 {
-      color: #7C3AED;
-      font-size: 28px;
-      font-weight: 800;
-      margin-bottom: 8px;
+
+    /* Ambient Background Glows */
+    .glow-blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.5;
     }
-    .subtitle {
-      color: #64748B;
-      font-size: 14px;
-      margin-bottom: 24px;
+    .blob-1 {
+      top: -100px;
+      left: -100px;
+      width: 500px;
+      height: 500px;
+      background: var(--primary-purple);
     }
-    h2 {
-      color: #4C1D95;
-      font-size: 18px;
-      font-weight: 700;
-      margin-top: 24px;
-      margin-bottom: 8px;
+    .blob-2 {
+      top: 40%;
+      right: -150px;
+      width: 450px;
+      height: 450px;
+      background: var(--accent-pink);
     }
-    p, li {
-      font-size: 15px;
-      color: #334155;
+    .blob-3 {
+      bottom: -100px;
+      left: 20%;
+      width: 400px;
+      height: 400px;
+      background: var(--accent-blue);
     }
-    ul {
-      padding-left: 20px;
+
+    /* Glassmorphism Styles */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-glass);
+      border-radius: 24px;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
     }
-    li {
-      margin-bottom: 8px;
+
+    /* Navigation Bar */
+    .nav-bar {
+      position: sticky;
+      top: 16px;
+      z-index: 100;
+      padding: 12px 24px;
+      margin: 16px auto 40px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    a {
-      color: #7C3AED;
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       text-decoration: none;
+    }
+    .brand-group img {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+    .brand-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -0.5px;
+    }
+    .brand-title span {
+      background: linear-gradient(135deg, #A78BFA, #EC4899);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .brand-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94A3B8;
+      margin-top: -2px;
+      letter-spacing: 0.5px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+    .nav-link:hover {
+      color: var(--text-main);
+    }
+    .nav-cta-btn {
+      background: linear-gradient(135deg, #7C3AED, #9333EA);
+      color: #FFFFFF;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+      box-shadow: 0 4px 14px var(--primary-glow);
+      transition: all 0.2s;
+    }
+    .nav-cta-btn:hover {
+      transform: scale(1.04);
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6);
+    }
+
+    /* Privacy Header */
+    .privacy-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: rgba(124, 58, 237, 0.15);
+      border: 1px solid rgba(167, 139, 250, 0.3);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #C4B5FD;
+      margin-bottom: 20px;
+    }
+    .page-title {
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #C084FC, #F472B6, #38BDF8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .last-updated {
+      color: var(--text-muted);
+      font-size: 14px;
       font-weight: 600;
     }
+
+    /* Privacy Body Content */
+    .privacy-content {
+      padding: 44px;
+      margin-bottom: 60px;
+    }
+    .intro-box {
+      background: rgba(124, 58, 237, 0.1);
+      border: 1px solid rgba(167, 139, 250, 0.25);
+      padding: 20px 24px;
+      border-radius: 16px;
+      margin-bottom: 32px;
+      font-size: 16px;
+      color: #E2E8F0;
+    }
+    .privacy-section {
+      margin-bottom: 36px;
+    }
+    .section-heading {
+      font-size: 22px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-icon {
+      font-size: 24px;
+    }
+    p {
+      color: #CBD5E1;
+      font-size: 15px;
+      margin-bottom: 14px;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 16px;
+    }
+    li {
+      position: relative;
+      padding-left: 28px;
+      margin-bottom: 12px;
+      color: #CBD5E1;
+      font-size: 15px;
+    }
+    li::before {
+      content: "🐾";
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-size: 14px;
+    }
+    li strong {
+      color: #F8FAFC;
+    }
+
+    .highlight-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin: 20px 0;
+    }
+
+    a {
+      color: #C084FC;
+      text-decoration: none;
+      font-weight: 700;
+      transition: color 0.2s;
+    }
     a:hover {
+      color: #F472B6;
       text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-glass);
+      padding: 40px 0 60px 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .footer-links a:hover {
+      color: var(--text-main);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      .privacy-content {
+        padding: 24px;
+      }
+      .page-title {
+        font-size: 32px;
+      }
     }
   </style>
 </head>
 <body>
+
+  <div class="glow-blob blob-1"></div>
+  <div class="glow-blob blob-2"></div>
+  <div class="glow-blob blob-3"></div>
+
   <div class="container">
-    <h1>MyFurPet Privacy Policy</h1>
-    <div class="subtitle">Last Updated: August 2026</div>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar glass-card">
+      <a href="index.html" class="brand-group">
+        <img src="assets/icon.png" alt="MyFurPet App Icon">
+        <div style="display: flex; flex-direction: column;">
+          <div class="brand-title">MyFur<span>Pet</span> 🐾</div>
+          <div class="brand-sub">Pet Care &amp; Vet AI</div>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="index.html#features" class="nav-link">Features</a>
+        <a href="index.html#tools" class="nav-link">Free Tools</a>
+        <a href="index.html#beta" class="nav-link">VIP Beta</a>
+        <a href="index.html#faq" class="nav-link">FAQ</a>
+      </div>
+      <a href="index.html#beta" class="nav-cta-btn">🚀 Join VIP Beta</a>
+    </nav>
 
-    <p>MyFurPet ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application.</p>
+    <!-- Header Section -->
+    <header class="privacy-header">
+      <div class="badge-pill">
+        <span>🛡️ Data Privacy &amp; Security Commitment</span>
+      </div>
+      <h1 class="page-title">
+        MyFurPet <span class="gradient-text">Privacy Policy</span>
+      </h1>
+      <div class="last-updated">
+        📅 Last Updated: August 2026 • Compliant with Republic Act No. 10173 &amp; Global Standards
+      </div>
+    </header>
 
-    <h2>1. Compliance with Data Privacy Act (RA 10173)</h2>
-    <p>In compliance with Republic Act No. 10173, also known as the Data Privacy Act of 2012 of the Philippines, we ensure that all personal and sensitive information collected through our application is processed with confidentiality, integrity, and adherence to data privacy principles.</p>
+    <!-- Main Content Card -->
+    <main class="privacy-content glass-card">
+      <div class="intro-box">
+        <strong>MyFurPet</strong> ("we," "our," or "us") is dedicated to protecting the privacy and confidentiality of pet owners, pet patients, and veterinary partners. This Privacy Policy explains how we collect, process, secure, and manage your data when using the MyFurPet mobile application and web ecosystem.
+      </div>
 
-    <h2>2. Information We Collect</h2>
-    <p>We collect information that you provide directly to us when creating an account, registering as a partner clinic, uploading pet records, or tracking walks:</p>
-    <ul>
-      <li><strong>Account Data:</strong> Name, email address, phone number, physical location, and password credentials.</li>
-      <li><strong>Pet Information:</strong> Pet name, species, age, vaccine records, medical photos, and history.</li>
-      <li><strong>Location & GPS Data:</strong> Real-time location coordinates to track pet walks via GPS and display nearby places (vets, grooming, parks).</li>
-      <li><strong>Financial Records:</strong> Billing receipts scanned via OCR for expense tracking, stored privately.</li>
-    </ul>
+      <section class="privacy-section">
+        <h2 class="section-heading">
+          <span class="section-icon">⚖️</span> 1. Compliance with Data Privacy Act (RA 10173)
+        </h2>
+        <p>
+          In strict compliance with <strong>Republic Act No. 10173</strong> (Data Privacy Act of 2012 of the Philippines) and international data protection standards, we ensure that all personal information and sensitive veterinary records collected through our platform are processed with transparency, legitimate purpose, and proportionality.
+        </p>
+      </section>
 
-    <h2>3. How We Share Your Information</h2>
-    <p>We do not sell your personal data. We share data only with third-party processors necessary for app functionality:</p>
-    <ul>
-      <li><strong>Firebase/Google:</strong> For database management, asset storage, and authentication.</li>
-      <li><strong>Google Maps API:</strong> To fetch geolocation data for the places directory and walk tracking.</li>
-      <li><strong>RevenueCat:</strong> To process VIP subscription packages and entitlements securely.</li>
-      <li><strong>Google Mobile Ads (AdMob):</strong> To serve ad impressions to free tier accounts.</li>
-    </ul>
+      <section class="privacy-section">
+        <h2 class="section-heading">
+          <span class="section-icon">📋</span> 2. Information We Collect
+        </h2>
+        <p>We collect only the information necessary to provide top-tier pet health tracking and veterinary booking services:</p>
+        <ul>
+          <li><strong>User Account Profile:</strong> Name, verified email address, phone number, location, and authentication credentials.</li>
+          <li><strong>Pet Medical &amp; Health Records:</strong> Pet name, breed, species, date of birth, weight history, vaccine certificates, scanned clinic notes, and medication schedules.</li>
+          <li><strong>GPS &amp; Location Data:</strong> Real-time location coordinates when tracking dog walks, finding nearby veterinary clinics, or broadcasting emergency Lost Pet SOS alerts.</li>
+          <li><strong>OCR Scanned Documents:</strong> Medical receipts, clinic invoices, and vaccination cards processed privately via our AI record scanner.</li>
+        </ul>
+      </section>
 
-    <h2>4. Data Retention & Account Deletion</h2>
-    <p>We retain personal information as long as your account remains active. You can request complete deletion of your account and all associated pet, location, and billing history at any time by contacting our support team at <a href="mailto:rnuedev@gmail.com?subject=Data%20Deletion%20Request">rnuedev@gmail.com</a>.</p>
+      <section class="privacy-section">
+        <h2 class="section-heading">
+          <span class="section-icon">🔒</span> 3. How We Use and Protect Your Data
+        </h2>
+        <p>Your data is encrypted in transit and at rest using industry-grade TLS 1.3 and Cloud Firestore security rules. We use your information strictly to:</p>
+        <ul>
+          <li>Digitize and maintain your pet's portable digital health passport.</li>
+          <li>Facilitate instant appointment bookings with verified partner vet clinics.</li>
+          <li>Calculate pet health analytics, daily walk streak tracking, and calorie benchmarks.</li>
+          <li>Broadcast instant Lost Pet PawAlert SOS radar notifications to community members in your area.</li>
+        </ul>
+      </section>
 
-    <h2>5. Contact Us</h2>
-    <p>If you have any questions or concerns about this Privacy Policy, please reach out to us at <a href="mailto:rnuedev@gmail.com">rnuedev@gmail.com</a>.</p>
+      <section class="privacy-section">
+        <h2 class="section-heading">
+          <span class="section-icon">🤝</span> 4. Third-Party Processors &amp; Zero Data Selling
+        </h2>
+        <div class="highlight-card">
+          <p style="color: #A7F3D0; font-weight: 800; margin-bottom: 8px;">🚫 Zero Data Selling Guarantee:</p>
+          <p style="margin-bottom: 0;">We never sell, rent, or trade your personal data or your pet's medical records to third-party data brokers or advertisers.</p>
+        </div>
+        <p>We work exclusively with certified infrastructure partners to power app features:</p>
+        <ul>
+          <li><strong>Google Cloud &amp; Firebase:</strong> Secure enterprise database storage, asset hosting, and user authentication.</li>
+          <li><strong>Google Maps Services:</strong> Real-time geolocation resolution for veterinary clinic routing and dog walk tracking.</li>
+          <li><strong>RevenueCat:</strong> Encrypted in-app subscription and VIP entitlement management.</li>
+        </ul>
+      </section>
+
+      <section class="privacy-section">
+        <h2 class="section-heading">
+          <span class="section-icon">🗑️</span> 5. Data Retention &amp; Permanent Account Deletion
+        </h2>
+        <p>
+          You have full ownership of your data. You may export or permanently delete your account, pet profiles, and medical records at any time.
+        </p>
+        <p>
+          To request permanent account and data erasure, tap <strong>"Delete Account"</strong> directly inside the app settings, or email our Data Protection Officer at <a href="mailto:rnuedev@gmail.com?subject=Data%20Deletion%20Request">rnuedev@gmail.com</a>. All records will be permanently purged within 48 hours.
+        </p>
+      </section>
+
+      <section class="privacy-section" style="margin-bottom: 0;">
+        <h2 class="section-heading">
+          <span class="section-icon">📬</span> 6. Contact Us &amp; Data Privacy Inquiries
+        </h2>
+        <p>
+          For any questions, feedback, or legal inquiries regarding our privacy practices, please contact our team directly:
+        </p>
+        <div class="highlight-card">
+          <p style="margin-bottom: 6px;">📧 <strong>Email:</strong> <a href="mailto:rnuedev@gmail.com">rnuedev@gmail.com</a></p>
+          <p style="margin-bottom: 6px;">📍 <strong>Entity:</strong> MyFurPet Development Team (Philippines)</p>
+          <p style="margin-bottom: 0;">🌐 <strong>Website:</strong> <a href="https://rnuedev-ctrl.github.io/-myfurpet-site/">https://rnuedev-ctrl.github.io/-myfurpet-site/</a></p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#features">App Features</a>
+        <a href="index.html#tools">Free Tools</a>
+        <a href="index.html#beta">VIP Beta</a>
+        <a href="privacy.html">Privacy Policy</a>
+      </div>
+      <div>
+        © 2026 MyFurPet. All rights reserved. Crafted with 💜 for pet parents &amp; veterinary partners everywhere.
+      </div>
+    </footer>
   </div>
+
 </body>
 </html>

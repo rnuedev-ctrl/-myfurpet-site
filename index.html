@@ -21,14 +21,19 @@
   <meta property="og:url" content="https://rnuedev-ctrl.github.io/-myfurpet-site/">
   <meta property="og:title" content="MyFurPet 🐾 — The Smartest Pet Health Passport in Your Pocket">
   <meta property="og:description" content="Digitize vet records with AI, book verified clinics in 1 tap, generate smart QR tags, and join our VIP Beta Tester community!">
-  <meta property="og:image" content="https://rnuedev-ctrl.github.io/-myfurpet-site/store_assets/feature_graphic_1024x500.png">
+  <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/myfurpet-7de31.firebasestorage.app/o/branding%2Fog_preview.png?alt=media&token=myfurpet-public-og-token">
+  <meta property="og:image:secure_url" content="https://firebasestorage.googleapis.com/v0/b/myfurpet-7de31.firebasestorage.app/o/branding%2Fog_preview.png?alt=media&token=myfurpet-public-og-token">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1024">
+  <meta property="og:image:height" content="1024">
+  <meta property="og:image:alt" content="MyFurPet — Your Pet's Complete Health Companion">
 
   <!-- Twitter Card -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://rnuedev-ctrl.github.io/-myfurpet-site/">
   <meta property="twitter:title" content="MyFurPet 🐾 — Smart Pet Medical Passport & AI Vet Assistant">
   <meta property="twitter:description" content="Join the free VIP Beta! AI Vet Scanner, Digital Vaccine Passport, 1-Tap Clinic Booking, and Lost Pet SOS Radar.">
-  <meta property="twitter:image" content="https://rnuedev-ctrl.github.io/-myfurpet-site/store_assets/feature_graphic_1024x500.png">
+  <meta property="twitter:image" content="https://firebasestorage.googleapis.com/v0/b/myfurpet-7de31.firebasestorage.app/o/branding%2Fog_preview.png?alt=media&token=myfurpet-public-og-token">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="assets/icon.png">
@@ -202,6 +207,13 @@
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+    .brand-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94A3B8;
+      margin-top: -2px;
+      letter-spacing: 0.5px;
     }
     .nav-links {
       display: flex;
@@ -706,9 +718,12 @@
   <div class="container">
     <!-- Navigation Bar -->
     <nav class="nav-bar glass-card">
-      <a href="#" class="brand-group">
+      <a href="#" class="brand-group" style="text-decoration: none;">
         <img src="assets/icon.png" alt="MyFurPet App Icon">
-        <div class="brand-title">MyFur<span>Pet</span> 🐾</div>
+        <div style="display: flex; flex-direction: column;">
+          <div class="brand-title">MyFur<span>Pet</span> 🐾</div>
+          <div class="brand-sub">Pet Care &amp; Vet AI</div>
+        </div>
       </a>
       <div class="nav-links">
         <a href="#features" class="nav-link">Features</a>
@@ -1027,12 +1042,17 @@
         </p>
 
         <form id="beta-signup-form" class="signup-form" onsubmit="handleBetaSignup(event)">
+          <!-- Anti-Bot Honeypot Trap (Invisible to humans) -->
+          <div style="position: absolute; left: -9999px; top: -9999px; opacity: 0; pointer-events: none;" aria-hidden="true">
+            <input type="text" id="beta-hp" name="website_hp_check" tabindex="-1" autocomplete="off" value="">
+          </div>
+
           <div class="form-row">
-            <input type="text" id="beta-name" class="demo-input" placeholder="Your Name" required>
-            <input type="email" id="beta-email" class="demo-input" placeholder="Email Address" required>
+            <input type="text" id="beta-name" class="demo-input" placeholder="Your Name" maxlength="60" required>
+            <input type="email" id="beta-email" class="demo-input" placeholder="Email Address" maxlength="100" required>
           </div>
           <div class="form-row">
-            <input type="text" id="beta-pet" class="demo-input" placeholder="Pet's Name (e.g. Chiqui)" required>
+            <input type="text" id="beta-pet" class="demo-input" placeholder="Pet's Name (e.g. Chiqui)" maxlength="50" required>
             <select id="beta-os" class="demo-input" style="background: #0F172A;" required>
               <option value="ios">🍏 iPhone (Apple TestFlight)</option>
               <option value="android">🤖 Android (Google Play Beta Track)</option>
@@ -1241,23 +1261,68 @@
       elem.classList.toggle('active');
     }
 
+    // Track page load time for human vs bot timing verification
+    const formLoadTimestamp = Date.now();
+
     // Beta Tester Signup Submission (Saves to Firestore beta_testers collection via REST API)
     async function handleBetaSignup(e) {
       e.preventDefault();
       const submitBtn = document.getElementById('beta-submit-btn');
+
+      // 1. Anti-Bot Honeypot Trap Check
+      const honeypot = document.getElementById('beta-hp') ? document.getElementById('beta-hp').value : '';
+      if (honeypot && honeypot.trim() !== '') {
+        console.warn('Bot submission blocked via honeypot.');
+        // Fake success for bot without writing to database
+        showToast('🎉 VIP Beta Access Granted.');
+        return;
+      }
+
+      // 2. Anti-Bot Speed Gate (Humans take > 1.2 seconds to fill forms)
+      if (Date.now() - formLoadTimestamp < 1200) {
+        console.warn('Rapid automated submission blocked.');
+        return;
+      }
+
+      // 3. Client Cooldown / Rate Limiting (Prevent spam clicks)
+      const lastSignup = localStorage.getItem('myfurpet_last_beta_signup');
+      const now = Date.now();
+      if (lastSignup && now - parseInt(lastSignup, 10) < 30000) {
+        const os = document.getElementById('beta-os').value;
+        showToast('✓ You have already claimed VIP Beta Access! Redirecting...');
+        if (os === 'android') {
+          window.location.href = 'https://groups.google.com/g/myfurpet-testers';
+        } else {
+          window.location.href = 'https://testflight.apple.com/join/g2zwG5Cc';
+        }
+        return;
+      }
+
+      const rawName = document.getElementById('beta-name').value;
+      const rawEmail = document.getElementById('beta-email').value;
+      const rawPet = document.getElementById('beta-pet').value;
+      const os = document.getElementById('beta-os').value;
+
+      // 4. Input Sanitization & Format Validation
+      const sanitize = (str) => (str || '').replace(/[<>&"']/g, '').trim();
+      const cleanName = sanitize(rawName).substring(0, 60);
+      const cleanEmail = (rawEmail || '').trim().toLowerCase().substring(0, 100);
+      const cleanPet = sanitize(rawPet).substring(0, 50);
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(cleanEmail)) {
+        showToast('⚠️ Please enter a valid email address.');
+        return;
+      }
+
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<span>⏳ Registering VIP Access...</span>';
 
-      const name = document.getElementById('beta-name').value.trim();
-      const email = document.getElementById('beta-email').value.trim();
-      const pet = document.getElementById('beta-pet').value.trim();
-      const os = document.getElementById('beta-os').value;
-
       const payload = {
         fields: {
-          name: { stringValue: name },
-          email: { stringValue: email },
-          petName: { stringValue: pet },
+          name: { stringValue: cleanName },
+          email: { stringValue: cleanEmail },
+          petName: { stringValue: cleanPet },
           os: { stringValue: os },
           source: { stringValue: 'github_pages_landing' },
           createdAt: { stringValue: new Date().toISOString() }
@@ -1270,11 +1335,12 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
+        localStorage.setItem('myfurpet_last_beta_signup', now.toString());
       } catch (err) {
         console.log('Submission note:', err);
       }
 
-      showToast(`🎉 Welcome ${name}! VIP Beta Access Granted for ${pet}.`);
+      showToast(`🎉 Welcome ${cleanName}! VIP Beta Access Granted for ${cleanPet}.`);
 
       if (os === 'android') {
         submitBtn.innerHTML = '<span>✓ Redirecting to Google Play Beta Group...</span>';

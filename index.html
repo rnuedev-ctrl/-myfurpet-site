@@ -728,6 +728,7 @@
       <div class="nav-links">
         <a href="#features" class="nav-link">Features</a>
         <a href="#tools" class="nav-link">Free Tools</a>
+        <a href="tag.html?petId=demo&name=Chiqui&species=Dog&breed=Golden+Retriever&phone=%2B639171234567" class="nav-link">Smart Tag 🏷️</a>
         <a href="#beta" class="nav-link">VIP Beta</a>
         <a href="#faq" class="nav-link">FAQ</a>
       </div>
@@ -882,7 +883,8 @@
         <div class="glass-card feature-card">
           <div class="feature-icon-box icon-blue">🏷️</div>
           <h3>Smart QR Collar Tag</h3>
-          <p>Generate a unique printable QR Code tag for your pet's collar. If your pet ever gets lost, anyone who scans the tag can contact you directly without needing an app install.</p>
+          <p>Generate a unique printable QR Code tag for your pet's collar. If your pet ever gets lost, anyone who scans the tag can contact you directly and share their exact GPS location with 1 tap.</p>
+          <a href="tag.html?petId=demo&name=Chiqui&species=Dog&breed=Golden+Retriever&phone=%2B639171234567" style="color: #A78BFA; font-weight: 700; font-size: 13px; text-decoration: none; margin-top: 10px; display: inline-block;">View Live Web Tag Demo ➔</a>
         </div>
 
         <div class="glass-card feature-card">
@@ -905,7 +907,7 @@
         <!-- Tool 1: Printable Smart QR Tag Generator -->
         <div class="glass-card interactive-card">
           <h3>🏷️ Free Smart Pet QR Collar Tag</h3>
-          <p>Generate a scannable emergency contact tag for your dog or cat’s collar.</p>
+          <p>Generate a scannable emergency contact tag for your dog or cat’s collar with live GPS broadcast.</p>
           
           <div class="demo-input-group">
             <label>Pet's Name</label>
@@ -927,7 +929,10 @@
               <div id="qr-preview-title" style="font-weight: 800; font-size: 16px; color: #1E1B4B;">Chiqui's Tag</div>
               <div id="qr-preview-sub" style="font-size: 12px; font-weight: 700; color: #7C3AED; margin-top: 2px;">Owner: +63 917 123 4567</div>
               <div id="qr-preview-notes" style="font-size: 11px; color: #64748B; margin-top: 2px;">Microchipped • Friendly dog</div>
-              <button onclick="printQRTag()" style="margin-top: 8px; padding: 6px 14px; background: #7C3AED; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer;">🖨️ Print / Save Tag</button>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;">
+                <button onclick="printQRTag()" style="padding: 6px 14px; background: #7C3AED; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer;">🖨️ Print / Save</button>
+                <a id="qr-live-demo-link" href="tag.html?name=Chiqui&phone=%2B639171234567" target="_blank" style="padding: 6px 14px; background: #0F172A; color: #A78BFA; border: 1px solid #334155; border-radius: 8px; font-weight: 700; font-size: 11px; text-decoration: none; display: inline-block;">🌐 View Live Web Tag ➔</a>
+              </div>
             </div>
           </div>
         </div>
@@ -1158,6 +1163,7 @@
       <div class="footer-links">
         <a href="privacy.html">Privacy Policy</a>
         <a href="#features">App Features</a>
+        <a href="tag.html?petId=demo&name=Chiqui&species=Dog&breed=Golden+Retriever&phone=%2B639171234567">Smart Collar Tag Demo</a>
         <a href="#tools">Free QR Tag Generator</a>
         <a href="#beta">Beta Tester Program</a>
       </div>
@@ -1177,14 +1183,19 @@
       const phone = document.getElementById('qr-owner-phone').value.trim() || 'No phone provided';
       const notes = document.getElementById('qr-notes').value.trim() || 'Please contact owner immediately.';
 
-      const qrPayload = `tel:${phone}`;
-      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=1&data=${encodeURIComponent(qrPayload)}`;
+      const webTagUrl = `https://rnuedev-ctrl.github.io/-myfurpet-site/tag.html?name=${encodeURIComponent(petName)}&phone=${encodeURIComponent(phone)}&notes=${encodeURIComponent(notes)}`;
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=1&data=${encodeURIComponent(webTagUrl)}`;
 
       const img = document.getElementById('qr-preview-img');
       img.src = qrApiUrl;
       document.getElementById('qr-preview-title').textContent = `${petName}'s Smart Collar Tag`;
       document.getElementById('qr-preview-sub').textContent = `📞 Owner: ${phone}`;
       document.getElementById('qr-preview-notes').textContent = `📝 ${notes}`;
+      
+      const liveLink = document.getElementById('qr-live-demo-link');
+      if (liveLink) {
+        liveLink.href = webTagUrl;
+      }
       document.getElementById('qr-result-box').style.display = 'flex';
     }
 

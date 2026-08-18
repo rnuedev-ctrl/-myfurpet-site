@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MyFurPet Smart Collar Tag 🐾 | Official Missing Pet Profile</title>
+  <meta name="description" content="Digital Smart Collar Tag for lost pets. Contact owner and send exact GPS location with 1 tap.">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/icon.png">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #7C3AED;
+      --primary-dark: #6D28D9;
+      --accent: #EF4444;
+      --accent-hover: #DC2626;
+      --success: #10B981;
+      --success-dark: #059669;
+      --bg: #0F172A;
+      --card-bg: rgba(30, 41, 59, 0.85);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #1E1B4B, #0F172A 70%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #FCA5A5;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .pet-avatar-wrapper {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      padding: 4px;
+      background: linear-gradient(135deg, #7C3AED, #EC4899);
+      box-shadow: 0 10px 25px rgba(124, 58, 237, 0.4);
+    }
+
+    .pet-avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #334155;
+    }
+
+    .pet-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 900;
+      color: #FFFFFF;
+      margin-bottom: 4px;
+    }
+
+    .pet-breed {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .chip-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #CBD5E1;
+      margin-bottom: 20px;
+    }
+
+    .emergency-box {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1.5px solid rgba(239, 68, 68, 0.35);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .emergency-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: #F87171;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .emergency-text {
+      font-size: 13px;
+      color: #FEE2E2;
+      line-height: 1.4;
+      font-weight: 600;
+    }
+
+    .actions-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 800;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-call {
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      color: #FFFFFF;
+      box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-call:hover, .btn-call:active {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 24px rgba(239, 68, 68, 0.45);
+    }
+
+    .btn-gps {
+      background: linear-gradient(135deg, var(--success), var(--success-dark));
+      color: #FFFFFF;
+      box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-gps:hover, .btn-gps:active {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 24px rgba(16, 185, 129, 0.45);
+    }
+
+    .gps-status {
+      display: none;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #A7F3D0;
+      padding: 12px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 10px;
+      line-height: 1.4;
+    }
+
+    .footer {
+      font-size: 11px;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .footer a {
+      color: #A78BFA;
+      text-decoration: none;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header-badge">
+      <span>🚨</span> Official Pet Recovery Tag
+    </div>
+
+    <div class="pet-avatar-wrapper">
+      <img id="petAvatar" class="pet-avatar" src="assets/icon.png" alt="Pet Avatar" />
+    </div>
+
+    <h1 id="petName" class="pet-name">Loading...</h1>
+    <div id="petBreed" class="pet-breed">Smart Collar Tag 🐾</div>
+    <div id="petChip" class="chip-badge">🆔 Microchip: Verifying...</div>
+
+    <div class="emergency-box">
+      <div class="emergency-title">⚠️ Special Care / Finder Instructions:</div>
+      <div id="petNotes" class="emergency-text">If found, please keep in a safe shaded area and contact the owner immediately. Do not chase.</div>
+    </div>
+
+    <div class="actions-grid">
+      <a id="callOwnerBtn" href="tel:+639171234567" class="btn btn-call">
+        <span>📞</span> Call Pet Owner Now
+      </a>
+
+      <button id="sendGpsBtn" class="btn btn-gps" onclick="shareCurrentLocation()">
+        <span>📍</span> Share My Exact GPS Pin with Owner
+      </button>
+
+      <div id="gpsStatusBox" class="gps-status">
+        ✅ <strong>GPS Pin Sent!</strong> The pet owner was just notified of your current location. Thank you for helping! 🐾❤️
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>Powered by <strong>MyFurPet AI Medical Hub</strong></div>
+      <div><a href="index.html">Download App & Claim Free VIP</a></div>
+    </div>
+  </div>
+
+  <script>
+    // 1. Parse URL Search Parameters
+    const params = new URLSearchParams(window.location.search);
+    const petId = params.get('petId') || 'unknown';
+    const name = params.get('name') || 'Beloved Pet';
+    const species = params.get('species') || 'Dog';
+    const breed = params.get('breed') || species;
+    const chip = params.get('chip') || 'Registered on MyFurPet';
+    const phone = params.get('phone') || '+639171234567';
+    const avatar = params.get('avatar') || 'assets/icon.png';
+    const notes = params.get('notes') || 'Please keep pet calm and call owner immediately.';
+
+    // 2. Populate DOM
+    document.getElementById('petName').textContent = name;
+    document.getElementById('petBreed').textContent = `${breed} (${species})`;
+    document.getElementById('petChip').textContent = `🆔 Microchip: ${chip}`;
+    document.getElementById('petNotes').textContent = notes;
+    document.getElementById('petAvatar').src = avatar;
+    document.getElementById('callOwnerBtn').href = `tel:${phone.replace(/[^0-9+]/g, '')}`;
+    document.title = `${name}'s Smart Collar Tag 🐾 | MyFurPet`;
+
+    // 3. Share Location Handler
+    async function shareCurrentLocation() {
+      const btn = document.getElementById('sendGpsBtn');
+      const statusBox = document.getElementById('gpsStatusBox');
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span> Locating GPS...';
+
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser.');
+        btn.disabled = false;
+        btn.innerHTML = '<span>📍</span> Share My Exact GPS Pin with Owner';
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const accuracy = position.coords.accuracy;
+
+          btn.innerHTML = '<span>📡</span> Dispatching to Owner...';
+
+          try {
+            // Write Scan Event to Firebase Firestore REST API
+            const firestoreUrl = `https://firestore.googleapis.com/v1/projects/myfurpet-7de31/databases/(default)/documents/pet_scans`;
+            const payload = {
+              fields: {
+                petId: { stringValue: petId },
+                petName: { stringValue: name },
+                latitude: { doubleValue: lat },
+                longitude: { doubleValue: lng },
+                accuracy: { doubleValue: accuracy },
+                timestamp: { timestampValue: new Date().toISOString() },
+                userAgent: { stringValue: navigator.userAgent },
+                mapsUrl: { stringValue: `https://www.google.com/maps/search/?api=1&query=${lat},${lng}` }
+              }
+            };
+
+            await fetch(firestoreUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+
+            statusBox.style.display = 'block';
+            btn.style.display = 'none';
+          } catch (e) {
+            console.error('Error posting GPS pin:', e);
+            statusBox.innerHTML = `✅ <strong>Location Captured:</strong> Lat ${lat.toFixed(4)}, Lng ${lng.toFixed(4)}. Please call the owner directly above!`;
+            statusBox.style.display = 'block';
+          }
+        },
+        (err) => {
+          console.warn('Geolocation error:', err);
+          alert('Could not access location. Please call the pet owner directly using the Call button.');
+          btn.disabled = false;
+          btn.innerHTML = '<span>📍</span> Share My Exact GPS Pin with Owner';
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+  </script>
+</body>
+</html>

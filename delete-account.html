@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account Deletion & Data Privacy - MyFurPet</title>
+  <link rel="icon" href="./assets/icon.png" />
+  <style>
+    :root {
+      --primary: #7C3AED;
+      --primary-dark: #5B21B6;
+      --danger: #DC2626;
+      --bg: #F9FAFB;
+      --surface: #FFFFFF;
+      --text: #1F2937;
+      --text-muted: #6B7280;
+      --border: #E5E7EB;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    main {
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .card {
+      background: var(--surface);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      padding: 32px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--text);
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+    p {
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-bottom: 16px;
+    }
+    .step-box {
+      background: #F3F4F6;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 20px 0;
+    }
+    .step-box h3 {
+      margin-top: 0;
+      color: var(--primary-dark);
+      font-size: 16px;
+    }
+    .step-box ol {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 14px;
+      color: var(--text);
+    }
+    .step-box li {
+      margin-bottom: 8px;
+    }
+    .data-list {
+      background: #FEF2F2;
+      border: 1px solid #FCA5A5;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 20px 0;
+      color: #991B1B;
+    }
+    .data-list h4 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+    .data-list ul {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 13px;
+    }
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo">🐾 MyFurPet</a>
+    <a href="privacy.html" style="font-size: 14px; color: var(--primary); text-decoration: none; font-weight: 700;">Privacy Policy</a>
+  </header>
+
+  <main>
+    <div class="card">
+      <h1>🗑️ Request Account & Data Deletion</h1>
+      <p>
+        At MyFurPet, we respect your right to privacy and full control over your personal data. You can delete your account and all associated personal data instantly at any time directly inside the app or through this page.
+      </p>
+
+      <div class="step-box">
+        <h3>Option 1: Instant In-App Deletion (Recommended)</h3>
+        <ol>
+          <li>Open the <strong>MyFurPet</strong> mobile app on iOS or Android.</li>
+          <li>Tap on your <strong>Profile</strong> tab in the bottom navigation.</li>
+          <li>Scroll to the <strong>Account & Settings</strong> section.</li>
+          <li>Tap <strong>🗑️ Delete Account & Personal Data</strong>.</li>
+          <li>Confirm the permanent deletion prompt. Your account and all cloud data will be purged immediately.</li>
+        </ol>
+      </div>
+
+      <div class="step-box">
+        <h3>Option 2: Online Deletion Request</h3>
+        <p style="margin: 0; font-size: 14px; color: var(--text);">
+          If you no longer have access to the app, you can submit an account removal request by contacting our data protection team at <a href="mailto:rnuedev@gmail.com?subject=Account%20Deletion%20Request" style="color: var(--primary); font-weight: 700;">rnuedev@gmail.com</a> with your registered email address. All records will be permanently erased within 24 hours.
+        </p>
+      </div>
+
+      <div class="data-list">
+        <h4>Data Purged Upon Deletion:</h4>
+        <ul>
+          <li>User profile, name, email, authentication tokens, and avatars.</li>
+          <li>All registered pet profiles, medical cards, and vaccination photos.</li>
+          <li>Appointment booking records, clinic chat histories, and GPS walk polylines.</li>
+          <li>AI token balance and PawPoints reward wallet.</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2026 MyFurPet. All rights reserved. &bull; <a href="privacy.html" style="color: var(--text-muted);">Privacy Policy</a> &bull; <a href="index.html" style="color: var(--text-muted);">Home</a>
+  </footer>
+</body>
+</html>

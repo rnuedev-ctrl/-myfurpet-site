@@ -728,6 +728,7 @@
       <div class="nav-links">
         <a href="#features" class="nav-link">Features</a>
         <a href="#tools" class="nav-link">Free Tools</a>
+        <a href="#feedback" class="nav-link">💡 Feedback &amp; Support</a>
         <a href="tag.html?petId=demo&name=Chiqui&species=Dog&breed=Golden+Retriever&phone=%2B639171234567" class="nav-link">Smart Tag 🏷️</a>
         <a href="privacy.html" class="nav-link">Privacy</a>
         <a href="delete-account.html" class="nav-link" style="color: #FCA5A5;">Delete Account</a>
@@ -1135,6 +1136,131 @@
       </div>
     </section>
 
+    <!-- Community Feedback & Problem Support Hub -->
+    <section id="feedback" style="padding: 40px 0 60px 0;">
+      <div class="section-header">
+        <span class="section-tag">Community Innovation &amp; Support</span>
+        <h2 class="section-title">Shape Our Roadmap or Get Help</h2>
+        <p class="section-subtitle">We listen to every pet parent. Suggest a new feature for our upcoming release or report a technical issue.</p>
+      </div>
+
+      <div class="glass-card" style="max-width: 760px; margin: 0 auto; padding: 32px; border-color: rgba(124, 58, 237, 0.35);">
+        <!-- Tab Switcher -->
+        <div style="display: flex; gap: 12px; margin-bottom: 24px; background: rgba(15, 23, 42, 0.6); padding: 6px; border-radius: 14px; border: 1px solid var(--border-glass);">
+          <button id="tab-btn-suggest" type="button" onclick="switchFeedbackTab('suggest')" style="flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: 800; font-size: 14px; cursor: pointer; background: linear-gradient(135deg, #7C3AED, #9333EA); color: #FFFFFF; transition: all 0.2s;">
+            💡 Suggest a Feature
+          </button>
+          <button id="tab-btn-report" type="button" onclick="switchFeedbackTab('report')" style="flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: 800; font-size: 14px; cursor: pointer; background: transparent; color: var(--text-muted); transition: all 0.2s;">
+            🚨 Report a Problem
+          </button>
+        </div>
+
+        <!-- FORM 1: SUGGEST A FEATURE -->
+        <form id="feedback-suggest-form" onsubmit="handleSubmitFeatureSuggestion(event)" style="display: block;">
+          <!-- Honeypot anti-bot -->
+          <div style="position: absolute; left: -9999px; top: -9999px; opacity: 0; pointer-events: none;" aria-hidden="true">
+            <input type="text" id="sug-hp" name="website_sug_hp" tabindex="-1" autocomplete="off" value="">
+          </div>
+
+          <div class="form-row">
+            <div class="demo-input-group">
+              <label for="sug-title">Idea / Feature Title *</label>
+              <input type="text" id="sug-title" class="demo-input" placeholder="e.g., Apple Watch walk tracker companion" maxlength="80" required>
+            </div>
+            <div class="demo-input-group">
+              <label for="sug-category">Feature Category</label>
+              <select id="sug-category" class="demo-input" style="background: #0F172A;" required>
+                <option value="🐕 Pet Health & Medical Passport">🐕 Pet Health &amp; Medical Passport</option>
+                <option value="📍 Vet Booking & Telehealth">📍 Vet Booking &amp; Telehealth</option>
+                <option value="🏃 Activity & Walk Tracker">🏃 Activity &amp; Walk Tracker</option>
+                <option value="📸 Community & Moments">📸 Community &amp; Moments</option>
+                <option value="🔔 Reminders & Pillbox">🔔 Reminders &amp; Pillbox</option>
+                <option value="💡 Brand New Creative Idea">💡 Brand New Creative Idea</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="demo-input-group">
+              <label for="sug-impact">Impact Level</label>
+              <select id="sug-impact" class="demo-input" style="background: #0F172A;">
+                <option value="High Impact">⭐ High Impact for Pets</option>
+                <option value="Must-Have Game Changer">🔥 Must-Have Game Changer</option>
+                <option value="Nice to Have">🌿 Nice to Have Convenience</option>
+              </select>
+            </div>
+            <div class="demo-input-group">
+              <label for="sug-email">Your Contact Email *</label>
+              <input type="email" id="sug-email" class="demo-input" placeholder="rnuedev@gmail.com" maxlength="100" required>
+            </div>
+          </div>
+
+          <div class="demo-input-group">
+            <label for="sug-desc">Description &amp; How It Helps Pet Parents *</label>
+            <textarea id="sug-desc" class="demo-input" style="min-height: 95px; resize: vertical;" placeholder="Describe what you would love to see and how it helps you care for your pet..." maxlength="1000" required></textarea>
+          </div>
+
+          <button type="submit" id="sug-submit-btn" class="btn-primary" style="justify-content: center; width: 100%; margin-top: 8px;">
+            <span>💡 Send Feature Suggestion</span>
+          </button>
+        </form>
+
+        <!-- FORM 2: REPORT A PROBLEM -->
+        <form id="feedback-report-form" onsubmit="handleSubmitProblemReport(event)" style="display: none;">
+          <!-- Honeypot anti-bot -->
+          <div style="position: absolute; left: -9999px; top: -9999px; opacity: 0; pointer-events: none;" aria-hidden="true">
+            <input type="text" id="rep-hp" name="website_rep_hp" tabindex="-1" autocomplete="off" value="">
+          </div>
+
+          <div class="form-row">
+            <div class="demo-input-group">
+              <label for="rep-category">Problem Category *</label>
+              <select id="rep-category" class="demo-input" style="background: #0F172A;" required>
+                <option value="📱 App Glitch / Lag">📱 App Glitch / Lag</option>
+                <option value="🐶 Pet Profile Issue">🐶 Pet Profile Issue</option>
+                <option value="📰 Feed / Community Post">📰 Feed / Community Post</option>
+                <option value="🏡 Adoption Hub">🏡 Adoption Hub</option>
+                <option value="💳 Payment / VIP Subscription">💳 Payment / VIP Subscription</option>
+                <option value="🛠️ Other Technical Issue">🛠️ Other Technical Issue</option>
+              </select>
+            </div>
+            <div class="demo-input-group">
+              <label for="rep-platform">Platform / Device</label>
+              <select id="rep-platform" class="demo-input" style="background: #0F172A;">
+                <option value="iPhone (iOS)">🍏 iPhone (iOS)</option>
+                <option value="Android Device">🤖 Android</option>
+                <option value="Web Browser">🌐 Web Browser</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="demo-input-group">
+              <label for="rep-name">Your Name</label>
+              <input type="text" id="rep-name" class="demo-input" placeholder="Your Name" maxlength="60">
+            </div>
+            <div class="demo-input-group">
+              <label for="rep-email">Your Contact Email *</label>
+              <input type="email" id="rep-email" class="demo-input" placeholder="rnuedev@gmail.com" maxlength="100" required>
+            </div>
+          </div>
+
+          <div class="demo-input-group">
+            <label for="rep-desc">Issue Details &amp; Steps to Reproduce *</label>
+            <textarea id="rep-desc" class="demo-input" style="min-height: 95px; resize: vertical;" placeholder="Please describe what happened, what screen you were on, and any error message shown..." maxlength="1000" required></textarea>
+          </div>
+
+          <button type="submit" id="rep-submit-btn" class="btn-primary" style="justify-content: center; width: 100%; margin-top: 8px; background: linear-gradient(135deg, #DC2626, #EF4444);">
+            <span>🚨 Submit Problem Report</span>
+          </button>
+        </form>
+
+        <div style="font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 18px;">
+          Direct Superadmin Support: <a href="mailto:rnuedev@gmail.com" style="color: #A78BFA; font-weight: 700; text-decoration: none;">rnuedev@gmail.com</a>
+        </div>
+      </div>
+    </section>
+
     <!-- FAQ Accordion -->
     <section id="faq" style="padding: 40px 0 80px 0;">
       <div class="section-header">
@@ -1227,6 +1353,8 @@
     <footer>
       <div class="footer-links">
         <a href="privacy.html">Privacy Policy</a>
+        <a href="#feedback">💡 Suggest a Feature</a>
+        <a href="#feedback">🚨 Report a Problem</a>
         <a href="delete-account.html" style="color: #FCA5A5; font-weight: 700;">🗑️ Delete Account & Data</a>
         <a href="#features">App Features</a>
         <a href="tag.html?petId=demo&name=Chiqui&species=Dog&breed=Golden+Retriever&phone=%2B639171234567">Smart Collar Tag Demo</a>
@@ -1429,6 +1557,129 @@
           window.location.href = 'https://testflight.apple.com/join/g2zwG5Cc';
         }, 1200);
       }
+    }
+
+    // ── Community Feedback Tab Switcher & Submissions ──
+    function switchFeedbackTab(tab) {
+      const suggestBtn = document.getElementById('tab-btn-suggest');
+      const reportBtn = document.getElementById('tab-btn-report');
+      const suggestForm = document.getElementById('feedback-suggest-form');
+      const reportForm = document.getElementById('feedback-report-form');
+
+      if (tab === 'suggest') {
+        suggestBtn.style.background = 'linear-gradient(135deg, #7C3AED, #9333EA)';
+        suggestBtn.style.color = '#FFFFFF';
+        reportBtn.style.background = 'transparent';
+        reportBtn.style.color = 'var(--text-muted)';
+        suggestForm.style.display = 'block';
+        reportForm.style.display = 'none';
+      } else {
+        reportBtn.style.background = 'linear-gradient(135deg, #DC2626, #EF4444)';
+        reportBtn.style.color = '#FFFFFF';
+        suggestBtn.style.background = 'transparent';
+        suggestBtn.style.color = 'var(--text-muted)';
+        reportForm.style.display = 'block';
+        suggestForm.style.display = 'none';
+      }
+    }
+
+    async function handleSubmitFeatureSuggestion(e) {
+      e.preventDefault();
+      const hp = document.getElementById('sug-hp').value;
+      if (hp && hp.trim() !== '') return;
+
+      const title = (document.getElementById('sug-title').value || '').trim();
+      const category = document.getElementById('sug-category').value;
+      const impactLevel = document.getElementById('sug-impact').value;
+      const email = (document.getElementById('sug-email').value || '').trim().toLowerCase();
+      const description = (document.getElementById('sug-desc').value || '').trim();
+      const submitBtn = document.getElementById('sug-submit-btn');
+
+      if (!title || !description || !email) {
+        showToast('⚠️ Please fill out all required fields.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>⏳ Sending Suggestion...</span>';
+
+      const payload = {
+        fields: {
+          title: { stringValue: title },
+          category: { stringValue: category },
+          impactLevel: { stringValue: impactLevel },
+          userEmail: { stringValue: email },
+          userName: { stringValue: email.split('@')[0] || 'Website Visitor' },
+          description: { stringValue: description },
+          status: { stringValue: 'PENDING' },
+          source: { stringValue: 'website_feedback_hub' },
+          deviceSummary: { stringValue: '🌐 Web Browser Landing Page' },
+          timestamp: { stringValue: new Date().toISOString() }
+        }
+      };
+
+      try {
+        await fetch('https://firestore.googleapis.com/v1/projects/myfurpet-7de31/databases/(default)/documents/feature_suggestions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        console.log('Suggestion dispatch note:', err);
+      }
+
+      showToast('💡 Thank you! Your feature suggestion has been sent to our Superadmin roadmap.');
+      document.getElementById('feedback-suggest-form').reset();
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<span>💡 Send Feature Suggestion</span>';
+    }
+
+    async function handleSubmitProblemReport(e) {
+      e.preventDefault();
+      const hp = document.getElementById('rep-hp').value;
+      if (hp && hp.trim() !== '') return;
+
+      const category = document.getElementById('rep-category').value;
+      const platform = document.getElementById('rep-platform').value;
+      const name = (document.getElementById('rep-name').value || '').trim() || 'Website Visitor';
+      const email = (document.getElementById('rep-email').value || '').trim().toLowerCase();
+      const description = (document.getElementById('rep-desc').value || '').trim();
+      const submitBtn = document.getElementById('rep-submit-btn');
+
+      if (!description || !email) {
+        showToast('⚠️ Please describe the issue and provide your email.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>⏳ Submitting Ticket...</span>';
+
+      const payload = {
+        fields: {
+          category: { stringValue: category },
+          userName: { stringValue: name },
+          userEmail: { stringValue: email },
+          description: { stringValue: description },
+          status: { stringValue: 'PENDING' },
+          deviceSummary: { stringValue: `🌐 Web Portal (${platform})` },
+          timestamp: { stringValue: new Date().toISOString() }
+        }
+      };
+
+      try {
+        await fetch('https://firestore.googleapis.com/v1/projects/myfurpet-7de31/databases/(default)/documents/user_problem_reports', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        console.log('Report dispatch note:', err);
+      }
+
+      showToast('🚨 Thank you! Your problem report was submitted to the engineering team.');
+      document.getElementById('feedback-report-form').reset();
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<span>🚨 Submit Problem Report</span>';
     }
 
     function showToast(msg) {

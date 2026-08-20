@@ -576,9 +576,13 @@
     document.getElementById('ownerNameDisplay').textContent = `Parent: ${owner}`;
     document.getElementById('ownerPhoneDisplay').textContent = phone ? `Emergency: ${phone}` : 'Emergency Phone on file';
     document.getElementById('vetClinicDisplay').textContent = `Clinic: ${vet}`;
-
-    if (avatar) {
-      document.getElementById('petAvatar').src = decodeURIComponent(avatar);
+    if (avatar && avatar.trim().length > 0) {
+      const avatarEl = document.getElementById('petAvatar');
+      avatarEl.src = avatar;
+      avatarEl.onerror = function() {
+        this.onerror = null;
+        this.src = 'assets/icon.png';
+      };
     }
 
     if (phone) {

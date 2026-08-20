@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Pawprint ID Digital Pet Passport 🐾 | MyFurPet Verified Record</title>
+  <meta name="description" content="Official Verified Digital Pet Passport. Instant airport, hotel, and boarding medical clearance record with immunization history.">
+  <meta property="og:title" content="Pawprint ID Digital Pet Passport 🐾">
+  <meta property="og:description" content="Official Verified Digital Pet Passport with immunization history and travel clearance.">
+  <meta property="og:type" content="website">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/icon.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #7C3AED;
+      --primary-dark: #6D28D9;
+      --accent: #10B981;
+      --accent-dark: #059669;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --bg: #0B0F19;
+      --card-bg: rgba(17, 24, 39, 0.92);
+      --card-border: rgba(124, 58, 237, 0.35);
+      --text: #F9FAFB;
+      --text-muted: #9CA3AF;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 0%, #2E1065, #0B0F19 65%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px;
+    }
+
+    .passport-container {
+      width: 100%;
+      max-width: 520px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1.5px solid var(--card-border);
+      border-radius: 28px;
+      padding: 26px 22px;
+      box-shadow: 0 25px 60px -12px rgba(124, 58, 237, 0.25);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Top Ribbon Seal */
+    .passport-header-seal {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1.5px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+    }
+
+    .seal-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .seal-logo {
+      font-size: 24px;
+    }
+
+    .seal-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #E9D5FF;
+      text-transform: uppercase;
+    }
+
+    .verified-chip {
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: #FFFFFF;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+    }
+
+    /* Mode Switcher */
+    .view-toggle-bar {
+      display: flex;
+      background: rgba(31, 41, 55, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 4px;
+      margin-bottom: 18px;
+      gap: 4px;
+    }
+
+    .view-toggle-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .view-toggle-btn.active {
+      background: var(--primary);
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+    }
+
+    /* Pet Identity Hero */
+    .hero-profile {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      background: rgba(30, 27, 75, 0.55);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    .hero-avatar-wrap {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      padding: 3px;
+      background: linear-gradient(135deg, #A855F7, #EC4899);
+      flex-shrink: 0;
+      box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
+    }
+
+    .hero-avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #374151;
+    }
+
+    .hero-details {
+      flex: 1;
+    }
+
+    .hero-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: #FFFFFF;
+      line-height: 1.1;
+      margin-bottom: 3px;
+    }
+
+    .hero-breed {
+      font-size: 13px;
+      font-weight: 700;
+      color: #DDD6FE;
+      margin-bottom: 6px;
+    }
+
+    .hero-chip-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #9CA3AF;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Biometrics Grid */
+    .biometrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .bio-cell {
+      background: rgba(31, 41, 55, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+
+    .bio-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .bio-value {
+      font-size: 13px;
+      font-weight: 800;
+      color: #F3F4F6;
+    }
+
+    /* Section Cards */
+    .section-box {
+      background: rgba(31, 41, 55, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      color: #C4B5FD;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Clearance List for Airlines & Boarding */
+    .clearance-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .clearance-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .clearance-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #F3F4F6;
+    }
+
+    .clearance-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .clearance-status-badge {
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .status-valid {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34D399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .status-warn {
+      background: rgba(245, 158, 11, 0.2);
+      color: #FBBF24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .status-due {
+      background: rgba(239, 68, 68, 0.2);
+      color: #F87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    /* Contacts & Actions */
+    .action-btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 12.5px;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.15s ease;
+    }
+
+    .action-btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7C3AED, #6D28D9);
+      color: #FFFFFF;
+      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(31, 41, 55, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #E5E7EB;
+    }
+
+    .btn-emergency {
+      background: #DC2626;
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4);
+    }
+
+    /* Printable Styles */
+    @media print {
+      body {
+        background: #FFFFFF;
+        color: #000000;
+        padding: 0;
+      }
+      .passport-container {
+        border: 2px solid #7C3AED;
+        box-shadow: none;
+        max-width: 100%;
+        background: #FFFFFF;
+      }
+      .view-toggle-bar, .action-btn-row, .footer-promo {
+        display: none !important;
+      }
+    }
+
+    .footer-promo {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .footer-promo a {
+      color: #A78BFA;
+      text-decoration: none;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="passport-container" id="passportCard">
+    <!-- Header Ribbon Seal -->
+    <div class="passport-header-seal">
+      <div class="seal-brand">
+        <span class="seal-logo">🐾</span>
+        <span class="seal-title">Pawprint ID Passport</span>
+      </div>
+      <div class="verified-chip">
+        ✓ Verified Record
+      </div>
+    </div>
+
+    <!-- View Switcher -->
+    <div class="view-toggle-bar">
+      <button class="view-toggle-btn active" id="btnModeTravel" onclick="setMode('travel')">
+        ✈️ Travel & Boarding Clearance
+      </button>
+      <button class="view-toggle-btn" id="btnModeFull" onclick="setMode('full')">
+        🪪 Complete Passport
+      </button>
+    </div>
+
+    <!-- Hero Identity -->
+    <div class="hero-profile">
+      <div class="hero-avatar-wrap">
+        <img id="petAvatar" class="hero-avatar" src="assets/icon.png" alt="Pet Avatar" />
+      </div>
+      <div class="hero-details">
+        <h1 id="petName" class="hero-name">Pet Name</h1>
+        <div id="petBreed" class="hero-breed">Species • Breed</div>
+        <div class="hero-chip-badge" id="chipBadge" onclick="copyMicrochip()">
+          🆔 Chip: <span id="petChip">Not Listed</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Biometrics Stats -->
+    <div class="biometrics-grid">
+      <div class="bio-cell">
+        <div class="bio-label">Age</div>
+        <div class="bio-value" id="petAge">--</div>
+      </div>
+      <div class="bio-cell">
+        <div class="bio-label">Weight</div>
+        <div class="bio-value" id="petWeight">-- kg</div>
+      </div>
+      <div class="bio-cell">
+        <div class="bio-label">Gender</div>
+        <div class="bio-value" id="petGender">--</div>
+      </div>
+    </div>
+
+    <!-- ── TRAVEL & AIRPORT CLEARANCE VIEW ── -->
+    <div id="sectionTravel">
+      <div class="section-box">
+        <div class="section-title">
+          <span>✈️ Immunization Clearance (Airline / Kennel Ready)</span>
+        </div>
+
+        <div id="clearanceList">
+          <!-- Dynamic Clearance Checklist -->
+          <div class="clearance-item">
+            <div>
+              <div class="clearance-name">Rabies Vaccination</div>
+              <div class="clearance-sub" id="rabiesDates">Annual Anti-Rabies Core</div>
+            </div>
+            <div class="clearance-status-badge status-valid" id="rabiesBadge">
+              ✓ Up to Date
+            </div>
+          </div>
+
+          <div class="clearance-item">
+            <div>
+              <div class="clearance-name">Core 5-in-1 / DHPP / FVRCP</div>
+              <div class="clearance-sub" id="dhppDates">Distemper, Parvo, Adenovirus</div>
+            </div>
+            <div class="clearance-status-badge status-valid" id="dhppBadge">
+              ✓ Verified
+            </div>
+          </div>
+
+          <div class="clearance-item">
+            <div>
+              <div class="clearance-name">Parasite & Tick Defense</div>
+              <div class="clearance-sub" id="parasiteDates">Flea, Tick, Heartworm Shield</div>
+            </div>
+            <div class="clearance-status-badge status-valid" id="parasiteBadge">
+              ✓ Active
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FULL MEDICAL DETAILS (Expanded Mode) ── -->
+    <div id="sectionFull" style="display: none;">
+      <!-- Vaccines Table -->
+      <div class="section-box">
+        <div class="section-title">
+          <span>💉 Full Vaccination History</span>
+        </div>
+        <div id="fullVacsList">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Critical Alerts -->
+      <div class="section-box">
+        <div class="section-title">
+          <span>🚨 Medical & Allergy Alerts</span>
+        </div>
+        <div style="font-size: 12.5px; color: #E5E7EB; line-height: 1.5;" id="alertsText">
+          No critical allergies or chronic conditions reported.
+        </div>
+      </div>
+    </div>
+
+    <!-- Veterinary Clinic & Emergency Contact -->
+    <div class="section-box">
+      <div class="section-title">
+        <span>🏥 Registered Clinic & Emergency Contacts</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #FFFFFF;" id="ownerNameDisplay">Pet Owner: Registered</div>
+          <div style="font-size: 11px; color: var(--text-muted);" id="ownerPhoneDisplay">Emergency Phone: Available</div>
+        </div>
+        <a id="btnCallOwner" href="#" class="action-btn btn-emergency" style="padding: 8px 12px; font-size: 11px; flex: none;">
+          📞 Call Owner
+        </a>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06);">
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #FFFFFF;" id="vetClinicDisplay">Attending Clinic: MyFurPet Vet</div>
+          <div style="font-size: 11px; color: var(--text-muted);" id="vetPhoneDisplay">Verified License on file</div>
+        </div>
+        <a id="btnCallVet" href="#" class="action-btn btn-secondary" style="padding: 8px 12px; font-size: 11px; flex: none;">
+          🏥 Call Vet
+        </a>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-btn-row">
+      <button class="action-btn btn-primary" onclick="window.print()">
+        📄 Print Travel Certificate
+      </button>
+      <button class="action-btn btn-secondary" onclick="sharePassport()">
+        🔗 Share Link
+      </button>
+    </div>
+  </div>
+
+  <div class="footer-promo">
+    Powered by <a href="https://rnuedev-ctrl.github.io/-myfurpet-site/">MyFurPet</a> • Verified Pet Health & Travel Passport
+  </div>
+
+  <script>
+    // Extract query parameters
+    const params = new URLSearchParams(window.location.search);
+
+    const name = params.get('name') || 'Beloved Pet';
+    const species = params.get('species') || 'Pet';
+    const breed = params.get('breed') || 'Companion';
+    const age = params.get('age') || 'Adult';
+    const weight = params.get('weight') || '--';
+    const gender = params.get('gender') || 'Unknown';
+    const avatar = params.get('avatar');
+    const chip = params.get('chip') || 'Registered';
+    const owner = params.get('owner') || 'Pet Parent';
+    const phone = params.get('phone') || '';
+    const vet = params.get('vet') || 'Registered Partner Clinic';
+    const vetPhone = params.get('vetPhone') || '';
+    const allergies = params.get('allergies');
+    const vacsRaw = params.get('vacs');
+
+    // Populate DOM
+    document.title = `${name}'s Pawprint ID Passport 🐾 | MyFurPet`;
+    document.getElementById('petName').textContent = name;
+    document.getElementById('petBreed').textContent = `${species} • ${breed}`;
+    document.getElementById('petChip').textContent = chip;
+    document.getElementById('petAge').textContent = age;
+    document.getElementById('petWeight').textContent = `${weight} kg`;
+    document.getElementById('petGender').textContent = gender;
+    document.getElementById('ownerNameDisplay').textContent = `Parent: ${owner}`;
+    document.getElementById('ownerPhoneDisplay').textContent = phone ? `Emergency: ${phone}` : 'Emergency Phone on file';
+    document.getElementById('vetClinicDisplay').textContent = `Clinic: ${vet}`;
+
+    if (avatar) {
+      document.getElementById('petAvatar').src = decodeURIComponent(avatar);
+    }
+
+    if (phone) {
+      document.getElementById('btnCallOwner').href = `tel:${phone}`;
+    } else {
+      document.getElementById('btnCallOwner').style.display = 'none';
+    }
+
+    if (vetPhone) {
+      document.getElementById('btnCallVet').href = `tel:${vetPhone}`;
+    } else {
+      document.getElementById('btnCallVet').style.display = 'none';
+    }
+
+    if (allergies && allergies.trim().length > 0) {
+      document.getElementById('alertsText').textContent = `⚠️ Allergies / Notes: ${allergies}`;
+    }
+
+    // Parse vaccines if passed
+    if (vacsRaw) {
+      try {
+        const parsedVacs = JSON.parse(decodeURIComponent(vacsRaw));
+        if (Array.isArray(parsedVacs) && parsedVacs.length > 0) {
+          const container = document.getElementById('fullVacsList');
+          container.innerHTML = parsedVacs.map(v => `
+            <div class="clearance-item">
+              <div>
+                <div class="clearance-name">${v.name}</div>
+                <div class="clearance-sub">Given: ${v.dateAdministered || '--'} • Next Due: ${v.nextDueDate || 'Up to Date'}</div>
+              </div>
+              <div class="clearance-status-badge status-valid">✓ ${v.status || 'Verified'}</div>
+            </div>
+          `).join('');
+        }
+      } catch (e) {}
+    }
+
+    function setMode(mode) {
+      const isTravel = mode === 'travel';
+      document.getElementById('sectionTravel').style.display = isTravel ? 'block' : 'none';
+      document.getElementById('sectionFull').style.display = isTravel ? 'none' : 'block';
+      document.getElementById('btnModeTravel').classList.toggle('active', isTravel);
+      document.getElementById('btnModeFull').classList.toggle('active', !isTravel);
+    }
+
+    function copyMicrochip() {
+      if (chip && chip !== 'Not Listed') {
+        navigator.clipboard.writeText(chip).then(() => {
+          alert(`Copied Microchip ID: ${chip}`);
+        }).catch(() => {});
+      }
+    }
+
+    function sharePassport() {
+      if (navigator.share) {
+        navigator.share({
+          title: `${name}'s Pawprint ID Passport 🐾`,
+          text: `Check out ${name}'s official digital pet passport and travel clearance!`,
+          url: window.location.href,
+        }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          alert('Passport link copied to clipboard!');
+        });
+      }
+    }
+  </script>
+</body>
+</html>

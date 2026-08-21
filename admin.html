@@ -1564,19 +1564,80 @@
       alert("📋 Copied universal affiliate link to clipboard!");
     }
 
+    // ── User Schema Resolver Helper ──
+    function resolveAdminUser(u) {
+      const p = u.profile || u.user || {};
+      let rawName = p.name || u.name || p.displayName || u.displayName || '';
+      let rawEmail = p.email || u.email || (u.id.includes('@') ? u.id.replace(/_/g, '.') : '');
+      
+      if (!rawName && rawEmail && rawEmail.includes('@')) {
+        rawName = rawEmail.split('@')[0];
+      }
+      if (!rawName) rawName = 'Pet Parent';
+
+      const isVip = !!(u.isVip || u.isPremium || p.isPremium || p.role === 'vip' || u.vipTier === 'gold' || p.vipTier === 'gold' || p.vipPlan);
+      let vipPlanName = 'Free Member';
+      if (p.vipPlan === 'early_access_beta_1yr') {
+        vipPlanName = '👑 Early Beta VIP (1-Yr)';
+      } else if (isVip) {
+        vipPlanName = '👑 VIP Gold';
+      }
+
+      const role = u.role || p.role || 'user';
+      const pets = Array.isArray(u.pets) ? u.pets : [];
+      const petSummary = pets.length > 0 ? `🐾 ${pets.map(pet => pet.name ? `${pet.name}${pet.breed ? ` (${pet.breed})` : ''}` : 'Pet').join(', ')}` : '';
+      const avatar = p.avatarUrl || u.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(rawName)}&background=7C3AED&color=ffffff&size=64&bold=true`;
+
+      return {
+        id: u.id,
+        name: rawName,
+        email: rawEmail || (u.id.startsWith('apple_') ? u.id.replace(/_/g, '.') : 'Guest / Social Account'),
+        isVip,
+        vipPlanName,
+        role,
+        pets,
+        petSummary,
+        avatar,
+        isSuspended: !!(u.isSuspended || p.isSuspended)
+      };
+    }
+
+    // ── Overview KPIs Update ──
+    function updateOverviewKPIs() {
+      document.getElementById('kpi-users-total').innerText = usersData.length;
+      document.getElementById('badge-users-count').innerText = usersData.length;
+      document.getElementById('kpi-users-sub').innerText = usersData.length + " verified pet parents registered";
+
+      const vipCount = usersData.filter(u => {
+        const parsed = resolveAdminUser(u);
+        return parsed.isVip;
+      }).length;
+      document.getElementById('kpi-vip-total').innerText = vipCount;
+
+      const clinicCount = clinicsData.length;
+      document.getElementById('kpi-clinics-total').innerText = clinicCount;
+
+      // Calculate estimate gross rev
+      const rev = (vipCount * 4.99) + (clinicsData.filter(c => c.isFeatured).length * 49.00);
+      document.getElementById('kpi-revenue-total').innerText = "$" + rev.toFixed(2);
+    }
+
     // ── Render Users Table ──
     function renderUsers() {
       const tbody = document.getElementById('usersTableBody');
       const q = (document.getElementById('userSearchInput')?.value || '').toLowerCase().trim();
       const roleFilter = document.getElementById('userRoleFilter')?.value || 'ALL';
 
-      let filtered = usersData.filter(u => {
-        const name = (u.name || '').toLowerCase();
-        const email = (u.email || '').toLowerCase();
-        const role = (u.role || 'user').toLowerCase();
-        const matchesQuery = !q || name.includes(q) || email.includes(q) || role.includes(q);
+      let resolvedList = usersData.map(resolveAdminUser);
 
-        if (roleFilter === 'VIP') return matchesQuery && (u.isVip || u.isPremium || u.vipTier === 'gold');
+      let filtered = resolvedList.filter(u => {
+        const name = u.name.toLowerCase();
+        const email = u.email.toLowerCase();
+        const role = u.role.toLowerCase();
+        const pets = u.petSummary.toLowerCase();
+        const matchesQuery = !q || name.includes(q) || email.includes(q) || role.includes(q) || pets.includes(q);
+
+        if (roleFilter === 'VIP') return matchesQuery && u.isVip;
         if (roleFilter === 'ADMIN') return matchesQuery && ['admin', 'superadmin'].includes(u.role);
         if (roleFilter === 'SUSPENDED') return matchesQuery && u.isSuspended;
         return matchesQuery;
@@ -1588,41 +1649,37 @@
       }
 
       tbody.innerHTML = filtered.map(u => {
-        const isVip = u.isVip || u.isPremium || u.vipTier === 'gold';
-        const isSuspended = !!u.isSuspended;
-        const avatar = u.avatarUrl && !u.avatarUrl.includes('unsplash.com') ? u.avatarUrl : `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || 'User')}&background=7C3AED&color=ffffff&size=64&bold=true`;
-
         return `
           <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
             <td class="p-4 flex items-center gap-3">
-              <img src="${avatar}" class="w-8 h-8 rounded-full object-cover border border-slate-200 dark:border-slate-700">
+              <img src="${u.avatar}" class="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 shadow-sm" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=7C3AED&color=ffffff'">
               <div>
-                <p class="font-bold text-slate-900 dark:text-white">${u.name || 'Pet Parent'}</p>
-                <p class="text-[10px] text-slate-400">UID: ${u.id.substring(0, 8)}...</p>
+                <p class="font-bold text-slate-900 dark:text-white text-xs">${u.name}</p>
+                ${u.petSummary ? `<p class="text-[11px] text-brand-600 dark:text-brand-400 font-medium">${u.petSummary}</p>` : `<p class="text-[10px] text-slate-400">UID: ${u.id.substring(0, 12)}...</p>`}
               </div>
             </td>
-            <td class="p-4 font-mono text-slate-600 dark:text-slate-400">${u.email || 'No email'}</td>
+            <td class="p-4 font-mono text-slate-600 dark:text-slate-300 text-xs">${u.email}</td>
             <td class="p-4">
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${isVip ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-700' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}">
-                ${isVip ? '👑 VIP Gold' : 'Free Member'}
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${u.isVip ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-700' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}">
+                ${u.vipPlanName}
               </span>
             </td>
             <td class="p-4">
               <span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.role === 'superadmin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-400' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}">
-                ${u.role || 'user'}
+                ${u.role}
               </span>
             </td>
             <td class="p-4">
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isSuspended ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'}">
-                ${isSuspended ? '⛔ Suspended' : '✓ Active'}
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.isSuspended ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'}">
+                ${u.isSuspended ? '⛔ Suspended' : '✓ Active'}
               </span>
             </td>
             <td class="p-4 text-right space-x-2">
-              <button onclick="toggleUserVip('${u.id}', ${!isVip})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border border-amber-300 dark:border-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950 text-amber-600 dark:text-amber-400">
-                ${isVip ? 'Revoke VIP' : 'Grant VIP'}
+              <button onclick="toggleUserVip('${u.id}', ${!u.isVip})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border border-amber-300 dark:border-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950 text-amber-600 dark:text-amber-400">
+                ${u.isVip ? 'Revoke VIP' : 'Grant VIP'}
               </button>
-              <button onclick="toggleUserSuspension('${u.id}', ${!isSuspended})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${isSuspended ? 'bg-emerald-600 text-white' : 'border border-rose-300 dark:border-rose-700 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950'}">
-                ${isSuspended ? 'Activate' : 'Suspend'}
+              <button onclick="toggleUserSuspension('${u.id}', ${!u.isSuspended})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${u.isSuspended ? 'bg-emerald-600 text-white' : 'border border-rose-300 dark:border-rose-700 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950'}">
+                ${u.isSuspended ? 'Activate' : 'Suspend'}
               </button>
             </td>
           </tr>
@@ -1636,12 +1693,16 @@
 
     async function toggleUserVip(userId, grant) {
       try {
-        await window.fbMethods.updateDoc(window.fbMethods.doc(window.fbDb, "users", userId), {
+        const updatePayload = {
           isVip: grant,
           isPremium: grant,
           vipTier: grant ? 'gold' : 'free',
-          vipGrantedAt: grant ? new Date().toISOString() : null
-        });
+          vipGrantedAt: grant ? new Date().toISOString() : null,
+          "profile.isPremium": grant,
+          "profile.role": grant ? 'vip' : 'user',
+          "profile.vipTier": grant ? 'gold' : 'free'
+        };
+        await window.fbMethods.updateDoc(window.fbMethods.doc(window.fbDb, "users", userId), updatePayload);
         alert(grant ? "👑 Granted VIP Gold membership." : "VIP membership revoked.");
       } catch (err) {
         alert("Error updating VIP status: " + err.message);
@@ -1653,7 +1714,8 @@
         try {
           await window.fbMethods.updateDoc(window.fbMethods.doc(window.fbDb, "users", userId), {
             isSuspended: suspend,
-            suspendedAt: suspend ? new Date().toISOString() : null
+            suspendedAt: suspend ? new Date().toISOString() : null,
+            "profile.isSuspended": suspend
           });
         } catch (err) {
           alert("Error: " + err.message);

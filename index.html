@@ -764,6 +764,102 @@
       transition: transform 0.2s ease;
     }
 
+    /* Curated Supplies Showcase Grid */
+    .supplies-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+      margin-top: 24px;
+    }
+    .supply-card {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.8) 100%);
+      transition: all 0.25s ease;
+    }
+    .supply-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(238, 77, 45, 0.4);
+      box-shadow: 0 12px 24px -8px rgba(238, 77, 45, 0.25);
+    }
+    .supply-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .supply-emoji {
+      font-size: 28px;
+    }
+    .supply-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: #FDE047;
+      background: rgba(253, 224, 71, 0.12);
+      border: 1px solid rgba(253, 224, 71, 0.25);
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+    .supply-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 6px;
+      line-height: 1.35;
+    }
+    .supply-desc {
+      font-size: 12.5px;
+      color: #94A3B8;
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+    .supply-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .supply-price {
+      font-size: 18px;
+      font-weight: 800;
+      color: #38BDF8;
+    }
+    .supply-orig-price {
+      font-size: 12px;
+      color: #64748B;
+      text-decoration: line-through;
+      margin-left: 6px;
+    }
+    .supply-rating {
+      font-size: 11px;
+      font-weight: 600;
+      color: #CBD5E1;
+    }
+    .shopee-web-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 10px 14px;
+      background: linear-gradient(135deg, #EE4D2D, #FF5722);
+      color: #FFFFFF;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 800;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(238, 77, 45, 0.35);
+      transition: all 0.2s ease;
+    }
+    .shopee-web-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(238, 77, 45, 0.5);
+    }
+
     /* Footer */
     footer {
       border-top: 1px solid var(--border-glass);
@@ -967,6 +1063,7 @@
         <p class="section-subtitle">Engineered specifically for modern pet parents, certified veterinarians, and emergency lost pet recovery.</p>
       </div>
 
+      <div class="features-grid">
         <div class="glass-card feature-card">
           <div class="feature-icon-box icon-purple">🧠</div>
           <h3>Gemini AI Visual Triage</h3>
@@ -1697,28 +1794,6 @@
             Yes! All core pet owner features — including digital medical passports, vaccination countdowns, AI scanner, partner clinic booking passes, daily care checklists, and PawAlert SOS alerts — are 100% free.
           </div>
         </div>
-
-        <div class="faq-item glass-card" onclick="toggleFaq(this)">
-          <div class="faq-question">
-            <span>How does the AI Vet Record Scanner protect my pet's data?</span>
-            <span class="faq-toggle-icon">+</span>
-          </div>
-          <div class="faq-answer">
-            All scanned medical records are encrypted and tied strictly to your private account and pet ID. We do not sell your personal data or clinic records to third parties.
-          </div>
-        </div>
-
-        <div class="glass-card faq-item" onclick="toggleFaq(this)">
-          <div class="faq-question">
-            <span>I own a Vet Clinic or Pet Grooming business. How do I join as a Partner?</span>
-            <span class="faq-toggle-icon">+</span>
-          </div>
-          <div class="faq-answer">
-            You can register your clinic directly inside the app under Profile ➔ 'Are You a Vet Clinic or Pet Business?', or contact us via our partner portal to get verified, receive booking leads, and manage patient digital check-ins.
-          </div>
-        </div>
-      </div>
-    </section>
 
         <div class="faq-item glass-card" onclick="toggleFaq(this)">
           <div class="faq-question">

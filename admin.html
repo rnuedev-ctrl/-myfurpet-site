@@ -1101,6 +1101,17 @@
         </div>
 
         <div>
+          <label class="block font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Product Photo URL (High-Res E-Commerce Image)</label>
+          <div class="flex items-center gap-2">
+            <input type="url" id="modalProductImageUrl" oninput="previewProductImage(this.value)" placeholder="https://down-ph.img.susercontent.com/file/..." class="flex-1 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-mono text-[11px]">
+            <div id="modalImagePreviewBox" class="w-10 h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden flex-shrink-0">
+              <span id="modalImagePreviewPlaceholder" class="text-slate-400 text-xs">📷</span>
+              <img id="modalImagePreviewImg" class="hidden w-full h-full object-contain" />
+            </div>
+          </div>
+        </div>
+
+        <div>
           <label class="block font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Affiliate Destination URL (Shopee / Amazon / Direct)</label>
           <input type="url" id="modalProductShopeeUrl" required placeholder="https://shopee.ph/search?keyword=...&utm_source=an_13324520100" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-mono text-[11px]">
         </div>
@@ -1462,7 +1473,7 @@
       tbody.innerHTML = filtered.map(p => `
         <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
           <td class="p-4 flex items-center gap-3">
-            <span class="text-2xl">${p.icon || '🛍️'}</span>
+            ${p.imageUrl ? `<img src="${p.imageUrl}" class="w-10 h-10 rounded-xl object-contain bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex-shrink-0" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.title || 'Product')}&background=F59E0B&color=ffffff'">` : `<span class="text-2xl">${p.icon || '🛍️'}</span>`}
             <div>
               <p class="font-bold text-slate-900 dark:text-white">${p.title || 'Product'}</p>
               <p class="text-[10px] text-slate-400 truncate max-w-xs">${p.description || ''}</p>
@@ -1504,10 +1515,29 @@
       renderAffiliateProducts();
     }
 
+    function previewProductImage(url) {
+      const img = document.getElementById('modalImagePreviewImg');
+      const placeholder = document.getElementById('modalImagePreviewPlaceholder');
+      if (url && url.startsWith('http')) {
+        img.src = url;
+        img.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+        img.onerror = function() {
+          img.classList.add('hidden');
+          placeholder.classList.remove('hidden');
+        };
+      } else {
+        img.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+      }
+    }
+
     function openCreateProductModal() {
       document.getElementById('productModalTitle').innerText = "Add New Affiliate Item";
       document.getElementById('modalProductId').value = "";
       document.getElementById('modalProductIcon').value = "🛍️";
+      document.getElementById('modalProductImageUrl').value = "";
+      previewProductImage("");
       document.getElementById('modalProductTitle').value = "";
       document.getElementById('modalProductCategory').value = "Pet Supplies";
       document.getElementById('modalProductBadge').value = "Best Seller";
@@ -1524,6 +1554,8 @@
       document.getElementById('productModalTitle').innerText = "Edit Affiliate Item";
       document.getElementById('modalProductId').value = p.id;
       document.getElementById('modalProductIcon').value = p.icon || '🛍️';
+      document.getElementById('modalProductImageUrl').value = p.imageUrl || '';
+      previewProductImage(p.imageUrl || '');
       document.getElementById('modalProductTitle').value = p.title || '';
       document.getElementById('modalProductCategory').value = p.category || 'Pet Supplies';
       document.getElementById('modalProductBadge').value = p.badge || '';
@@ -1552,6 +1584,7 @@
       const productRecord = {
         id: prodId,
         icon: document.getElementById('modalProductIcon').value.trim() || '🛍️',
+        imageUrl: document.getElementById('modalProductImageUrl').value.trim(),
         title: document.getElementById('modalProductTitle').value.trim(),
         category: document.getElementById('modalProductCategory').value,
         badge: document.getElementById('modalProductBadge').value.trim(),

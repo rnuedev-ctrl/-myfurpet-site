@@ -668,6 +668,7 @@
               </table>
             </div>
           </div>
+        </section>
 
         <!-- =============================================================== -->
         <!-- 5. REFERRAL COMMISSIONS PANEL -->
@@ -975,6 +976,65 @@
       </div>
     </main>
 
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 🏥 CLINIC LEAD CREDIT ADJUSTMENT MODAL -->
+  <!-- ========================================================================= -->
+  <div id="creditAdjustmentModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-lg font-black font-display text-slate-900 dark:text-white flex items-center gap-2">
+            <span>⚡ Adjust Lead Credits</span>
+          </h3>
+          <p id="creditModalClinicName" class="text-xs font-bold text-brand-600 dark:text-brand-400 mt-0.5">Clinic Name</p>
+        </div>
+        <button onclick="closeCreditModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white text-sm">
+          ✕
+        </button>
+      </div>
+
+      <form onsubmit="saveCreditAdjustment(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="creditModalClinicId">
+
+        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+          <span class="text-slate-500 font-bold">Current Balance:</span>
+          <span id="creditModalCurrentBalance" class="text-base font-black font-mono text-brand-600 dark:text-brand-400">0 Credits</span>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-2">Quick Presets</label>
+          <div class="grid grid-cols-4 gap-2">
+            <button type="button" onclick="setCreditPreset(5)" class="py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-brand-500 font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200">+5</button>
+            <button type="button" onclick="setCreditPreset(10)" class="py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-brand-500 font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200">+10</button>
+            <button type="button" onclick="setCreditPreset(20)" class="py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-brand-500 font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200">+20</button>
+            <button type="button" onclick="setCreditPreset(50)" class="py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-brand-500 font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200">+50</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Custom Amount</label>
+          <div class="flex items-center gap-2">
+            <select id="creditModalAction" class="w-28 px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-bold">
+              <option value="add">Add (+)</option>
+              <option value="deduct">Deduct (-)</option>
+              <option value="set">Set Exact (=)</option>
+            </select>
+            <input type="number" id="creditModalAmount" min="0" max="9999" value="10" required class="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-mono font-bold text-sm focus:ring-2 focus:ring-brand-500">
+          </div>
+        </div>
+
+        <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" onclick="closeCreditModal()" class="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 font-bold hover:bg-slate-100 dark:hover:bg-slate-800">
+            Cancel
+          </button>
+          <button type="submit" id="saveCreditBtn" class="px-6 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold shadow-md shadow-brand-600/30">
+            Update Credits
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <!-- ========================================================================= -->
@@ -1759,8 +1819,8 @@
               </span>
             </td>
             <td class="p-4 text-right space-x-2">
-              <button onclick="topupClinicCredits('${c.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-brand-600 text-white hover:bg-brand-500">
-                + Add 50 Credits
+              <button onclick="openCreditModal('${c.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-brand-600 text-white hover:bg-brand-500 shadow-sm transition-all">
+                ⚡ Custom Credits
               </button>
               <button onclick="toggleClinicFeatured('${c.id}', ${!isFeatured})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border border-slate-300 dark:border-slate-700 hover:bg-slate-100">
                 ${isFeatured ? 'Unfeature' : 'Feature VIP'}
@@ -1775,15 +1835,69 @@
       renderClinics();
     }
 
-    async function topupClinicCredits(clinicId) {
+    // ── Clinic Credit Modal Functions ──
+    function openCreditModal(clinicId) {
+      const clinic = clinicsData.find(c => c.id === clinicId);
+      if (!clinic) return;
+      document.getElementById('creditModalClinicId').value = clinic.id;
+      document.getElementById('creditModalClinicName').innerText = clinic.name || 'Vet Clinic';
+      document.getElementById('creditModalCurrentBalance').innerText = (clinic.leadCredits || 0) + ' Credits';
+      document.getElementById('creditModalAmount').value = "10";
+      document.getElementById('creditModalAction').value = "add";
+      document.getElementById('creditAdjustmentModal').classList.remove('hidden');
+    }
+
+    function setCreditPreset(amount) {
+      document.getElementById('creditModalAction').value = "add";
+      document.getElementById('creditModalAmount').value = amount;
+    }
+
+    function closeCreditModal() {
+      document.getElementById('creditAdjustmentModal').classList.add('hidden');
+    }
+
+    async function saveCreditAdjustment(e) {
+      e.preventDefault();
+      const btn = document.getElementById('saveCreditBtn');
+      btn.disabled = true;
+      btn.innerText = "Updating...";
+
+      const clinicId = document.getElementById('creditModalClinicId').value;
+      const action = document.getElementById('creditModalAction').value;
+      const amount = parseInt(document.getElementById('creditModalAmount').value, 10) || 0;
+
+      const clinic = clinicsData.find(c => c.id === clinicId);
+      const current = clinic ? (clinic.leadCredits || 0) : 0;
+      let newBalance = current;
+
+      if (action === 'add') {
+        newBalance = current + amount;
+      } else if (action === 'deduct') {
+        newBalance = Math.max(0, current - amount);
+      } else if (action === 'set') {
+        newBalance = Math.max(0, amount);
+      }
+
       try {
         const placeRef = window.fbMethods.doc(window.fbDb, "places", clinicId);
-        const snap = await window.fbMethods.getDoc(placeRef);
-        const current = snap.exists() ? (snap.data().leadCredits || 0) : 0;
-        await window.fbMethods.updateDoc(placeRef, { leadCredits: current + 50 });
-        alert("Added 50 Lead Credits successfully.");
+        await window.fbMethods.updateDoc(placeRef, { 
+          leadCredits: newBalance,
+          lastCreditAdjustment: {
+            amount,
+            action,
+            previousBalance: current,
+            newBalance,
+            adjustedAt: new Date().toISOString(),
+            adjustedBy: currentAdminUser?.email || 'rnuedev@gmail.com'
+          }
+        });
+        closeCreditModal();
+        alert(`✅ Updated lead credits balance to ${newBalance} credits!`);
       } catch (err) {
-        alert("Error topping up credits: " + err.message);
+        alert("Error updating credits: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Update Credits";
       }
     }
 

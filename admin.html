@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyFurPet Master Admin Suite | Enterprise Control Center</title>
+  <meta name="description" content="Secure administrative command and analytics console for MyFurPet.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="assets/icon.png">
+
+  <!-- Google Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS & Chart.js -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#F5F3FF',
+              100: '#EDE9FE',
+              200: '#DDD6FE',
+              300: '#C4B5FD',
+              400: '#A78BFA',
+              500: '#8B5CF6',
+              600: '#7C3AED',
+              700: '#6D28D9',
+              800: '#5B21B6',
+              900: '#4C1D95',
+            },
+            dark: {
+              bg: '#0F172A',
+              card: '#1E293B',
+              border: '#334155',
+              hover: '#334155',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    .dark .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(124, 58, 237, 0.3);
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(124, 58, 237, 0.6);
+    }
+    .glass-card {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .animate-pulse-slow {
+      animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+
+  <!-- Firebase App & Services (v10 Modular SDK via CDN) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword, 
+      signOut, 
+      onAuthStateChanged,
+      GoogleAuthProvider,
+      signInWithPopup 
+    } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+    import { 
+      getFirestore, 
+      collection, 
+      doc, 
+      getDocs, 
+      getDoc, 
+      setDoc, 
+      updateDoc, 
+      deleteDoc, 
+      query, 
+      where, 
+      orderBy, 
+      limit, 
+      onSnapshot 
+    } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA4PZ-l6kTnaQrsbBsQ8kZcZYne_fy-q4U",
+      authDomain: "myfurpet-7de31.firebaseapp.com",
+      projectId: "myfurpet-7de31",
+      storageBucket: "myfurpet-7de31.firebasestorage.app",
+      messagingSenderId: "589652442330",
+      appId: "1:589652442330:web:d105e0ebeef0d50955f9e3",
+      measurementId: "G-2MKZN7HW19"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Export to window for vanilla integration
+    window.fbAuth = auth;
+    window.fbDb = db;
+    window.fbMethods = {
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged,
+      GoogleAuthProvider,
+      signInWithPopup,
+      collection,
+      doc,
+      getDocs,
+      getDoc,
+      setDoc,
+      updateDoc,
+      deleteDoc,
+      query,
+      where,
+      orderBy,
+      limit,
+      onSnapshot
+    };
+
+    // Trigger auth state listener once ready
+    window.initAdminAuth();
+  </script>
+</head>
+<body class="bg-slate-50 dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 min-h-screen flex flex-col selection:bg-brand-500 selection:text-white transition-colors duration-200">
+
+  <!-- ========================================================================= -->
+  <!-- 🔒 ZERO-TRUST AUTHENTICATION BARRIER MODAL -->
+  <!-- ========================================================================= -->
+  <div id="authGateModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 max-w-md w-full shadow-2xl relative overflow-hidden text-center">
+      <!-- Glow decoration -->
+      <div class="absolute -top-24 -right-24 w-48 h-48 bg-brand-600/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-emerald-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="w-16 h-16 bg-brand-500/10 border border-brand-500/20 text-brand-600 dark:text-brand-400 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">
+        🛡️
+      </div>
+
+      <h2 class="text-2xl font-black font-display tracking-tight text-slate-900 dark:text-white mb-1">
+        Master Admin Gate
+      </h2>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">
+        Strict Zero-Trust Access Barrier. Only verified executive accounts (`rnuedev@gmail.com`) can proceed.
+      </p>
+
+      <div id="authErrorAlert" class="hidden mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-400 text-xs font-semibold text-left">
+      </div>
+
+      <form id="adminLoginForm" onsubmit="handleEmailLogin(event)" class="space-y-3.5 text-left">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">Executive Email</label>
+          <input type="email" id="loginEmail" required placeholder="rnuedev@gmail.com" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">Master Password</label>
+          <input type="password" id="loginPassword" required placeholder="••••••••••••" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all">
+        </div>
+
+        <button type="submit" id="loginBtn" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-500 hover:to-brand-600 text-white font-bold text-sm shadow-lg shadow-brand-600/30 flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+          <span>Authorize Access</span>
+          <span id="loginSpinner" class="hidden animate-spin">⏳</span>
+        </button>
+      </form>
+
+      <div class="relative my-5">
+        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200 dark:border-slate-800"></div></div>
+        <div class="relative flex justify-center text-xs uppercase"><span class="bg-white dark:bg-slate-900 px-3 text-slate-400 font-bold tracking-widest text-[10px]">Or</span></div>
+      </div>
+
+      <button onclick="handleGoogleLogin()" class="w-full py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm flex items-center justify-center gap-3 transition-all active:scale-[0.98]">
+        <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.55 0 2.94.54 4.04 1.43l3.03-3.03C17.24 1.71 14.8 1 12 1 7.37 1 3.4 3.73 1.5 7.64l3.66 2.84C6.04 7.64 8.78 5 12 5z"/><path fill="#4285F4" d="M23.5 12.28c0-.82-.07-1.6-.21-2.28H12v4.56h6.48c-.28 1.48-1.12 2.73-2.38 3.58l3.66 2.84c2.14-1.98 3.74-4.88 3.74-8.7z"/><path fill="#FBBC05" d="M5.16 14.84c-.24-.72-.37-1.49-.37-2.28s.13-1.56.37-2.28L1.5 7.44C.54 9.36 0 11.51 0 13.72c0 2.21.54 4.36 1.5 6.28l3.66-2.84z"/><path fill="#34A853" d="M12 23.5c3.24 0 5.96-1.08 7.95-2.92l-3.66-2.84c-1.08.72-2.47 1.16-4.29 1.16-3.22 0-5.96-2.64-6.84-5.48L1.5 16.26C3.4 20.17 7.37 23.5 12 23.5z"/></svg>
+        <span>Continue with Google Workspace</span>
+      </button>
+
+      <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-400">
+        🔐 Multi-Layer Session Encryption & Cloud Firestore Rule Verification Active
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 🖥️ MAIN MASTER CONTROL SUITE APPLICATION -->
+  <!-- ========================================================================= -->
+  <div id="adminApp" class="flex-1 flex flex-col md:flex-row overflow-hidden opacity-0 pointer-events-none transition-opacity duration-300">
+
+    <!-- ── LEFT SIDEBAR NAVIGATION ── -->
+    <aside class="w-full md:w-64 lg:w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col flex-shrink-0 z-20">
+      <!-- Brand Header -->
+      <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <img src="assets/icon.png" alt="MyFurPet Logo" class="w-9 h-9 rounded-xl shadow-md border border-brand-500/20 object-cover">
+          <div>
+            <h1 class="font-display font-black text-lg tracking-tight text-slate-900 dark:text-white leading-tight">
+              MyFurPet
+            </h1>
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span class="text-[10px] font-bold tracking-wider text-brand-600 dark:text-brand-400 uppercase">Master Suite</span>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="toggleDarkMode()" title="Toggle Dark/Light Mode" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm">
+          🌓
+        </button>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="p-3 flex-1 overflow-y-auto space-y-1 custom-scrollbar">
+        <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all bg-brand-50 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 border border-brand-200 dark:border-brand-800/60 shadow-sm">
+          <span class="text-base">📊</span>
+          <span>Executive Overview</span>
+        </button>
+
+        <button onclick="switchTab('financials')" id="tab-financials" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
+          <span class="text-base">💰</span>
+          <span>Financials & Rev</span>
+        </button>
+
+        <button onclick="switchTab('users')" id="tab-users" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
+          <span class="text-base">👥</span>
+          <span>Users & VIP Controls</span>
+          <span id="badge-users-count" class="ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">...</span>
+        </button>
+
+        <button onclick="switchTab('clinics')" id="tab-clinics" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
+          <span class="text-base">🏥</span>
+          <span>Partner Clinics & Vets</span>
+        </button>
+
+        <button onclick="switchTab('referrals')" id="tab-referrals" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
+          <span class="text-base">🔗</span>
+          <span>Referral Commissions</span>
+        </button>
+
+        <button onclick="switchTab('errors')" id="tab-errors" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
+          <span class="text-base">⚠️</span>
+          <span>Critical Error Logs</span>
+          <span id="badge-errors-count" class="ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400">0</span>
+        </button>
+
+        <button onclick="switchTab('lead_audit')" id="tab-lead_audit" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
+          <span class="text-base">📋</span>
+          <span>Lead Audit Logs</span>
+        </button>
+
+        <button onclick="switchTab('sos')" id="tab-sos" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
+          <span class="text-base">🚨</span>
+          <span>PawAlert SOS Desk</span>
+        </button>
+
+        <button onclick="switchTab('moderation')" id="tab-moderation" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
+          <span class="text-base">🛡️</span>
+          <span>Content Moderation</span>
+          <span id="badge-reports-count" class="ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400">0</span>
+        </button>
+
+        <button onclick="switchTab('reports_suggestions')" id="tab-reports_suggestions" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
+          <span class="text-base">💡</span>
+          <span>Problems & Feedback</span>
+        </button>
+
+        <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
+          <span class="text-base">⚙️</span>
+          <span>Master Settings</span>
+        </button>
+      </nav>
+
+      <!-- Admin Profile & Logout Footer -->
+      <div class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div id="adminAvatar" class="w-8 h-8 rounded-full bg-brand-600 text-white font-bold flex items-center justify-center text-xs flex-shrink-0">
+              AD
+            </div>
+            <div class="min-w-0">
+              <p id="adminUserEmail" class="text-xs font-bold text-slate-900 dark:text-white truncate">
+                rnuedev@gmail.com
+              </p>
+              <p class="text-[10px] text-brand-600 dark:text-brand-400 font-semibold">
+                👑 SuperAdmin Verified
+              </p>
+            </div>
+          </div>
+          <button onclick="handleLogout()" title="Secure Logout" class="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors">
+            🚪
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── MAIN CONTENT AREA ── -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto custom-scrollbar">
+      
+      <!-- Top Action Bar -->
+      <header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-10">
+        <div class="flex items-center gap-3">
+          <h2 id="currentSectionTitle" class="text-base font-extrabold font-display tracking-tight text-slate-900 dark:text-white">
+            Executive Overview
+          </h2>
+          <span id="liveSyncStatus" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Live Firestore Streaming
+          </span>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button onclick="refreshAllData()" class="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm">
+            <span>↺ Refresh</span>
+          </button>
+          <button onclick="exportFullAdminReportCSV()" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-md shadow-brand-600/20">
+            <span>📥 Export CSV</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Tab Panels Container -->
+      <div class="p-6 space-y-6 max-w-7xl w-full mx-auto">
+
+        <!-- =============================================================== -->
+        <!-- 1. EXECUTIVE OVERVIEW PANEL -->
+        <!-- =============================================================== -->
+        <section id="panel-overview" class="space-y-6">
+          <!-- KPI Cards Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm relative overflow-hidden">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Registered Users</span>
+                <span class="p-2 rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-600 dark:text-brand-400 text-sm">👥</span>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span id="kpi-users-total" class="text-3xl font-black font-display text-slate-900 dark:text-white">0</span>
+                <span class="text-xs text-emerald-500 font-bold">● Active</span>
+              </div>
+              <p id="kpi-users-sub" class="text-[11px] text-slate-400 mt-2">Loading cloud records...</p>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm relative overflow-hidden">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Active VIP Subscriptions</span>
+                <span class="p-2 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-400 text-sm">👑</span>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span id="kpi-vip-total" class="text-3xl font-black font-display text-slate-900 dark:text-white">0</span>
+                <span class="text-xs text-amber-500 font-bold">VIP Gold / Standard</span>
+              </div>
+              <p id="kpi-vip-sub" class="text-[11px] text-slate-400 mt-2">RevenueCat synced</p>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm relative overflow-hidden">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Verified Partner Clinics</span>
+                <span class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 text-sm">🏥</span>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span id="kpi-clinics-total" class="text-3xl font-black font-display text-slate-900 dark:text-white">0</span>
+                <span class="text-xs text-emerald-500 font-bold">Official Network</span>
+              </div>
+              <p id="kpi-clinics-sub" class="text-[11px] text-slate-400 mt-2">Nationwide Vet Partners</p>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm relative overflow-hidden">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Gross Platform Rev</span>
+                <span class="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-sm">💵</span>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span id="kpi-revenue-total" class="text-3xl font-black font-display text-slate-900 dark:text-white">$0.00</span>
+                <span class="text-xs text-indigo-500 font-bold">USD Total</span>
+              </div>
+              <p id="kpi-revenue-sub" class="text-[11px] text-slate-400 mt-2">Sponsorships + VIP + Affiliates</p>
+            </div>
+
+          </div>
+
+          <!-- Quick Actions & Urgent Alerts -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm">
+              <h3 class="font-display font-bold text-sm tracking-tight text-slate-900 dark:text-white mb-4 flex items-center justify-between">
+                <span>⚡ Real-Time System Health & Urgent Actions</span>
+                <span class="text-xs text-brand-600 dark:text-brand-400 font-medium">Auto-refresh active</span>
+              </h3>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div onclick="switchTab('errors')" class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 hover:border-rose-300 dark:hover:border-rose-700 cursor-pointer transition-all">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs font-bold text-slate-600 dark:text-slate-400">Critical Errors</span>
+                    <span id="quick-error-badge" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400">0 Open</span>
+                  </div>
+                  <p class="text-[11px] text-slate-400">Click to review crash logs</p>
+                </div>
+
+                <div onclick="switchTab('moderation')" class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 hover:border-amber-300 dark:hover:border-amber-700 cursor-pointer transition-all">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs font-bold text-slate-600 dark:text-slate-400">Reported Posts</span>
+                    <span id="quick-reports-badge" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400">0 Pending</span>
+                  </div>
+                  <p class="text-[11px] text-slate-400">Click to triage reports</p>
+                </div>
+
+                <div onclick="switchTab('sos')" class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 hover:border-red-300 dark:hover:border-red-700 cursor-pointer transition-all">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs font-bold text-slate-600 dark:text-slate-400">PawAlert SOS</span>
+                    <span id="quick-sos-badge" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400">0 Active</span>
+                  </div>
+                  <p class="text-[11px] text-slate-400">Lost pet emergencies</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Maintenance Mode & Switcher Widget -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm flex flex-col justify-between">
+              <div>
+                <h3 class="font-display font-bold text-sm tracking-tight text-slate-900 dark:text-white mb-2">
+                  ⚙️ Platform Switchers
+                </h3>
+                <p class="text-xs text-slate-400 mb-4">
+                  Instant platform kill switches and global emergency overrides.
+                </p>
+
+                <div class="space-y-3">
+                  <label class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 cursor-pointer">
+                    <div>
+                      <p class="text-xs font-bold text-slate-800 dark:text-slate-200">Maintenance Mode</p>
+                      <p class="text-[10px] text-slate-400">Block customer app requests</p>
+                    </div>
+                    <input type="checkbox" id="overviewMaintenanceToggle" onchange="toggleMaintenanceMode(this.checked)" class="w-4 h-4 text-brand-600 rounded">
+                  </label>
+                </div>
+              </div>
+
+              <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                <span>Environment:</span>
+                <span class="font-mono font-bold text-emerald-500">production-v22</span>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- 2. FINANCIALS & REVENUE PANEL -->
+        <!-- =============================================================== -->
+        <section id="panel-financials" class="hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-black font-display tracking-tight text-slate-900 dark:text-white">
+                Financial Transactions & Revenue Ledger
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Real-time transaction history from RevenueCat, Partner Clinic Sponsorships, and Commissions.
+              </p>
+            </div>
+            <button onclick="exportFinancialsCSV()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md shadow-emerald-600/20">
+              📥 Export Financials CSV
+            </button>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider">
+                  <tr>
+                    <th class="p-4">Transaction ID</th>
+                    <th class="p-4">Date</th>
+                    <th class="p-4">Source / Account</th>
+                    <th class="p-4">Type</th>
+                    <th class="p-4">Amount</th>
+                    <th class="p-4">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="financialsTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
+                  <tr>
+                    <td colspan="6" class="p-8 text-center text-slate-400">Loading live financial ledger...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- 3. USERS & VIP CONTROLS PANEL -->
+        <!-- =============================================================== -->
+        <section id="panel-users" class="hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 class="text-lg font-black font-display tracking-tight text-slate-900 dark:text-white">
+                Users & VIP Membership Directory
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Direct Cloud Firestore user inspection, VIP status overrides, and account suspension controls.
+              </p>
+            </div>
+            
+            <div class="flex items-center gap-3">
+              <input type="text" id="userSearchInput" oninput="filterUsersList()" placeholder="🔍 Search name, email, or role..." class="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs w-64 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <select id="userRoleFilter" onchange="filterUsersList()" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold">
+                <option value="ALL">All Roles</option>
+                <option value="VIP">VIP Members</option>
+                <option value="ADMIN">Admins</option>
+                <option value="SUSPENDED">Suspended</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider">
+                  <tr>
+                    <th class="p-4">User</th>
+                    <th class="p-4">Email</th>
+                    <th class="p-4">VIP Status</th>
+                    <th class="p-4">Role</th>
+                    <th class="p-4">Account Status</th>
+                    <th class="p-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
+                  <tr>
+                    <td colspan="6" class="p-8 text-center text-slate-400">Streaming live users from Cloud Firestore...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- 4. PARTNER CLINICS & VETS PANEL -->
+        <!-- =============================================================== -->
+        <section id="panel-clinics" class="hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 class="text-lg font-black font-display tracking-tight text-slate-900 dark:text-white">
+                Official Partner Clinics & Vet Directory
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Approve VIP partner claims, toggle featured badges, and manage lead credit balances.
+              </p>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <input type="text" id="clinicSearchInput" oninput="filterClinicsList()" placeholder="🔍 Search clinic name, city..." class="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs w-64 focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider">
+                  <tr>
+                    <th class="p-4">Clinic Name</th>
+                    <th class="p-4">Address / City</th>
+                    <th class="p-4">Plan / Badge</th>
+                    <th class="p-4">Lead Credits</th>
+                    <th class="p-4">Featured</th>
+                    <th class="p-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="clinicsTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
+                  <tr>
+                    <td colspan="6" class="p-8 text-center text-slate-400">Loading partner clinics...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- 5. REFERRAL COMMISSIONS PANEL -->
+        <!-- =============================================================== -->
+        <section id="panel-referrals" class="hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-black font-display tracking-tight text-slate-900 dark:text-white">
+                Referral Tree & Commission Balances
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                User-to-user referral tracking and clinic commission settlement payouts.
+              </p>
+            </div>
+            <button onclick="exportReferralsCSV()" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold shadow-md shadow-brand-600/20">
+              📥 Export Referral CSV
+            </button>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider">
+                  <tr>
+                    <th class="p-4">Referrer Account</th>
+                    <th class="p-4">Referred User</th>
+                    <th class="p-4">Commission Earned</th>
+                    <th class="p-4">Date</th>
+                    <th class="p-4">Settlement Status</th>
+                  </tr>
+                </thead>
+                <tbody id="referralsTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
+                  <tr>
+                    <td colspan="5" class="p-8 text-center text-slate-400">Loading referral records...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- 6. CRITICAL ERROR LOGS PANEL -->
+        <!-- =============================================================== -->
+        <section id="panel-errors" class="hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-black font-display tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                <span>Critical System Error Logs</span>
+                <span id="errorCountPill" class="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400">0 Open</span>
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Live crash reports, network timeout exceptions, and automated Slack notification logs.
+              </p>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button onclick="clearResolvedErrors()" class="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold">
+                🧹 Clear Resolved
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider">
+                  <tr>
+                    <th class="p-4">Severity</th>
+                    <th class="p-4">Error Message</th>
+                    <th class="p-4">Context / Screen</th>
+                    <th class="p-4">Timestamp</th>
+                    <th class="p-4">Status</th>
+                    <th class="p-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="errorsTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
+                  <tr>
+                    <td colspan="6" class="p-8 text-center text-slate-400">No critical errors logged. Systems operating optimally.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- 7. LEAD AUDIT LOGS PANEL -->
+        <!-- =============================================================== -->
+        <section id="panel-lead_audit" class="hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-black font-display tracking-tight text-slate-900 dark:text-white">
+                Business Lead Transactions & Audit Trails
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Direct inspection of clinic visits, phone leads, GPS navigation clicks, and store orders.
+              </p>
+            </div>
+            <button onclick="exportLeadAuditCSV()" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold shadow-md shadow-brand-600/20">
+              📥 Export Audit CSV
+            </button>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider">
+                  <tr>
+                    <th class="p-4">Clinic Name</th>
+                    <th class="p-4">Lead Action Type</th>
+                    <th class="p-4">Customer Details</th>
+                    <th class="p-4">Timestamp</th>
+                    <th class="p-4">Details</th>
+                  </tr>
+                </thead>
+                <tbody id="leadAuditTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
+                  <tr>
+                    <td colspan="5" class="p-8 text-center text-slate-400">Loading live business lead transactions...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- 8. PAWALERT SOS COMMAND DESK -->
+        <!-- =============================================================== -->
+        <section id="panel-sos" class="hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-black font-display tracking-tight text-slate-900 dark:text-white">
+                Emergency PawAlert SOS Command Desk
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Active lost pet emergency broadcasts, search perimeter status, and reunion resolution.
+              </p>
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider">
+                  <tr>
+                    <th class="p-4">Pet Details</th>
+                    <th class="p-4">Last Seen Location</th>
+                    <th class="p-4">Owner Contact</th>
+                    <th class="p-4">Broadcast Time</th>
+                    <th class="p-4">Status</th>
+                    <th class="p-4 text-right">Resolution</th>
+                  </tr>
+                </thead>
+                <tbody id="sosTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
+                  <tr>
+                    <td colspan="6" class="p-8 text-center text-slate-400">Streaming live lost pet alerts...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- 9. CONTENT MODERATION PANEL -->
+        <!-- =============================================================== -->
+        <section id="panel-moderation" class="hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-black font-display tracking-tight text-slate-900 dark:text-white">
+                Community Post Safety & Content Moderation
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Review flagged posts, delete prohibited content, and suspend repeat violators.
+              </p>
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider">
+                  <tr>
+                    <th class="p-4">Reported Reason</th>
+                    <th class="p-4">Author</th>
+                    <th class="p-4">Post Caption Preview</th>
+                    <th class="p-4">Reported By</th>
+                    <th class="p-4">Status</th>
+                    <th class="p-4 text-right">Moderation Action</th>
+                  </tr>
+                </thead>
+                <tbody id="moderationTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
+                  <tr>
+                    <td colspan="6" class="p-8 text-center text-slate-400">No pending reports. Community feed is clean!</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- 10. PROBLEMS & SUGGESTIONS PANEL -->
+        <!-- =============================================================== -->
+        <section id="panel-reports_suggestions" class="hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-black font-display tracking-tight text-slate-900 dark:text-white">
+                User Problem Reports & Feature Suggestions
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Triage user-submitted bug tickets and prioritize popular feature requests.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Bug Reports -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
+              <h4 class="font-display font-bold text-sm text-slate-900 dark:text-white mb-3">
+                🐛 User Problem Reports
+              </h4>
+              <div id="userProblemsList" class="space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
+                <p class="text-xs text-slate-400">Loading problem reports...</p>
+              </div>
+            </div>
+
+            <!-- Feature Suggestions -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
+              <h4 class="font-display font-bold text-sm text-slate-900 dark:text-white mb-3">
+                💡 Feature Suggestions & Requests
+              </h4>
+              <div id="featureSuggestionsList" class="space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
+                <p class="text-xs text-slate-400">Loading feature suggestions...</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- 11. MASTER SETTINGS PANEL -->
+        <!-- =============================================================== -->
+        <section id="panel-settings" class="hidden space-y-6 max-w-3xl">
+          <div>
+            <h3 class="text-lg font-black font-display tracking-tight text-slate-900 dark:text-white">
+              Master Platform Settings & Feature Toggles
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Configure global app announcements, affiliate routing rules, and maintenance gates.
+            </p>
+          </div>
+
+          <form id="masterSettingsForm" onsubmit="saveMasterSettings(event)" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-5">
+            
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">
+                Global Platform Announcement Banner
+              </label>
+              <input type="text" id="settingAnnouncement" placeholder="Welcome to MyFurPet 2.0! 🎉" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:outline-none">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">
+                  Default Currency
+                </label>
+                <select id="settingCurrency" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold">
+                  <option value="USD">USD ($)</option>
+                  <option value="PHP">PHP (₱)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">
+                  Affiliate Marketplace Mode
+                </label>
+                <select id="settingMarketplaceMode" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold">
+                  <option value="auto">Auto Geo-Detection (Shopee / Amazon)</option>
+                  <option value="shopee">Force Shopee PH</option>
+                  <option value="amazon">Force Amazon Global</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+              <label class="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" id="settingMaintenanceMode" class="w-4 h-4 text-brand-600 rounded">
+                <div>
+                  <span class="text-xs font-bold text-slate-900 dark:text-white">Enable Platform Maintenance Mode</span>
+                  <p class="text-[11px] text-slate-400">When enabled, mobile users receive an upgrade notice and temporary pause.</p>
+                </div>
+              </label>
+            </div>
+
+            <div class="pt-4 flex justify-end">
+              <button type="submit" id="saveSettingsBtn" class="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-md shadow-brand-600/30 transition-all">
+                💾 Save Master Settings
+              </button>
+            </div>
+
+          </form>
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 📜 CLIENT JAVASCRIPT CONTROLLER -->
+  <!-- ========================================================================= -->
+  <script>
+    // ── Global State ──
+    let currentAdminUser = null;
+    let usersData = [];
+    let clinicsData = [];
+    let errorsData = [];
+    let reportsData = [];
+    let sosData = [];
+    let leadAuditData = [];
+    let referralsData = [];
+    let problemReportsData = [];
+    let featureSuggestionsData = [];
+    let financialTransactions = [];
+
+    const SUPERADMIN_EMAILS = ['rnuedev@gmail.com', 'rnuedev-ctrl@gmail.com'];
+
+    // ── Dark Mode Toggle ──
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+    if (localStorage.getItem('theme') === 'light') {
+      document.documentElement.classList.remove('dark');
+    }
+
+    // ── Tab Switching ──
+    function switchTab(tabId) {
+      document.querySelectorAll('section[id^="panel-"]').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-brand-50', 'dark:bg-brand-950/50', 'text-brand-600', 'dark:text-brand-400', 'border', 'border-brand-200', 'dark:border-brand-800/60', 'shadow-sm');
+        btn.classList.add('text-slate-600', 'dark:text-slate-400');
+      });
+
+      const activePanel = document.getElementById('panel-' + tabId);
+      if (activePanel) activePanel.classList.remove('hidden');
+
+      const activeBtn = document.getElementById('tab-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.remove('text-slate-600', 'dark:text-slate-400');
+        activeBtn.classList.add('bg-brand-50', 'dark:bg-brand-950/50', 'text-brand-600', 'dark:text-brand-400', 'border', 'border-brand-200', 'dark:border-brand-800/60', 'shadow-sm');
+      }
+
+      const titles = {
+        overview: 'Executive Overview',
+        financials: 'Financials & Rev',
+        users: 'Users & VIP Controls',
+        clinics: 'Partner Clinics & Vets',
+        referrals: 'Referral Commissions',
+        errors: 'Critical Error Logs',
+        lead_audit: 'Lead Audit Logs',
+        sos: 'PawAlert SOS Desk',
+        moderation: 'Content Moderation',
+        reports_suggestions: 'Problems & Feedback',
+        settings: 'Master Settings'
+      };
+      document.getElementById('currentSectionTitle').innerText = titles[tabId] || 'Master Suite';
+    }
+
+    // ── Auth Gate Controller ──
+    window.initAdminAuth = function() {
+      const auth = window.fbAuth;
+      window.fbMethods.onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          const email = (user.email || '').toLowerCase().trim();
+          
+          // Verify superadmin permission against database & allowlist
+          let isSuperAdmin = SUPERADMIN_EMAILS.includes(email);
+          if (!isSuperAdmin) {
+            try {
+              const userSnap = await window.fbMethods.getDoc(window.fbMethods.doc(window.fbDb, "users", user.uid));
+              if (userSnap.exists() && ['superadmin', 'admin'].includes(userSnap.data().role)) {
+                isSuperAdmin = true;
+              }
+            } catch (err) {
+              console.error("Role check error:", err);
+            }
+          }
+
+          if (isSuperAdmin) {
+            currentAdminUser = user;
+            document.getElementById('authGateModal').classList.add('hidden');
+            const adminApp = document.getElementById('adminApp');
+            adminApp.classList.remove('opacity-0', 'pointer-events-none');
+            document.getElementById('adminUserEmail').innerText = user.email;
+            document.getElementById('adminAvatar').innerText = (user.displayName || user.email || 'A').substring(0, 2).toUpperCase();
+            
+            // Start real-time Firestore listeners
+            startLiveSubscriptions();
+          } else {
+            // Unauthorized Account Barrier
+            showAuthError("Access Denied 🔒. Account '" + email + "' lacks Executive SuperAdmin clearance.");
+            window.fbMethods.signOut(auth);
+          }
+        } else {
+          document.getElementById('authGateModal').classList.remove('hidden');
+          document.getElementById('adminApp').classList.add('opacity-0', 'pointer-events-none');
+        }
+      });
+    };
+
+    function showAuthError(msg) {
+      const el = document.getElementById('authErrorAlert');
+      el.innerText = msg;
+      el.classList.remove('hidden');
+    }
+
+    async function handleEmailLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPassword').value.trim();
+      const btn = document.getElementById('loginBtn');
+      const spinner = document.getElementById('loginSpinner');
+      
+      document.getElementById('authErrorAlert').classList.add('hidden');
+      btn.disabled = true;
+      spinner.classList.remove('hidden');
+
+      try {
+        await window.fbMethods.signInWithEmailAndPassword(window.fbAuth, email, pass);
+      } catch (err) {
+        showAuthError("Authentication failed: " + err.message);
+      } finally {
+        btn.disabled = false;
+        spinner.classList.add('hidden');
+      }
+    }
+
+    async function handleGoogleLogin() {
+      document.getElementById('authErrorAlert').classList.add('hidden');
+      try {
+        const provider = new window.fbMethods.GoogleAuthProvider();
+        await window.fbMethods.signInWithPopup(window.fbAuth, provider);
+      } catch (err) {
+        showAuthError("Google Sign-In failed: " + err.message);
+      }
+    }
+
+    async function handleLogout() {
+      if (confirm("Are you sure you want to securely log out of the Master Suite?")) {
+        await window.fbMethods.signOut(window.fbAuth);
+        location.reload();
+      }
+    }
+
+    // =========================================================================
+    // 📡 REAL-TIME FIRESTORE DATA STREAMS
+    // =========================================================================
+    function startLiveSubscriptions() {
+      const db = window.fbDb;
+      const { collection, onSnapshot, query, orderBy, limit } = window.fbMethods;
+
+      // 1. Users Stream
+      onSnapshot(collection(db, "users"), (snapshot) => {
+        usersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderUsers();
+        updateOverviewKPIs();
+      }, (err) => console.error("Users stream error:", err));
+
+      // 2. Places / Clinics Stream
+      onSnapshot(collection(db, "places"), (snapshot) => {
+        clinicsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderClinics();
+        updateOverviewKPIs();
+      }, (err) => console.error("Clinics stream error:", err));
+
+      // 3. Critical Errors Stream
+      try {
+        const errorsQuery = query(collection(db, "system_errors"), orderBy("timestamp", "desc"), limit(50));
+        onSnapshot(errorsQuery, (snapshot) => {
+          errorsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          renderErrors();
+        }, (err) => console.log("System errors notice:", err));
+      } catch (_) {}
+
+      // 4. Moderation Reports Stream
+      onSnapshot(collection(db, "reported_posts"), (snapshot) => {
+        reportsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderReports();
+      }, (err) => console.log("Reports notice:", err));
+
+      // 5. PawAlert SOS Stream
+      onSnapshot(collection(db, "lost_pet_alerts"), (snapshot) => {
+        sosData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderSosAlerts();
+      }, (err) => console.log("SOS notice:", err));
+
+      // 6. Lead Audit Transactions Stream
+      try {
+        const leadsQuery = query(collection(db, "business_lead_transactions"), orderBy("timestamp", "desc"), limit(100));
+        onSnapshot(leadsQuery, (snapshot) => {
+          leadAuditData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          renderLeadAudit();
+        }, (err) => console.log("Leads notice:", err));
+      } catch (_) {}
+
+      // 7. Problem Reports Stream
+      onSnapshot(collection(db, "user_problem_reports"), (snapshot) => {
+        problemReportsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderProblemReports();
+      }, (err) => console.log("Problem reports notice:", err));
+
+      // 8. Feature Suggestions Stream
+      onSnapshot(collection(db, "feature_suggestions"), (snapshot) => {
+        featureSuggestionsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderFeatureSuggestions();
+      }, (err) => console.log("Feature suggestions notice:", err));
+
+      // 9. Admin Settings Stream
+      onSnapshot(window.fbMethods.doc(db, "admin_settings", "global_config"), (docSnap) => {
+        if (docSnap.exists()) {
+          const s = docSnap.data();
+          document.getElementById('overviewMaintenanceToggle').checked = !!s.maintenanceMode;
+          document.getElementById('settingMaintenanceMode').checked = !!s.maintenanceMode;
+          document.getElementById('settingAnnouncement').value = s.announcementBanner || '';
+          document.getElementById('settingCurrency').value = s.currency || 'USD';
+          document.getElementById('settingMarketplaceMode').value = s.marketplaceMode || 'auto';
+        }
+      }, (err) => console.log("Settings notice:", err));
+    }
+
+    // ── Overview KPIs Update ──
+    function updateOverviewKPIs() {
+      document.getElementById('kpi-users-total').innerText = usersData.length;
+      document.getElementById('badge-users-count').innerText = usersData.length;
+      document.getElementById('kpi-users-sub').innerText = usersData.length + " verified pet parents registered";
+
+      const vipCount = usersData.filter(u => u.isVip || u.isPremium || (u.vipTier && u.vipTier !== 'free')).length;
+      document.getElementById('kpi-vip-total').innerText = vipCount;
+
+      const clinicCount = clinicsData.length;
+      document.getElementById('kpi-clinics-total').innerText = clinicCount;
+
+      // Calculate estimate gross rev
+      const rev = (vipCount * 4.99) + (clinicsData.filter(c => c.isFeatured).length * 49.00);
+      document.getElementById('kpi-revenue-total').innerText = "$" + rev.toFixed(2);
+    }
+
+    // ── Render Users Table ──
+    function renderUsers() {
+      const tbody = document.getElementById('usersTableBody');
+      const q = (document.getElementById('userSearchInput')?.value || '').toLowerCase().trim();
+      const roleFilter = document.getElementById('userRoleFilter')?.value || 'ALL';
+
+      let filtered = usersData.filter(u => {
+        const name = (u.name || '').toLowerCase();
+        const email = (u.email || '').toLowerCase();
+        const role = (u.role || 'user').toLowerCase();
+        const matchesQuery = !q || name.includes(q) || email.includes(q) || role.includes(q);
+
+        if (roleFilter === 'VIP') return matchesQuery && (u.isVip || u.isPremium || u.vipTier === 'gold');
+        if (roleFilter === 'ADMIN') return matchesQuery && ['admin', 'superadmin'].includes(u.role);
+        if (roleFilter === 'SUSPENDED') return matchesQuery && u.isSuspended;
+        return matchesQuery;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No users match criteria.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(u => {
+        const isVip = u.isVip || u.isPremium || u.vipTier === 'gold';
+        const isSuspended = !!u.isSuspended;
+        const avatar = u.avatarUrl && !u.avatarUrl.includes('unsplash.com') ? u.avatarUrl : `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || 'User')}&background=7C3AED&color=ffffff&size=64&bold=true`;
+
+        return `
+          <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+            <td class="p-4 flex items-center gap-3">
+              <img src="${avatar}" class="w-8 h-8 rounded-full object-cover border border-slate-200 dark:border-slate-700">
+              <div>
+                <p class="font-bold text-slate-900 dark:text-white">${u.name || 'Pet Parent'}</p>
+                <p class="text-[10px] text-slate-400">UID: ${u.id.substring(0, 8)}...</p>
+              </div>
+            </td>
+            <td class="p-4 font-mono text-slate-600 dark:text-slate-400">${u.email || 'No email'}</td>
+            <td class="p-4">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${isVip ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-700' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}">
+                ${isVip ? '👑 VIP Gold' : 'Free Member'}
+              </span>
+            </td>
+            <td class="p-4">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.role === 'superadmin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-400' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}">
+                ${u.role || 'user'}
+              </span>
+            </td>
+            <td class="p-4">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isSuspended ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'}">
+                ${isSuspended ? '⛔ Suspended' : '✓ Active'}
+              </span>
+            </td>
+            <td class="p-4 text-right space-x-2">
+              <button onclick="toggleUserVip('${u.id}', ${!isVip})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border border-amber-300 dark:border-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950 text-amber-600 dark:text-amber-400">
+                ${isVip ? 'Revoke VIP' : 'Grant VIP'}
+              </button>
+              <button onclick="toggleUserSuspension('${u.id}', ${!isSuspended})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${isSuspended ? 'bg-emerald-600 text-white' : 'border border-rose-300 dark:border-rose-700 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950'}">
+                ${isSuspended ? 'Activate' : 'Suspend'}
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterUsersList() {
+      renderUsers();
+    }
+
+    async function toggleUserVip(userId, grant) {
+      try {
+        await window.fbMethods.updateDoc(window.fbMethods.doc(window.fbDb, "users", userId), {
+          isVip: grant,
+          isPremium: grant,
+          vipTier: grant ? 'gold' : 'free',
+          vipGrantedAt: grant ? new Date().toISOString() : null
+        });
+        alert(grant ? "👑 Granted VIP Gold membership." : "VIP membership revoked.");
+      } catch (err) {
+        alert("Error updating VIP status: " + err.message);
+      }
+    }
+
+    async function toggleUserSuspension(userId, suspend) {
+      if (confirm(suspend ? "Suspend user account?" : "Reactivate user account?")) {
+        try {
+          await window.fbMethods.updateDoc(window.fbMethods.doc(window.fbDb, "users", userId), {
+            isSuspended: suspend,
+            suspendedAt: suspend ? new Date().toISOString() : null
+          });
+        } catch (err) {
+          alert("Error: " + err.message);
+        }
+      }
+    }
+
+    // ── Render Partner Clinics ──
+    function renderClinics() {
+      const tbody = document.getElementById('clinicsTableBody');
+      const q = (document.getElementById('clinicSearchInput')?.value || '').toLowerCase().trim();
+
+      let filtered = clinicsData.filter(c => {
+        const name = (c.name || '').toLowerCase();
+        const addr = (c.address || '').toLowerCase();
+        return !q || name.includes(q) || addr.includes(q);
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No partner clinics found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(c => {
+        const isFeatured = !!c.isFeatured;
+        const credits = c.leadCredits || 0;
+
+        return `
+          <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+            <td class="p-4 font-bold text-slate-900 dark:text-white">${c.name || 'Vet Clinic'}</td>
+            <td class="p-4 text-slate-500 dark:text-slate-400">${c.address || c.city || 'Philippines'}</td>
+            <td class="p-4">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${isFeatured ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-400 border border-purple-300' : 'bg-slate-100 text-slate-500'}">
+                ${isFeatured ? '👑 VIP Partner' : 'Standard'}
+              </span>
+            </td>
+            <td class="p-4 font-mono font-bold text-brand-600 dark:text-brand-400">${credits} Credits</td>
+            <td class="p-4">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isFeatured ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}">
+                ${isFeatured ? '✓ Featured' : 'Standard'}
+              </span>
+            </td>
+            <td class="p-4 text-right space-x-2">
+              <button onclick="topupClinicCredits('${c.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-brand-600 text-white hover:bg-brand-500">
+                + Add 50 Credits
+              </button>
+              <button onclick="toggleClinicFeatured('${c.id}', ${!isFeatured})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border border-slate-300 dark:border-slate-700 hover:bg-slate-100">
+                ${isFeatured ? 'Unfeature' : 'Feature VIP'}
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterClinicsList() {
+      renderClinics();
+    }
+
+    async function topupClinicCredits(clinicId) {
+      try {
+        const placeRef = window.fbMethods.doc(window.fbDb, "places", clinicId);
+        const snap = await window.fbMethods.getDoc(placeRef);
+        const current = snap.exists() ? (snap.data().leadCredits || 0) : 0;
+        await window.fbMethods.updateDoc(placeRef, { leadCredits: current + 50 });
+        alert("Added 50 Lead Credits successfully.");
+      } catch (err) {
+        alert("Error topping up credits: " + err.message);
+      }
+    }
+
+    async function toggleClinicFeatured(clinicId, featured) {
+      try {
+        await window.fbMethods.updateDoc(window.fbMethods.doc(window.fbDb, "places", clinicId), { isFeatured: featured });
+      } catch (err) {
+        alert("Error updating clinic: " + err.message);
+      }
+    }
+
+    // ── Render Critical Errors ──
+    function renderErrors() {
+      const tbody = document.getElementById('errorsTableBody');
+      const openCount = errorsData.filter(e => e.status !== 'RESOLVED').length;
+      document.getElementById('errorCountPill').innerText = openCount + " Open";
+      document.getElementById('badge-errors-count').innerText = openCount;
+      document.getElementById('quick-error-badge').innerText = openCount + " Open";
+
+      if (errorsData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No critical errors logged. Systems operating optimally.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = errorsData.map(e => `
+        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+          <td class="p-4">
+            <span class="px-2 py-0.5 rounded text-[10px] font-black ${e.severity === 'CRITICAL' ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400'}">
+              ${e.severity || 'WARNING'}
+            </span>
+          </td>
+          <td class="p-4 font-mono font-bold text-slate-900 dark:text-white max-w-xs truncate">${e.errorMessage || 'Unknown exception'}</td>
+          <td class="p-4 text-slate-500">${e.screenContext || 'App Core'}</td>
+          <td class="p-4 text-[11px] text-slate-400">${e.timestamp ? new Date(e.timestamp).toLocaleTimeString() : 'Recently'}</td>
+          <td class="p-4">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${e.status === 'RESOLVED' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
+              ${e.status || 'OPEN'}
+            </span>
+          </td>
+          <td class="p-4 text-right">
+            ${e.status !== 'RESOLVED' ? `
+              <button onclick="resolveError('${e.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-600 text-white hover:bg-emerald-500">
+                ✓ Resolve
+              </button>
+            ` : `<span class="text-[11px] text-slate-400 font-semibold">Resolved</span>`}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function resolveError(errId) {
+      try {
+        await window.fbMethods.updateDoc(window.fbMethods.doc(window.fbDb, "system_errors", errId), { status: 'RESOLVED' });
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    }
+
+    async function clearResolvedErrors() {
+      if (confirm("Delete all resolved error logs?")) {
+        const resolved = errorsData.filter(e => e.status === 'RESOLVED');
+        for (const e of resolved) {
+          await window.fbMethods.deleteDoc(window.fbMethods.doc(window.fbDb, "system_errors", e.id));
+        }
+      }
+    }
+
+    // ── Render Moderation Reports ──
+    function renderReports() {
+      const tbody = document.getElementById('moderationTableBody');
+      const pendingCount = reportsData.filter(r => r.status !== 'RESOLVED_DELETED' && r.status !== 'DISMISSED').length;
+      document.getElementById('badge-reports-count').innerText = pendingCount;
+      document.getElementById('quick-reports-badge').innerText = pendingCount + " Pending";
+
+      if (reportsData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No pending reports. Community feed is clean!</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = reportsData.map(r => `
+        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+          <td class="p-4 font-bold text-amber-600 dark:text-amber-400">${r.reason || 'Flagged content'}</td>
+          <td class="p-4 font-bold text-slate-900 dark:text-white">${r.authorName || 'User'}</td>
+          <td class="p-4 text-slate-500 max-w-xs truncate">${r.caption || r.postId}</td>
+          <td class="p-4 text-slate-400">${r.reportedByName || 'Community Member'}</td>
+          <td class="p-4">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${r.status === 'RESOLVED_DELETED' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'}">
+              ${r.status || 'PENDING'}
+            </span>
+          </td>
+          <td class="p-4 text-right space-x-2">
+            <button onclick="deleteReportedPost('${r.id}', '${r.postId}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-rose-600 text-white hover:bg-rose-500">
+              🗑️ Delete Post
+            </button>
+            <button onclick="dismissReport('${r.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border border-slate-300 hover:bg-slate-100">
+              Dismiss
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function deleteReportedPost(reportId, postId) {
+      if (confirm("Permanently delete this community post?")) {
+        try {
+          if (postId) {
+            await window.fbMethods.deleteDoc(window.fbMethods.doc(window.fbDb, "community_posts", postId));
+          }
+          await window.fbMethods.updateDoc(window.fbMethods.doc(window.fbDb, "reported_posts", reportId), { status: 'RESOLVED_DELETED' });
+          alert("Post deleted and ticket resolved.");
+        } catch (err) {
+          alert("Error: " + err.message);
+        }
+      }
+    }
+
+    async function dismissReport(reportId) {
+      try {
+        await window.fbMethods.updateDoc(window.fbMethods.doc(window.fbDb, "reported_posts", reportId), { status: 'DISMISSED' });
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    }
+
+    // ── Render SOS Alerts ──
+    function renderSosAlerts() {
+      const tbody = document.getElementById('sosTableBody');
+      const activeCount = sosData.filter(s => s.status !== 'REUNITED').length;
+      document.getElementById('quick-sos-badge').innerText = activeCount + " Active";
+
+      if (sosData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No active lost pet emergency broadcasts.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = sosData.map(s => `
+        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+          <td class="p-4 font-bold text-slate-900 dark:text-white">${s.petName || 'Pet'} (${s.breed || 'Dog'})</td>
+          <td class="p-4 text-slate-500">${s.lastSeenLocation || 'Manila, PH'}</td>
+          <td class="p-4 font-mono">${s.contactPhone || s.ownerName || 'Contact via App'}</td>
+          <td class="p-4 text-[11px] text-slate-400">${s.timestamp ? new Date(s.timestamp).toLocaleString() : 'Recently'}</td>
+          <td class="p-4">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black ${s.status === 'REUNITED' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700 animate-pulse'}">
+              ${s.status || 'ACTIVE SOS'}
+            </span>
+          </td>
+          <td class="p-4 text-right">
+            ${s.status !== 'REUNITED' ? `
+              <button onclick="markSosReunited('${s.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-600 text-white hover:bg-emerald-500">
+                🐾 Mark Reunited
+              </button>
+            ` : `<span class="text-xs text-emerald-600 font-bold">✓ Reunited</span>`}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function markSosReunited(sosId) {
+      if (confirm("Mark this pet as safely reunited with family?")) {
+        try {
+          await window.fbMethods.updateDoc(window.fbMethods.doc(window.fbDb, "lost_pet_alerts", sosId), { status: 'REUNITED' });
+        } catch (err) {
+          alert("Error: " + err.message);
+        }
+      }
+    }
+
+    // ── Render Lead Audit ──
+    function renderLeadAudit() {
+      const tbody = document.getElementById('leadAuditTableBody');
+      if (leadAuditData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">No lead transactions recorded yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = leadAuditData.slice(0, 50).map(l => `
+        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+          <td class="p-4 font-bold text-slate-900 dark:text-white">${l.clinicName || 'Clinic'}</td>
+          <td class="p-4">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-400">
+              ${l.actionType || 'visit'}
+            </span>
+          </td>
+          <td class="p-4 text-slate-500">${l.customerName || l.customerEmail || 'Pet Parent'}</td>
+          <td class="p-4 text-[11px] text-slate-400">${l.timestamp ? new Date(l.timestamp).toLocaleString() : 'Recently'}</td>
+          <td class="p-4 text-slate-600 dark:text-slate-400 max-w-xs truncate">${l.details || 'Customer engagement'}</td>
+        </tr>
+      `).join('');
+    }
+
+    // ── Render Problems & Suggestions ──
+    function renderProblemReports() {
+      const c = document.getElementById('userProblemsList');
+      if (problemReportsData.length === 0) {
+        c.innerHTML = `<p class="text-xs text-slate-400">No user problem reports filed.</p>`;
+        return;
+      }
+      c.innerHTML = problemReportsData.map(p => `
+        <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 flex items-start justify-between gap-3">
+          <div>
+            <p class="text-xs font-bold text-slate-900 dark:text-white">${p.summary || p.category || 'App Issue'}</p>
+            <p class="text-[11px] text-slate-500 mt-1">${p.description || 'No description provided'}</p>
+            <p class="text-[10px] text-slate-400 mt-1.5 font-mono">Reported by: ${p.userEmail || p.userName || 'Anonymous'}</p>
+          </div>
+          <button onclick="resolveProblem('${p.id}')" class="px-2 py-1 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 hover:bg-emerald-200">
+            ✓ Done
+          </button>
+        </div>
+      `).join('');
+    }
+
+    async function resolveProblem(id) {
+      await window.fbMethods.updateDoc(window.fbMethods.doc(window.fbDb, "user_problem_reports", id), { status: 'RESOLVED' });
+    }
+
+    function renderFeatureSuggestions() {
+      const c = document.getElementById('featureSuggestionsList');
+      if (featureSuggestionsData.length === 0) {
+        c.innerHTML = `<p class="text-xs text-slate-400">No feature suggestions submitted yet.</p>`;
+        return;
+      }
+      c.innerHTML = featureSuggestionsData.map(f => `
+        <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 flex items-start justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <p class="text-xs font-bold text-slate-900 dark:text-white">${f.title || 'Feature Idea'}</p>
+              <span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-brand-100 text-brand-700">▲ ${f.upvotes || 1}</span>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-1">${f.description || ''}</p>
+          </div>
+          <span class="text-[10px] font-bold text-brand-600">${f.status || 'NEW'}</span>
+        </div>
+      `).join('');
+    }
+
+    // ── Save Master Settings ──
+    async function saveMasterSettings(e) {
+      e.preventDefault();
+      const btn = document.getElementById('saveSettingsBtn');
+      btn.disabled = true;
+      btn.innerText = "Saving...";
+
+      const settings = {
+        announcementBanner: document.getElementById('settingAnnouncement').value.trim(),
+        currency: document.getElementById('settingCurrency').value,
+        marketplaceMode: document.getElementById('settingMarketplaceMode').value,
+        maintenanceMode: document.getElementById('settingMaintenanceMode').checked,
+        updatedAt: new Date().toISOString(),
+        updatedBy: currentAdminUser?.email || 'rnuedev@gmail.com'
+      };
+
+      try {
+        await window.fbMethods.setDoc(window.fbMethods.doc(window.fbDb, "admin_settings", "global_config"), settings, { merge: true });
+        alert("✅ Master Platform Settings saved and live across all devices!");
+      } catch (err) {
+        alert("Error saving settings: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "💾 Save Master Settings";
+      }
+    }
+
+    async function toggleMaintenanceMode(enabled) {
+      try {
+        await window.fbMethods.setDoc(window.fbMethods.doc(window.fbDb, "admin_settings", "global_config"), {
+          maintenanceMode: enabled,
+          updatedAt: new Date().toISOString()
+        }, { merge: true });
+      } catch (err) {
+        alert("Error toggling maintenance mode: " + err.message);
+      }
+    }
+
+    // ── CSV Exporters ──
+    function exportFullAdminReportCSV() {
+      let csv = "ID,Name,Email,VIP,Role,Status\n";
+      usersData.forEach(u => {
+        csv += `"${u.id}","${u.name || ''}","${u.email || ''}","${u.isVip ? 'YES' : 'NO'}","${u.role || 'user'}","${u.isSuspended ? 'SUSPENDED' : 'ACTIVE'}"\n`;
+      });
+      downloadCSV(csv, "myfurpet_users_report.csv");
+    }
+
+    function exportFinancialsCSV() {
+      let csv = "Clinic,Plan,Credits,Address\n";
+      clinicsData.forEach(c => {
+        csv += `"${c.name}","${c.isFeatured ? 'VIP Partner' : 'Standard'}","${c.leadCredits || 0}","${c.address || ''}"\n`;
+      });
+      downloadCSV(csv, "myfurpet_partners_financials.csv");
+    }
+
+    function exportLeadAuditCSV() {
+      let csv = "Clinic,Action,Customer,Timestamp,Details\n";
+      leadAuditData.forEach(l => {
+        csv += `"${l.clinicName || ''}","${l.actionType || ''}","${l.customerName || l.customerEmail || ''}","${l.timestamp || ''}","${l.details || ''}"\n`;
+      });
+      downloadCSV(csv, "myfurpet_lead_audit_transactions.csv");
+    }
+
+    function downloadCSV(csvContent, filename) {
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function refreshAllData() {
+      startLiveSubscriptions();
+      alert("🔄 Syncing latest records from Cloud Firestore...");
+    }
+  </script>
+</body>
+</html>

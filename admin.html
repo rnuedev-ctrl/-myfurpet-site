@@ -257,6 +257,12 @@
           <span>Partner Clinics & Vets</span>
         </button>
 
+        <button onclick="switchTab('affiliate_hub')" id="tab-affiliate_hub" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
+          <span class="text-base">🛍️</span>
+          <span>Shopee & Affiliate Hub</span>
+          <span id="badge-products-count" class="ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400">...</span>
+        </button>
+
         <button onclick="switchTab('referrals')" id="tab-referrals" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
           <span class="text-base">🔗</span>
           <span>Referral Commissions</span>
@@ -600,6 +606,63 @@
         </section>
 
         <!-- =============================================================== -->
+        <!-- 4.5. SHOPEE & AFFILIATE HUB PANEL -->
+        <!-- =============================================================== -->
+        <section id="panel-affiliate_hub" class="hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 class="text-lg font-black font-display tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                <span>🛍️ Shopee & Global Affiliate Product Hub</span>
+                <span id="productCountPill" class="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400">0 Products</span>
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Curate recommended pet items, manage Shopee/Amazon affiliate referral links, and update discount badges.
+              </p>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <input type="text" id="affiliateSearchInput" oninput="filterAffiliateProducts()" placeholder="🔍 Search title, brand, tag..." class="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs w-64 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <button onclick="openCreateProductModal()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-md shadow-amber-500/20 flex items-center gap-1.5 transition-all">
+                <span>+ Add Affiliate Item</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Affiliate UTM Helper Bar -->
+          <div class="bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-2 text-xs text-amber-800 dark:text-amber-300">
+              <span class="text-base">⚡</span>
+              <span><strong>Universal Tracking Active:</strong> Shopee Affiliate Tag: <code class="bg-amber-100 dark:bg-amber-900/60 px-1.5 py-0.5 rounded text-[10px] font-mono">an_13324520100</code> | Amazon Tag: <code class="bg-amber-100 dark:bg-amber-900/60 px-1.5 py-0.5 rounded text-[10px] font-mono">myfurpet-20</code></span>
+            </div>
+            <button onclick="openUtmGeneratorModal()" class="px-3 py-1 rounded-lg border border-amber-300 dark:border-amber-800 bg-white dark:bg-slate-900 text-amber-700 dark:text-amber-400 text-xs font-bold hover:bg-amber-50">
+              Generate Deep Link 🔗
+            </button>
+          </div>
+
+          <!-- Products Table -->
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider">
+                  <tr>
+                    <th class="p-4">Product</th>
+                    <th class="p-4">Category</th>
+                    <th class="p-4">Price</th>
+                    <th class="p-4">Badge / Highlight</th>
+                    <th class="p-4">Target Search Keywords</th>
+                    <th class="p-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="affiliateProductsTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
+                  <tr>
+                    <td colspan="6" class="p-8 text-center text-slate-400">Loading affiliate catalog from Cloud Firestore...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        <!-- =============================================================== -->
         <!-- 5. REFERRAL COMMISSIONS PANEL -->
         <!-- =============================================================== -->
         <section id="panel-referrals" class="hidden space-y-6">
@@ -908,6 +971,134 @@
   </div>
 
   <!-- ========================================================================= -->
+  <!-- 🛍️ AFFILIATE PRODUCT CREATE / EDIT MODAL -->
+  <!-- ========================================================================= -->
+  <div id="affiliateProductModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 id="productModalTitle" class="text-lg font-black font-display text-slate-900 dark:text-white">
+            Add New Affiliate Item
+          </h3>
+          <p class="text-xs text-slate-500">Live sync to app Pet Store & Homepage Deals.</p>
+        </div>
+        <button onclick="closeProductModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white text-sm">
+          ✕
+        </button>
+      </div>
+
+      <form id="affiliateProductForm" onsubmit="saveProductForm(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="modalProductId">
+
+        <div class="grid grid-cols-4 gap-3">
+          <div>
+            <label class="block font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Icon</label>
+            <input type="text" id="modalProductIcon" required value="🛍️" class="w-full px-3 py-2 text-center text-base rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-brand-500">
+          </div>
+          <div class="col-span-3">
+            <label class="block font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Product Title</label>
+            <input type="text" id="modalProductTitle" required placeholder="e.g. Royal Canin Gastrointestinal Dog Kibble" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Category</label>
+            <select id="modalProductCategory" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-semibold">
+              <option value="Pet Supplies">🛍️ General Supplies</option>
+              <option value="Rx Diets & Nutrition">🩺 Rx Diets & Nutrition</option>
+              <option value="Flea, Tick & Meds">💊 Flea, Tick & Meds</option>
+              <option value="Grooming & Shampoo">🧴 Grooming & Shampoo</option>
+              <option value="Toys & Training">🎾 Toys & Agility</option>
+              <option value="Puppy & Kitten">🐾 Puppy & Kitten</option>
+              <option value="Senior Pet Care">👴 Senior Pet Care</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Promotional Badge</label>
+            <input type="text" id="modalProductBadge" placeholder="e.g. Top Rated or 30% Off" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Display Price</label>
+            <input type="text" id="modalProductPrice" required placeholder="₱650 or $12.99" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-bold">
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Original Price (Strikethrough)</label>
+            <input type="text" id="modalProductOriginalPrice" placeholder="₱850 or $18.00" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Affiliate Destination URL (Shopee / Amazon / Direct)</label>
+          <input type="url" id="modalProductShopeeUrl" required placeholder="https://shopee.ph/search?keyword=...&utm_source=an_13324520100" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-mono text-[11px]">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Search Keywords (Comma Separated)</label>
+          <input type="text" id="modalProductKeywords" placeholder="royal canin, gastro, dog food, dry kibble" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white">
+        </div>
+
+        <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" onclick="closeProductModal()" class="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 font-bold hover:bg-slate-100 dark:hover:bg-slate-800">
+            Cancel
+          </button>
+          <button type="submit" id="saveProductSubmitBtn" class="px-6 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-md shadow-amber-500/20">
+            Save Item to Cloud
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 🔗 UTM DEEP LINK GENERATOR MODAL -->
+  <!-- ========================================================================= -->
+  <div id="utmGeneratorModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative text-xs">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base font-black font-display text-slate-900 dark:text-white">
+          ⚡ Affiliate Deep Link Generator
+        </h3>
+        <button onclick="closeUtmGeneratorModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white text-sm">
+          ✕
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Target Keyword / Product Name</label>
+          <input type="text" id="utmKeywordInput" placeholder="NexGard Spectra Chewables" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Platform</label>
+          <select id="utmPlatformSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-semibold">
+            <option value="shopee">Shopee PH (Universal Affiliate)</option>
+            <option value="amazon">Amazon Global (Associates Tag)</option>
+          </select>
+        </div>
+
+        <button onclick="generateTrackingLink()" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold shadow-md shadow-brand-600/20">
+          Generate Universal Tracking URL
+        </button>
+
+        <div id="utmResultContainer" class="hidden pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
+          <label class="block font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Generated Link:</label>
+          <textarea id="utmGeneratedUrl" readonly rows="3" class="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/80 font-mono text-[11px] select-all"></textarea>
+          <button onclick="copyGeneratedUtm()" class="w-full py-1.5 rounded-lg border border-brand-300 text-brand-600 dark:text-brand-400 font-bold hover:bg-brand-50">
+            📋 Copy to Clipboard
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
   <!-- 📜 CLIENT JAVASCRIPT CONTROLLER -->
   <!-- ========================================================================= -->
   <script>
@@ -923,6 +1114,7 @@
     let problemReportsData = [];
     let featureSuggestionsData = [];
     let financialTransactions = [];
+    let productsData = [];
 
     const SUPERADMIN_EMAILS = ['rnuedev@gmail.com', 'rnuedev-ctrl@gmail.com'];
 
@@ -963,6 +1155,7 @@
         financials: 'Financials & Rev',
         users: 'Users & VIP Controls',
         clinics: 'Partner Clinics & Vets',
+        affiliate_hub: 'Shopee & Affiliate Hub',
         referrals: 'Referral Commissions',
         errors: 'Critical Error Logs',
         lead_audit: 'Lead Audit Logs',
@@ -1081,7 +1274,13 @@
         updateOverviewKPIs();
       }, (err) => console.error("Clinics stream error:", err));
 
-      // 3. Critical Errors Stream
+      // 3. Affiliate Products Stream
+      onSnapshot(collection(db, "affiliate_products"), (snapshot) => {
+        productsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderAffiliateProducts();
+      }, (err) => console.log("Affiliate products notice:", err));
+
+      // 4. Critical Errors Stream
       try {
         const errorsQuery = query(collection(db, "system_errors"), orderBy("timestamp", "desc"), limit(50));
         onSnapshot(errorsQuery, (snapshot) => {
@@ -1090,19 +1289,19 @@
         }, (err) => console.log("System errors notice:", err));
       } catch (_) {}
 
-      // 4. Moderation Reports Stream
+      // 5. Moderation Reports Stream
       onSnapshot(collection(db, "reported_posts"), (snapshot) => {
         reportsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderReports();
       }, (err) => console.log("Reports notice:", err));
 
-      // 5. PawAlert SOS Stream
+      // 6. PawAlert SOS Stream
       onSnapshot(collection(db, "lost_pet_alerts"), (snapshot) => {
         sosData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderSosAlerts();
       }, (err) => console.log("SOS notice:", err));
 
-      // 6. Lead Audit Transactions Stream
+      // 7. Lead Audit Transactions Stream
       try {
         const leadsQuery = query(collection(db, "business_lead_transactions"), orderBy("timestamp", "desc"), limit(100));
         onSnapshot(leadsQuery, (snapshot) => {
@@ -1111,19 +1310,19 @@
         }, (err) => console.log("Leads notice:", err));
       } catch (_) {}
 
-      // 7. Problem Reports Stream
+      // 8. Problem Reports Stream
       onSnapshot(collection(db, "user_problem_reports"), (snapshot) => {
         problemReportsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderProblemReports();
       }, (err) => console.log("Problem reports notice:", err));
 
-      // 8. Feature Suggestions Stream
+      // 9. Feature Suggestions Stream
       onSnapshot(collection(db, "feature_suggestions"), (snapshot) => {
         featureSuggestionsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderFeatureSuggestions();
       }, (err) => console.log("Feature suggestions notice:", err));
 
-      // 9. Admin Settings Stream
+      // 10. Admin Settings Stream
       onSnapshot(window.fbMethods.doc(db, "admin_settings", "global_config"), (docSnap) => {
         if (docSnap.exists()) {
           const s = docSnap.data();
@@ -1151,6 +1350,191 @@
       // Calculate estimate gross rev
       const rev = (vipCount * 4.99) + (clinicsData.filter(c => c.isFeatured).length * 49.00);
       document.getElementById('kpi-revenue-total').innerText = "$" + rev.toFixed(2);
+    }
+
+    // ── Render Affiliate Products ──
+    function renderAffiliateProducts() {
+      const tbody = document.getElementById('affiliateProductsTableBody');
+      const q = (document.getElementById('affiliateSearchInput')?.value || '').toLowerCase().trim();
+      document.getElementById('productCountPill').innerText = productsData.length + " Products";
+      document.getElementById('badge-products-count').innerText = productsData.length;
+
+      let filtered = productsData.filter(p => {
+        const title = (p.title || '').toLowerCase();
+        const category = (p.category || '').toLowerCase();
+        const badge = (p.badge || '').toLowerCase();
+        const keywords = (p.keywords || []).join(' ').toLowerCase();
+        return !q || title.includes(q) || category.includes(q) || badge.includes(q) || keywords.includes(q);
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No affiliate products in catalog. Tap "+ Add Affiliate Item" to add!</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(p => `
+        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+          <td class="p-4 flex items-center gap-3">
+            <span class="text-2xl">${p.icon || '🛍️'}</span>
+            <div>
+              <p class="font-bold text-slate-900 dark:text-white">${p.title || 'Product'}</p>
+              <p class="text-[10px] text-slate-400 truncate max-w-xs">${p.description || ''}</p>
+            </div>
+          </td>
+          <td class="p-4">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+              ${p.category || 'Pet Supplies'}
+            </span>
+          </td>
+          <td class="p-4 font-bold text-slate-900 dark:text-white">
+            ${p.price || '₱0'}
+            ${p.originalPrice ? `<span class="line-through text-slate-400 text-[10px] ml-1.5">${p.originalPrice}</span>` : ''}
+          </td>
+          <td class="p-4">
+            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-800">
+              ${p.badge || 'Featured'}
+            </span>
+          </td>
+          <td class="p-4 text-slate-500 font-mono text-[10px] max-w-xs truncate">
+            ${(p.keywords || []).join(', ') || 'No keywords'}
+          </td>
+          <td class="p-4 text-right space-x-2">
+            <button onclick="testAffiliateLink('${encodeURIComponent(p.shopeeUrl || '')}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-500 text-white hover:bg-amber-600">
+              🛒 Test Link
+            </button>
+            <button onclick="openEditProductModal('${p.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border border-slate-300 hover:bg-slate-100">
+              ✏️ Edit
+            </button>
+            <button onclick="deleteProduct('${p.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border border-rose-300 text-rose-600 hover:bg-rose-50">
+              🗑️
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterAffiliateProducts() {
+      renderAffiliateProducts();
+    }
+
+    function openCreateProductModal() {
+      document.getElementById('productModalTitle').innerText = "Add New Affiliate Item";
+      document.getElementById('modalProductId').value = "";
+      document.getElementById('modalProductIcon').value = "🛍️";
+      document.getElementById('modalProductTitle').value = "";
+      document.getElementById('modalProductCategory').value = "Pet Supplies";
+      document.getElementById('modalProductBadge').value = "Best Seller";
+      document.getElementById('modalProductPrice').value = "₱";
+      document.getElementById('modalProductOriginalPrice').value = "";
+      document.getElementById('modalProductShopeeUrl').value = "https://shopee.ph/search?keyword=Pet%20Supplies&utm_source=an_13324520100&utm_medium=affiliates&utm_campaign=myfurpet_app";
+      document.getElementById('modalProductKeywords').value = "";
+      document.getElementById('affiliateProductModal').classList.remove('hidden');
+    }
+
+    function openEditProductModal(productId) {
+      const p = productsData.find(item => item.id === productId);
+      if (!p) return;
+      document.getElementById('productModalTitle').innerText = "Edit Affiliate Item";
+      document.getElementById('modalProductId').value = p.id;
+      document.getElementById('modalProductIcon').value = p.icon || '🛍️';
+      document.getElementById('modalProductTitle').value = p.title || '';
+      document.getElementById('modalProductCategory').value = p.category || 'Pet Supplies';
+      document.getElementById('modalProductBadge').value = p.badge || '';
+      document.getElementById('modalProductPrice').value = p.price || '';
+      document.getElementById('modalProductOriginalPrice').value = p.originalPrice || '';
+      document.getElementById('modalProductShopeeUrl').value = p.shopeeUrl || '';
+      document.getElementById('modalProductKeywords').value = (p.keywords || []).join(', ');
+      document.getElementById('affiliateProductModal').classList.remove('hidden');
+    }
+
+    function closeProductModal() {
+      document.getElementById('affiliateProductModal').classList.add('hidden');
+    }
+
+    async function saveProductForm(e) {
+      e.preventDefault();
+      const btn = document.getElementById('saveProductSubmitBtn');
+      btn.disabled = true;
+      btn.innerText = "Saving to Cloud...";
+
+      const existingId = document.getElementById('modalProductId').value;
+      const prodId = existingId || `prod-${Date.now()}`;
+      const kwString = document.getElementById('modalProductKeywords').value;
+      const kwArray = kwString.split(',').map(k => k.trim().toLowerCase()).filter(Boolean);
+
+      const productRecord = {
+        id: prodId,
+        icon: document.getElementById('modalProductIcon').value.trim() || '🛍️',
+        title: document.getElementById('modalProductTitle').value.trim(),
+        category: document.getElementById('modalProductCategory').value,
+        badge: document.getElementById('modalProductBadge').value.trim(),
+        price: document.getElementById('modalProductPrice').value.trim(),
+        originalPrice: document.getElementById('modalProductOriginalPrice').value.trim(),
+        shopeeUrl: document.getElementById('modalProductShopeeUrl').value.trim(),
+        keywords: kwArray,
+        updatedAt: new Date().toISOString()
+      };
+
+      try {
+        await window.fbMethods.setDoc(window.fbMethods.doc(window.fbDb, "affiliate_products", prodId), productRecord, { merge: true });
+        closeProductModal();
+        alert("✅ Affiliate product saved and synchronized with all mobile users!");
+      } catch (err) {
+        alert("Error saving product: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Save Item to Cloud";
+      }
+    }
+
+    async function deleteProduct(productId) {
+      if (confirm("Are you sure you want to delete this affiliate product from the catalog?")) {
+        try {
+          await window.fbMethods.deleteDoc(window.fbMethods.doc(window.fbDb, "affiliate_products", productId));
+        } catch (err) {
+          alert("Error: " + err.message);
+        }
+      }
+    }
+
+    function testAffiliateLink(encodedUrl) {
+      const url = decodeURIComponent(encodedUrl);
+      if (url && url.startsWith('http')) {
+        window.open(url, '_blank');
+      } else {
+        alert("Invalid URL: " + url);
+      }
+    }
+
+    function openUtmGeneratorModal() {
+      document.getElementById('utmGeneratorModal').classList.remove('hidden');
+    }
+
+    function closeUtmGeneratorModal() {
+      document.getElementById('utmGeneratorModal').classList.add('hidden');
+    }
+
+    function generateTrackingLink() {
+      const kw = document.getElementById('utmKeywordInput').value.trim() || 'Pet Supplies';
+      const platform = document.getElementById('utmPlatformSelect').value;
+      let target = "";
+
+      if (platform === 'amazon') {
+        target = `https://www.amazon.com/s?k=${encodeURIComponent(kw)}&tag=myfurpet-20`;
+      } else {
+        target = `https://shopee.ph/search?keyword=${encodeURIComponent(kw)}&utm_source=an_13324520100&utm_medium=affiliates&utm_campaign=myfurpet_app`;
+      }
+
+      document.getElementById('utmGeneratedUrl').value = target;
+      document.getElementById('utmResultContainer').classList.remove('hidden');
+    }
+
+    function copyGeneratedUtm() {
+      const copyText = document.getElementById('utmGeneratedUrl');
+      copyText.select();
+      copyText.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(copyText.value);
+      alert("📋 Copied universal affiliate link to clipboard!");
     }
 
     // ── Render Users Table ──

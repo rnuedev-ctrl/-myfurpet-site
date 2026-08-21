@@ -1333,12 +1333,25 @@
       <div class="section-header">
         <span class="section-tag">Curated Pet Care &amp; Nutrition</span>
         <h2 class="section-title">Verified Pet Essentials &amp; Supplies 🐾🛒</h2>
-        <p class="section-subtitle">Doctor-recommended nutrition, grooming, parasite control, and daily essentials for your pets at exclusive Shopee prices.</p>
+        <p class="section-subtitle">Doctor-recommended nutrition, grooming, parasite control, and daily essentials for your pets with seamless international delivery.</p>
+      </div>
+
+      <!-- Marketplace Store Selector -->
+      <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+        <span style="font-size: 13px; font-weight: 700; color: #94A3B8;">Preferred Marketplace:</span>
+        <div style="display: inline-flex; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 999px; padding: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+          <button id="store-btn-shopee" onclick="setMarketplaceStore('shopee')" style="padding: 7px 18px; border-radius: 999px; border: none; font-size: 12px; font-weight: 800; cursor: pointer; background: linear-gradient(135deg, #EE4D2D, #FF5722); color: #FFF; transition: all 0.2s;">
+            🇵🇭 Shopee (PH/SEA)
+          </button>
+          <button id="store-btn-amazon" onclick="setMarketplaceStore('amazon')" style="padding: 7px 18px; border-radius: 999px; border: none; font-size: 12px; font-weight: 800; cursor: pointer; background: transparent; color: #94A3B8; transition: all 0.2s;">
+            🌐 Amazon (Global / US)
+          </button>
+        </div>
       </div>
 
       <div class="supplies-grid">
         <!-- 1. Flushable Natural Tofu Cat Litter -->
-        <div class="glass-card supply-card">
+        <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=tofu%20cat%20litter&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Flushable Tofu Cat Litter">
           <div class="supply-top">
             <span class="supply-emoji">🐱</span>
             <span class="supply-badge">🏆 #1 Cat Bestseller</span>
@@ -1362,7 +1375,7 @@
         </div>
 
         <!-- 2. Ultra-Absorbent Charcoal Pee Pads -->
-        <div class="glass-card supply-card">
+        <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=charcoal%20pet%20pee%20pads&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Charcoal Dog Pee Pads Leak Proof">
           <div class="supply-top">
             <span class="supply-emoji">🐾</span>
             <span class="supply-badge">💧 100% Leak Proof</span>
@@ -1386,7 +1399,7 @@
         </div>
 
         <!-- 3. Hypoallergenic Oatmeal Pet Shampoo -->
-        <div class="glass-card supply-card">
+        <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=oatmeal%20pet%20shampoo&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Hypoallergenic Oatmeal Dog Shampoo">
           <div class="supply-top">
             <span class="supply-emoji">🧴</span>
             <span class="supply-badge">🌿 Itch Relief</span>
@@ -1410,7 +1423,7 @@
         </div>
 
         <!-- 4. Pure Wild Alaskan Salmon Oil -->
-        <div class="glass-card supply-card">
+        <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=wild%20alaskan%20salmon%20oil%20dog%20cat&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Wild Alaskan Salmon Oil for Dogs and Cats">
           <div class="supply-top">
             <span class="supply-emoji">🐟</span>
             <span class="supply-badge">✨ Shiny Coat</span>
@@ -1434,7 +1447,7 @@
         </div>
 
         <!-- 5. Tick & Flea Spot-On Treatment -->
-        <div class="glass-card supply-card">
+        <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=tick%20and%20flea%20spot%20on&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Flea and Tick Treatment for Dogs Cats">
           <div class="supply-top">
             <span class="supply-emoji">🛡️</span>
             <span class="supply-badge">⚡ 30-Day Protection</span>
@@ -1458,7 +1471,7 @@
         </div>
 
         <!-- 6. Safety Pet Nail Clipper with LED Light -->
-        <div class="glass-card supply-card">
+        <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=pet%20nail%20clipper%20led&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Pet Nail Clippers with LED Light Quick Sensor">
           <div class="supply-top">
             <span class="supply-emoji">✂️</span>
             <span class="supply-badge">💡 LED Bloodline Guard</span>
@@ -1482,7 +1495,7 @@
         </div>
 
         <!-- 7. Automatic Pet Water Fountain -->
-        <div class="glass-card supply-card">
+        <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=automatic%20pet%20water%20fountain&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Automatic Pet Water Fountain Filter">
           <div class="supply-top">
             <span class="supply-emoji">🥤</span>
             <span class="supply-badge">💧 Kidney Health</span>
@@ -1506,7 +1519,7 @@
         </div>
 
         <!-- 8. Multi-Strain Pet Probiotics & Enzymes -->
-        <div class="glass-card supply-card">
+        <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=pet%20probiotics%20powder&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Multi Strain Pet Probiotics Enzyme Powder Dogs Cats">
           <div class="supply-top">
             <span class="supply-emoji">🦠</span>
             <span class="supply-badge">✨ Digestion &amp; Gut</span>
@@ -1829,7 +1842,7 @@
         <a href="#tools">Free QR Tag Generator</a>
       </div>
       <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px; max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.6;">
-        📢 <strong>Affiliate Disclosure:</strong> MyFurPet participates in verified merchant affiliate programs, including the Shopee Affiliate Program. Tapping product links and purchasing supplies may earn MyFurPet a small referral commission at <strong>zero additional cost to you</strong>. Non-prescription supplies are curated for wellness and do not substitute professional veterinary diagnoses.
+        📢 <strong>Affiliate Disclosure:</strong> MyFurPet is a participant in the <strong>Amazon Services LLC Associates Program</strong> (an affiliate advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to Amazon.com) and the <strong>Shopee Affiliate Program</strong>. Tapping product links and purchasing pet supplies may earn MyFurPet a referral commission at <strong>zero additional cost to you</strong>. Non-prescription supplies are curated for wellness and do not substitute professional veterinary diagnoses.
       </div>
       <div>
         © 2026 MyFurPet. All rights reserved. Crafted with 💜 for pet parents &amp; veterinary partners everywhere.
@@ -2152,6 +2165,63 @@
       submitBtn.disabled = false;
       submitBtn.innerHTML = '<span>🚨 Submit Problem Report</span>';
     }
+
+    // ── Smart Marketplace Store Switcher (Shopee PH vs Amazon Global) ──
+    const AMAZON_TAG = 'myfurpet-20';
+    let activeStore = 'shopee';
+
+    function initGeoMarketplace() {
+      try {
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+        const isPH = tz.includes('Manila') || tz.includes('Asia/Manila');
+        if (!isPH) {
+          setMarketplaceStore('amazon');
+          return;
+        }
+      } catch (e) {}
+      setMarketplaceStore('shopee');
+    }
+
+    function setMarketplaceStore(store) {
+      activeStore = store;
+      const btnShopee = document.getElementById('store-btn-shopee');
+      const btnAmazon = document.getElementById('store-btn-amazon');
+      if (btnShopee && btnAmazon) {
+        if (store === 'amazon') {
+          btnAmazon.style.background = 'linear-gradient(135deg, #FF9900, #FFB84D)';
+          btnAmazon.style.color = '#111827';
+          btnShopee.style.background = 'transparent';
+          btnShopee.style.color = '#94A3B8';
+        } else {
+          btnShopee.style.background = 'linear-gradient(135deg, #EE4D2D, #FF5722)';
+          btnShopee.style.color = '#FFFFFF';
+          btnAmazon.style.background = 'transparent';
+          btnAmazon.style.color = '#94A3B8';
+        }
+      }
+
+      document.querySelectorAll('.supply-card').forEach((card) => {
+        const btn = card.querySelector('.shopee-web-btn');
+        const shopeeUrl = card.getAttribute('data-shopee-url');
+        const amazonKeyword = card.getAttribute('data-amazon-keyword');
+        if (btn) {
+          if (store === 'amazon') {
+            btn.href = `https://www.amazon.com/s?k=${encodeURIComponent(amazonKeyword || 'Pet Supplies')}&tag=${AMAZON_TAG}`;
+            btn.style.background = 'linear-gradient(135deg, #FF9900, #F59E0B)';
+            btn.style.color = '#111827';
+            btn.innerHTML = '<span>🛒 Buy on Amazon</span>';
+          } else {
+            btn.href = shopeeUrl || '#';
+            btn.style.background = 'linear-gradient(135deg, #EE4D2D, #FF5722)';
+            btn.style.color = '#FFFFFF';
+            btn.innerHTML = '<span>🛒 Buy on Shopee</span>';
+          }
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', initGeoMarketplace);
+    initGeoMarketplace();
 
     function showToast(msg) {
       const t = document.getElementById('toast');

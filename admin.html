@@ -83,15 +83,16 @@
 
   <!-- Firebase App & Services (v10 Modular SDK via CDN) -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
       getAuth, 
       signInWithEmailAndPassword, 
       signOut, 
       onAuthStateChanged,
       GoogleAuthProvider,
-      signInWithPopup 
-    } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+      signInWithPopup,
+      sendPasswordResetEmail 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { 
       getFirestore, 
       collection, 
@@ -106,7 +107,7 @@
       orderBy, 
       limit, 
       onSnapshot 
-    } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA4PZ-l6kTnaQrsbBsQ8kZcZYne_fy-q4U",
@@ -131,6 +132,7 @@
       onAuthStateChanged,
       GoogleAuthProvider,
       signInWithPopup,
+      sendPasswordResetEmail,
       collection,
       doc,
       getDocs,
@@ -181,7 +183,12 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">Master Password</label>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Master Password</label>
+            <button type="button" onclick="handleForgotPassword()" class="text-[11px] font-bold text-brand-600 dark:text-brand-400 hover:underline">
+              Forgot / Reset Password?
+            </button>
+          </div>
           <input type="password" id="loginPassword" required placeholder="••••••••••••" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all">
         </div>
 
@@ -1229,10 +1236,26 @@
       try {
         await window.fbMethods.signInWithEmailAndPassword(window.fbAuth, email, pass);
       } catch (err) {
-        showAuthError("Authentication failed: " + err.message);
+        showAuthError("Authentication failed: " + (err.message || 'Invalid email or password.'));
       } finally {
         btn.disabled = false;
         spinner.classList.add('hidden');
+      }
+    }
+
+    async function handleForgotPassword() {
+      const email = (document.getElementById('loginEmail').value || 'rnuedev@gmail.com').trim();
+      if (!email) {
+        alert("Please enter your executive email address first.");
+        return;
+      }
+      if (confirm(`Send a password reset link to ${email}?`)) {
+        try {
+          await window.fbMethods.sendPasswordResetEmail(window.fbAuth, email);
+          alert(`✅ Password reset link has been dispatched to ${email}. Please check your inbox or spam folder.`);
+        } catch (err) {
+          alert("Error sending password reset: " + err.message);
+        }
       }
     }
 
@@ -1242,7 +1265,11 @@
         const provider = new window.fbMethods.GoogleAuthProvider();
         await window.fbMethods.signInWithPopup(window.fbAuth, provider);
       } catch (err) {
-        showAuthError("Google Sign-In failed: " + err.message);
+        if (err.code === 'auth/configuration-not-found') {
+          showAuthError("Google Sign-In configuration error (auth/configuration-not-found): Google Auth Provider is not enabled in Firebase Console or Authorized Domain is pending. Please sign in above using your Executive Email and Master Password.");
+        } else {
+          showAuthError("Google Sign-In failed: " + err.message);
+        }
       }
     }
 

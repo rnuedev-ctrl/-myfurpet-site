@@ -178,71 +178,90 @@
       position: sticky;
       top: 16px;
       z-index: 100;
-      padding: 12px 24px;
+      padding: 10px 24px;
       margin: 16px auto 32px auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
     }
     .brand-group {
       display: flex;
       align-items: center;
       gap: 12px;
       text-decoration: none;
+      flex-shrink: 0;
     }
     .brand-group img {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
       box-shadow: 0 4px 12px var(--primary-glow);
     }
     .brand-title {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 800;
       color: #FFFFFF;
       letter-spacing: -0.5px;
+      line-height: 1.2;
+      display: flex;
+      align-items: center;
+      gap: 2px;
     }
     .brand-title span {
-      background: linear-gradient(135deg, #A78BFA, #EC4899);
+      background: linear-gradient(135deg, #C084FC, #EC4899);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .brand-sub {
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 600;
       color: #94A3B8;
-      margin-top: -2px;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
+      line-height: 1;
+      margin-top: 2px;
     }
     .nav-links {
       display: flex;
-      gap: 20px;
+      gap: 24px;
       align-items: center;
+      white-space: nowrap;
     }
     .nav-link {
-      color: var(--text-muted);
+      color: #94A3B8;
       text-decoration: none;
       font-size: 14px;
       font-weight: 600;
-      transition: color 0.2s;
+      transition: all 0.2s ease;
+      white-space: nowrap;
     }
     .nav-link:hover {
-      color: var(--text-main);
+      color: #F8FAFC;
     }
     .nav-cta-btn {
       background: linear-gradient(135deg, #7C3AED, #9333EA);
       color: #FFFFFF;
-      padding: 10px 20px;
+      padding: 9px 20px;
       border-radius: 12px;
       font-weight: 700;
-      font-size: 14px;
+      font-size: 13.5px;
       text-decoration: none;
       box-shadow: 0 4px 14px var(--primary-glow);
-      transition: all 0.2s;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
     .nav-cta-btn:hover {
-      transform: scale(1.04);
+      transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6);
     }
 
@@ -811,21 +830,18 @@
   <div class="container">
     <!-- Navigation Bar -->
     <nav class="nav-bar glass-card">
-      <a href="#" class="brand-group" style="text-decoration: none;">
+      <a href="#" class="brand-group">
         <img src="assets/icon.png" alt="MyFurPet App Icon">
         <div style="display: flex; flex-direction: column;">
-          <div class="brand-title">MyFur<span>Pet</span> 🐾</div>
+          <div class="brand-title">MyFur<span>Pet</span></div>
           <div class="brand-sub">Pet Care &amp; Vet AI</div>
         </div>
       </a>
       <div class="nav-links">
         <a href="#features" class="nav-link">Features</a>
-        <a href="#tools" class="nav-link">Free Tools</a>
         <a href="#supplies" class="nav-link">Pet Supplies 🛒</a>
-        <a href="#feedback" class="nav-link">💡 Feedback &amp; Support</a>
-        <a href="tag.html?petId=demo&name=Chiqui&species=Dog&breed=Golden+Retriever&phone=%2B639171234567" class="nav-link">Smart Tag 🏷️</a>
-        <a href="privacy.html" class="nav-link">Privacy</a>
-        <a href="delete-account.html" class="nav-link" style="color: #FCA5A5;">Delete Account</a>
+        <a href="#medical-suite" class="nav-link">Medical Suite</a>
+        <a href="#tools" class="nav-link">Free Tools</a>
         <a href="#faq" class="nav-link">FAQ</a>
       </div>
       <a href="#beta" class="nav-cta-btn">🚀 Claim VIP Access</a>

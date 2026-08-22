@@ -1822,26 +1822,40 @@
       const petSummary = pets.length > 0 ? `🐾 ${pets.map(pet => pet.name ? `${pet.name}${pet.breed ? ` (${pet.breed})` : ''}` : 'Pet').join(', ')}` : '';
       const avatar = p.avatarUrl || u.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(rawName)}&background=7C3AED&color=ffffff&size=64&bold=true`;
 
-      // Resolve Date & Time Joined (Strict Precise Timestamps First)
-      const preciseTimestampFields = [
-        u.createdAt, p.createdAt, u.created_at, p.created_at,
-        u.joinedAt, p.joinedAt, u.joined_at, p.joined_at,
-        u.registeredAt, p.registeredAt, u.registered_at, p.registered_at,
-        u.agreedToTermsAt, p.agreedToTermsAt,
-        u.agreedToPrivacyAt, p.agreedToPrivacyAt,
-        u.vipGrantedAt, p.vipGrantedAt,
-        u.dateJoined, p.dateJoined, u.registrationDate, p.registrationDate,
-        u.creationTime, p.creationTime,
-        u.timestamp, p.timestamp
-      ];
+      // ── Resolve Date & Time Joined (Strict Immutable Registration Timestamps) ──
+      let rawJoined = null;
 
-      let rawJoined = preciseTimestampFields.find(f => f !== undefined && f !== null && f !== '');
+      // 1. Founding Master Accounts (Fixed Immutable Epoch)
+      if (
+        rawEmail === 'rnuedev@gmail.com' ||
+        rawEmail === 'bob@gmail.com' ||
+        rawEmail.startsWith('rnuedev') ||
+        u.id === 'rnuedev_gmail_com' ||
+        u.id === 'bob_gmail_com' ||
+        u.id === 'rnuedev'
+      ) {
+        rawJoined = '2026-08-01T08:00:00.000Z';
+      }
 
-      // Check pets for original creation date
+      // 2. Strict Immutable Creation & Registration Fields (Never use updatedAt, vipGrantedAt, or live timestamps)
+      if (!rawJoined) {
+        const immutableCreationFields = [
+          u.createdAt, p.createdAt, u.created_at, p.created_at,
+          u.joinedAt, p.joinedAt, u.joined_at, p.joined_at,
+          u.registeredAt, p.registeredAt, u.registered_at, p.registered_at,
+          u.agreedToTermsAt, p.agreedToTermsAt,
+          u.agreedToPrivacyAt, p.agreedToPrivacyAt,
+          u.dateJoined, p.dateJoined, u.registrationDate, p.registrationDate,
+          u.creationTime, p.creationTime
+        ];
+        rawJoined = immutableCreationFields.find(f => f !== undefined && f !== null && f !== '');
+      }
+
+      // 3. Check earliest pet creation / addition timestamp
       if (!rawJoined && pets.length > 0) {
         for (const pet of pets) {
           if (pet && typeof pet === 'object') {
-            const petDate = pet.createdAt || pet.created_at || pet.dateAdded || pet.timestamp;
+            const petDate = pet.createdAt || pet.created_at || pet.dateAdded;
             if (petDate) {
               rawJoined = petDate;
               break;
@@ -1850,14 +1864,13 @@
         }
       }
 
-      // Check memberSince or founding master account
-      if (!rawJoined) {
-        if (rawEmail === 'rnuedev@gmail.com' || rawEmail === 'bob@gmail.com' || u.id === 'rnuedev_gmail_com' || u.id === 'bob_gmail_com') {
-          rawJoined = '2026-08-01T08:00:00.000Z'; // Founding Master Account
-        } else if (u.memberSince || p.memberSince) {
-          rawJoined = u.memberSince || p.memberSince;
+      // 4. Stable MemberSince Resolution
+      if (!rawJoined && (u.memberSince || p.memberSince)) {
+        const msStr = (u.memberSince || p.memberSince || '').trim();
+        if (msStr.toLowerCase().includes('august 2026') || msStr.toLowerCase().includes('aug 2026')) {
+          rawJoined = '2026-08-01T08:00:00.000Z';
         } else {
-          rawJoined = u.updatedAt || p.updatedAt || u.updated_at || p.updated_at || null;
+          rawJoined = msStr;
         }
       }
 

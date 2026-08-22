@@ -561,10 +561,10 @@
               <table class="w-full text-left text-xs">
                 <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider select-none">
                   <tr>
-                    <th class="p-4 cursor-pointer hover:text-brand-500 transition-colors" onclick="toggleHeaderSort('name')">User ↕</th>
+                    <th id="th-sort-name" class="p-4 cursor-pointer hover:text-brand-500 transition-colors" onclick="toggleHeaderSort('name')">User ↕</th>
                     <th class="p-4">Email</th>
-                    <th class="p-4 cursor-pointer hover:text-brand-500 transition-colors" onclick="toggleHeaderSort('joined')">Date & Time Joined 📅 ↕</th>
-                    <th class="p-4 cursor-pointer hover:text-brand-500 transition-colors" onclick="toggleHeaderSort('vip')">VIP Status ↕</th>
+                    <th id="th-sort-joined" class="p-4 cursor-pointer hover:text-brand-500 transition-colors" onclick="toggleHeaderSort('joined')">Date & Time Joined 📅 ▼ (Newest)</th>
+                    <th id="th-sort-vip" class="p-4 cursor-pointer hover:text-brand-500 transition-colors" onclick="toggleHeaderSort('vip')">VIP Status ↕</th>
                     <th class="p-4">Role</th>
                     <th class="p-4">Account Status</th>
                     <th class="p-4 text-right">Actions</th>
@@ -1750,6 +1750,7 @@
 
     function handleUserSortSelect(val) {
       userSortMode = val;
+      updateSortHeaderIndicators();
       renderUsers();
     }
 
@@ -1759,11 +1760,22 @@
       } else if (type === 'name') {
         userSortMode = userSortMode === 'name_asc' ? 'name_desc' : 'name_asc';
       } else if (type === 'vip') {
-        userSortMode = 'vip_first';
+        userSortMode = userSortMode === 'vip_first' ? 'joined_desc' : 'vip_first';
       }
       const select = document.getElementById('userSortSelect');
       if (select) select.value = userSortMode;
+      updateSortHeaderIndicators();
       renderUsers();
+    }
+
+    function updateSortHeaderIndicators() {
+      const nameH = document.getElementById('th-sort-name');
+      const joinedH = document.getElementById('th-sort-joined');
+      const vipH = document.getElementById('th-sort-vip');
+
+      if (nameH) nameH.innerText = userSortMode === 'name_asc' ? 'User 🔤 ▲ (A-Z)' : userSortMode === 'name_desc' ? 'User 🔤 ▼ (Z-A)' : 'User ↕';
+      if (joinedH) joinedH.innerText = userSortMode === 'joined_desc' ? 'Date & Time Joined 📅 ▼ (Newest)' : userSortMode === 'joined_asc' ? 'Date & Time Joined 📅 ▲ (Oldest)' : 'Date & Time Joined 📅 ↕';
+      if (vipH) vipH.innerText = userSortMode === 'vip_first' ? 'VIP Status 👑 ▼ (VIP First)' : 'VIP Status ↕';
     }
 
     // ── User Schema Resolver Helper ──

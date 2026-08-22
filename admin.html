@@ -589,27 +589,47 @@
 
           <!-- Interactive Live Geo Breakdown Table -->
           <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
-            <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div class="flex items-center gap-3 w-full sm:w-auto">
+            <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col lg:flex-row items-center justify-between gap-4">
+              <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
                 <div class="relative flex-1 sm:w-64">
-                  <input type="text" id="geoSearchInput" oninput="filterGeoTable()" placeholder="Search city or country..." class="w-full pl-8 pr-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
+                  <input type="text" id="geoSearchInput" oninput="filterGeoTable()" placeholder="Search city, province, or country..." class="w-full pl-8 pr-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
                   <span class="absolute left-2.5 top-2.5 text-slate-400 text-xs">🔍</span>
                 </div>
+
+                <select id="geoCountryFilter" onchange="filterGeoTable()" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:outline-none">
+                  <option value="all">🌐 All Sovereign Countries</option>
+                  <option value="PH">🇵🇭 Philippines Only</option>
+                  <option value="US">🇺🇸 United States Only</option>
+                  <option value="JP">🇯🇵 Japan Only</option>
+                  <option value="CA">🇨🇦 Canada Only</option>
+                  <option value="GB">🇬🇧 United Kingdom Only</option>
+                  <option value="AU">🇦🇺 Australia Only</option>
+                  <option value="SG">🇸🇬 Singapore Only</option>
+                  <option value="AE">🇦🇪 UAE Only</option>
+                </select>
               </div>
 
-              <div class="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-800 self-stretch sm:self-auto overflow-x-auto">
-                <button onclick="setGeoSegment('all')" id="geo-seg-all" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-400 shadow-sm transition-all">All Regions</button>
-                <button onclick="setGeoSegment('ph')" id="geo-seg-ph" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-all">🇵🇭 Philippines</button>
-                <button onclick="setGeoSegment('intl')" id="geo-seg-intl" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-all">✈️ International</button>
+              <div class="flex items-center gap-2 w-full lg:w-auto justify-between sm:justify-end">
+                <!-- Granular View Mode -->
+                <div class="flex items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-800">
+                  <button onclick="setGeoViewMode('cities')" id="geo-view-cities" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-400 shadow-sm transition-all">🏙️ Cities & Metros</button>
+                  <button onclick="setGeoViewMode('countries')" id="geo-view-countries" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-all">🌐 Country Overview</button>
+                </div>
+
+                <div class="flex items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-800">
+                  <button onclick="setGeoSegment('all')" id="geo-seg-all" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-400 shadow-sm transition-all">All</button>
+                  <button onclick="setGeoSegment('ph')" id="geo-seg-ph" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-all">🇵🇭 PH</button>
+                  <button onclick="setGeoSegment('intl')" id="geo-seg-intl" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-all">✈️ Intl</button>
+                </div>
               </div>
             </div>
 
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider">
+                <thead id="geoTableHeader" class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider">
                   <tr>
                     <th class="p-4">Territory / Country</th>
-                    <th class="p-4">Primary City / Hub</th>
+                    <th class="p-4">Metro Hub / City</th>
                     <th class="p-4">Total Users</th>
                     <th class="p-4">Partner Clinics</th>
                     <th class="p-4">VIP Members</th>
@@ -2766,12 +2786,14 @@
     }
 
     // =========================================================================
-    // 🌍 GEOGRAPHICAL REACH & GLOBAL ANALYTICS ENGINE
+    // 🌍 GEOGRAPHICAL REACH & GLOBAL ANALYTICS ENGINE (DYNAMIC & GRANULAR)
     // =========================================================================
     let geoCountryChartInstance = null;
     let geoCityChartInstance = null;
     let currentGeoSegment = 'all';
+    let currentGeoViewMode = 'cities';
     let geoAggregatedData = [];
+    let geoCountrySummaryData = [];
 
     const COUNTRY_META = {
       PH: { name: 'Philippines', flag: '🇵🇭', isDomestic: true },
@@ -2783,56 +2805,183 @@
       SG: { name: 'Singapore', flag: '🇸🇬', isDomestic: false },
       AE: { name: 'United Arab Emirates', flag: '🇦🇪', isDomestic: false },
       DE: { name: 'Germany', flag: '🇩🇪', isDomestic: false },
+      FR: { name: 'France', flag: '🇫🇷', isDomestic: false },
       KR: { name: 'South Korea', flag: '🇰🇷', isDomestic: false },
+      HK: { name: 'Hong Kong', flag: '🇭🇰', isDomestic: false },
       OTHER: { name: 'International / Other', flag: '🌐', isDomestic: false }
     };
+
+    const PHILIPPINE_CITY_DICTIONARY = [
+      // NCR Individual Cities
+      { match: ['quezon city', 'qc', 'diliman', 'novaliches', 'cubao', 'katipunan'], city: 'Quezon City', region: 'Metro Manila' },
+      { match: ['makati', 'ayala', 'bel-air', 'poblacion'], city: 'Makati', region: 'Metro Manila' },
+      { match: ['taguig', 'bgc', 'bonifacio', 'fort bonifacio', 'market market'], city: 'Taguig (BGC)', region: 'Metro Manila' },
+      { match: ['pasig', 'ortigas', 'kapitolyo'], city: 'Pasig', region: 'Metro Manila' },
+      { match: ['mandaluyong', 'wack-wack', 'shaw'], city: 'Mandaluyong', region: 'Metro Manila' },
+      { match: ['san juan', 'greenhills'], city: 'San Juan', region: 'Metro Manila' },
+      { match: ['marikina'], city: 'Marikina', region: 'Metro Manila' },
+      { match: ['pasay', 'moa', 'mall of asia', 'baclaran', 'roxas'], city: 'Pasay', region: 'Metro Manila' },
+      { match: ['parañaque', 'paranaque', 'bf homes', 'sucat'], city: 'Parañaque', region: 'Metro Manila' },
+      { match: ['las piñas', 'las pinas'], city: 'Las Piñas', region: 'Metro Manila' },
+      { match: ['muntinlupa', 'alabang', 'filinvest', 'ayala alabang'], city: 'Muntinlupa (Alabang)', region: 'Metro Manila' },
+      { match: ['caloocan', 'kalookan', 'monumento'], city: 'Caloocan', region: 'Metro Manila' },
+      { match: ['malabon'], city: 'Malabon', region: 'Metro Manila' },
+      { match: ['navotas'], city: 'Navotas', region: 'Metro Manila' },
+      { match: ['valenzuela'], city: 'Valenzuela', region: 'Metro Manila' },
+      { match: ['pateros'], city: 'Pateros', region: 'Metro Manila' },
+      { match: ['manila', 'ermita', 'malate', 'sampaloc', 'tondo', 'binondo', 'sta mesa', 'sta cruz', 'paco', 'pandacan', 'intramuros'], city: 'City of Manila', region: 'Metro Manila' },
+
+      // Provincial Hubs (Visayas)
+      { match: ['cebu', 'mandaue', 'lapu-lapu', 'talisay', 'minglanilla', 'banilad', 'lahug', 'mactan'], city: 'Cebu Metro', region: 'Central Visayas' },
+      { match: ['iloilo', 'mandurriao', 'jaro'], city: 'Iloilo City', region: 'Western Visayas' },
+      { match: ['bacolod', 'negros', 'dumaguete'], city: 'Bacolod / Negros', region: 'Negros Island' },
+      { match: ['bohol', 'tagbilaran', 'panglao'], city: 'Tagbilaran, Bohol', region: 'Central Visayas' },
+      { match: ['tacloban', 'ormoc', 'leyte'], city: 'Tacloban / Leyte', region: 'Eastern Visayas' },
+
+      // Provincial Hubs (Mindanao)
+      { match: ['davao', 'tagum', 'lanang', 'matina', 'bajada'], city: 'Davao City', region: 'Davao Region' },
+      { match: ['cagayan de oro', 'cdo', 'misamis'], city: 'Cagayan de Oro', region: 'Northern Mindanao' },
+      { match: ['general santos', 'gensan', 'south cotabato'], city: 'General Santos', region: 'Soccsksargen' },
+      { match: ['zamboanga'], city: 'Zamboanga City', region: 'Zamboanga Peninsula' },
+      { match: ['butuan', 'agusan'], city: 'Butuan City', region: 'Caraga' },
+
+      // Provincial Hubs (Luzon)
+      { match: ['baguio', 'benguet', 'la trinidad', 'camp john hay'], city: 'Baguio City', region: 'CAR' },
+      { match: ['angeles', 'san fernando pampanga', 'clark', 'mabalacat', 'pampanga'], city: 'Angeles / Pampanga', region: 'Central Luzon' },
+      { match: ['bacoor', 'imus', 'dasmariñas', 'dasmarinas', 'tagaytay', 'general trias', 'gentri', 'silang', 'cavite'], city: 'Cavite Metro', region: 'Calabarzon' },
+      { match: ['santa rosa', 'sta rosa', 'calamba', 'biñan', 'binan', 'cabuyao', 'san pedro', 'los baños', 'los banos', 'nuvali', 'laguna'], city: 'Laguna Metro', region: 'Calabarzon' },
+      { match: ['antipolo', 'cainta', 'taytay', 'angono', 'san mateo', 'rodriguez', 'rizal'], city: 'Antipolo / Rizal', region: 'Calabarzon' },
+      { match: ['batangas', 'lipa', 'tanauan', 'sto tomas', 'nasugbu'], city: 'Batangas (Lipa / Metro)', region: 'Calabarzon' },
+      { match: ['bulacan', 'malolos', 'meycauayan', 'sjdm', 'san jose del monte', 'marilao', 'bocaue'], city: 'Bulacan Metro', region: 'Central Luzon' },
+      { match: ['tarlac'], city: 'Tarlac City', region: 'Central Luzon' },
+      { match: ['dagupan', 'urdaneta', 'san carlos pangasinan', 'pangasinan'], city: 'Pangasinan', region: 'Ilocos Region' },
+      { match: ['san fernando la union', 'la union', 'elyu', 'san juan la union'], city: 'La Union', region: 'Ilocos Region' },
+      { match: ['laoag', 'vigan', 'ilocos'], city: 'Ilocos (Laoag / Vigan)', region: 'Ilocos Region' },
+      { match: ['naga', 'legazpi', 'albay', 'camarines', 'bicol'], city: 'Bicol (Naga / Legazpi)', region: 'Bicol Region' },
+      { match: ['puerto princesa', 'el nido', 'coron', 'palawan'], city: 'Puerto Princesa, Palawan', region: 'Mimaropa' },
+      { match: ['cabanatuan', 'gapan', 'nueva ecija'], city: 'Nueva Ecija', region: 'Central Luzon' }
+    ];
+
+    const GLOBAL_CITY_DICTIONARY = [
+      // United States
+      { match: ['los angeles', 'la', 'socal', 'hollywood', 'pasadena'], city: 'Los Angeles, CA', country: 'US' },
+      { match: ['san francisco', 'sf', 'bay area', 'silicon valley', 'san jose', 'oakland', 'palo alto'], city: 'San Francisco Bay, CA', country: 'US' },
+      { match: ['san diego', 'chula vista'], city: 'San Diego, CA', country: 'US' },
+      { match: ['california', 'ca'], city: 'California, US', country: 'US' },
+      { match: ['new york', 'nyc', 'manhattan', 'brooklyn', 'queens', 'ny'], city: 'New York, NY', country: 'US' },
+      { match: ['seattle', 'wa', 'washington', 'redmond'], city: 'Seattle, WA', country: 'US' },
+      { match: ['austin', 'dallas', 'houston', 'texas', 'tx', 'fort worth'], city: 'Texas, US', country: 'US' },
+      { match: ['chicago', 'il', 'illinois'], city: 'Chicago, IL', country: 'US' },
+      { match: ['miami', 'orlando', 'tampa', 'florida', 'fl'], city: 'Florida, US', country: 'US' },
+      { match: ['honolulu', 'hawaii', 'hi', 'oahu'], city: 'Honolulu, HI', country: 'US' },
+      { match: ['las vegas', 'nevada', 'nv'], city: 'Las Vegas, NV', country: 'US' },
+
+      // Canada
+      { match: ['toronto', 'gta', 'ontario', 'mississauga'], city: 'Toronto, ON', country: 'CA' },
+      { match: ['vancouver', 'bc', 'british columbia', 'richmond bc'], city: 'Vancouver, BC', country: 'CA' },
+      { match: ['calgary', 'edmonton', 'alberta', 'ab'], city: 'Calgary, AB', country: 'CA' },
+      { match: ['montreal', 'quebec', 'qc'], city: 'Montreal, QC', country: 'CA' },
+
+      // Japan
+      { match: ['tokyo', 'shinjuku', 'shibuya', 'minato', 'roppongi'], city: 'Tokyo', country: 'JP' },
+      { match: ['osaka', 'kyoto', 'kansai', 'kobe'], city: 'Osaka / Kyoto', country: 'JP' },
+      { match: ['yokohama', 'kanagawa'], city: 'Yokohama', country: 'JP' },
+      { match: ['nagoya', 'aichi'], city: 'Nagoya', country: 'JP' },
+      { match: ['fukuoka'], city: 'Fukuoka', country: 'JP' },
+
+      // UK & Europe
+      { match: ['london', 'westminster', 'camden'], city: 'London', country: 'GB' },
+      { match: ['manchester', 'birmingham', 'leeds'], city: 'Manchester / Midlands', country: 'GB' },
+      { match: ['paris', 'france'], city: 'Paris', country: 'FR' },
+      { match: ['berlin', 'munich', 'frankfurt', 'germany'], city: 'Germany', country: 'DE' },
+
+      // Asia-Pacific & Middle East
+      { match: ['sydney', 'nsw', 'new south wales'], city: 'Sydney, NSW', country: 'AU' },
+      { match: ['melbourne', 'vic', 'victoria'], city: 'Melbourne, VIC', country: 'AU' },
+      { match: ['brisbane', 'queensland', 'qld'], city: 'Brisbane, QLD', country: 'AU' },
+      { match: ['singapore', 'sg'], city: 'Singapore', country: 'SG' },
+      { match: ['dubai', 'abu dhabi', 'uae', 'emirates'], city: 'Dubai, UAE', country: 'AE' },
+      { match: ['seoul', 'korea', 'gangnam'], city: 'Seoul', country: 'KR' },
+      { match: ['hong kong', 'hk', 'kowloon'], city: 'Hong Kong', country: 'HK' }
+    ];
 
     function resolveRecordCountryAndCity(record) {
       const p = record.profile || {};
       const rawCountry = (record.country || p.country || record.countryCode || '').toString().trim().toUpperCase();
-      const rawAddress = (record.address || p.address || record.location || record.city || p.city || '').toString();
+      const rawAddress = (record.location || p.location || record.address || p.address || record.city || p.city || record.province || p.province || '').toString().trim();
+      const rawEmail = (record.email || p.email || '').toString().toLowerCase();
+      const rawPhone = (record.phone || p.phone || '').toString();
       const rawCurrency = (record.currencyMode || record.currency || '').toString().toUpperCase();
 
       let countryCode = 'PH';
-      let cityName = 'Metro Manila';
+      let cityName = '';
 
-      // 1. Detect Country Code
-      if (rawCountry === 'US' || rawCountry === 'USA' || rawAddress.toLowerCase().includes('united states') || rawAddress.toLowerCase().includes('california') || rawAddress.toLowerCase().includes('texas')) {
-        countryCode = 'US';
-      } else if (rawCountry === 'JP' || rawCountry === 'JAPAN' || rawAddress.toLowerCase().includes('japan') || rawAddress.toLowerCase().includes('tokyo') || rawCurrency === 'JPY') {
-        countryCode = 'JP';
-      } else if (rawCountry === 'CA' || rawCountry === 'CANADA' || rawAddress.toLowerCase().includes('canada') || rawAddress.toLowerCase().includes('toronto') || rawAddress.toLowerCase().includes('vancouver')) {
-        countryCode = 'CA';
-      } else if (rawCountry === 'GB' || rawCountry === 'UK' || rawAddress.toLowerCase().includes('united kingdom') || rawAddress.toLowerCase().includes('london') || rawCurrency === 'GBP') {
-        countryCode = 'GB';
-      } else if (rawCountry === 'AU' || rawCountry === 'AUSTRALIA' || rawAddress.toLowerCase().includes('australia') || rawAddress.toLowerCase().includes('sydney') || rawCurrency === 'AUD') {
-        countryCode = 'AU';
-      } else if (rawCountry === 'SG' || rawCountry === 'SINGAPORE' || rawAddress.toLowerCase().includes('singapore') || rawCurrency === 'SGD') {
-        countryCode = 'SG';
-      } else if (rawCountry === 'AE' || rawCountry === 'UAE' || rawAddress.toLowerCase().includes('dubai') || rawAddress.toLowerCase().includes('emirates')) {
-        countryCode = 'AE';
-      } else if (rawCountry && COUNTRY_META[rawCountry]) {
-        countryCode = rawCountry;
-      } else if (rawCurrency === 'USD') {
-        countryCode = 'US';
+      const lowerAddr = rawAddress.toLowerCase();
+
+      // 1. Check Global City & Country Dictionary
+      for (const item of GLOBAL_CITY_DICTIONARY) {
+        if (item.match.some(m => lowerAddr.includes(m) || (m.length > 2 && rawAddress.toLowerCase().includes(m)))) {
+          countryCode = item.country;
+          cityName = item.city;
+          break;
+        }
       }
 
-      // 2. Resolve City
-      const lowerAddr = rawAddress.toLowerCase();
-      if (lowerAddr.includes('quezon city')) cityName = 'Quezon City';
-      else if (lowerAddr.includes('makati')) cityName = 'Makati';
-      else if (lowerAddr.includes('taguig') || lowerAddr.includes('bgc')) cityName = 'Taguig (BGC)';
-      else if (lowerAddr.includes('cebu')) cityName = 'Cebu City';
-      else if (lowerAddr.includes('davao')) cityName = 'Davao City';
-      else if (lowerAddr.includes('pasig')) cityName = 'Pasig';
-      else if (lowerAddr.includes('manila')) cityName = 'Manila';
-      else if (lowerAddr.includes('los angeles') || lowerAddr.includes('la')) cityName = 'Los Angeles';
-      else if (lowerAddr.includes('tokyo')) cityName = 'Tokyo';
-      else if (lowerAddr.includes('london')) cityName = 'London';
-      else if (lowerAddr.includes('singapore')) cityName = 'Singapore';
-      else if (lowerAddr.includes('sydney')) cityName = 'Sydney';
-      else if (record.city) cityName = record.city;
-      else if (countryCode !== 'PH') cityName = COUNTRY_META[countryCode]?.name || 'Overseas';
+      // 2. Check Philippine City & Regional Dictionary
+      if (!cityName) {
+        for (const item of PHILIPPINE_CITY_DICTIONARY) {
+          if (item.match.some(m => lowerAddr.includes(m))) {
+            countryCode = 'PH';
+            cityName = item.city;
+            break;
+          }
+        }
+      }
+
+      // 3. Check Explicit Country Code or Currency
+      if (!cityName) {
+        if (rawCountry === 'US' || rawCountry === 'USA' || rawCurrency === 'USD' || rawPhone.startsWith('+1')) {
+          countryCode = 'US';
+          cityName = 'United States (Various)';
+        } else if (rawCountry === 'JP' || rawCountry === 'JAPAN' || rawCurrency === 'JPY' || rawPhone.startsWith('+81')) {
+          countryCode = 'JP';
+          cityName = 'Japan (Various)';
+        } else if (rawCountry === 'CA' || rawCountry === 'CANADA' || rawCurrency === 'CAD') {
+          countryCode = 'CA';
+          cityName = 'Canada (Various)';
+        } else if (rawCountry === 'GB' || rawCountry === 'UK' || rawCurrency === 'GBP' || rawPhone.startsWith('+44')) {
+          countryCode = 'GB';
+          cityName = 'United Kingdom (Various)';
+        } else if (rawCountry === 'AU' || rawCountry === 'AUSTRALIA' || rawCurrency === 'AUD' || rawPhone.startsWith('+61')) {
+          countryCode = 'AU';
+          cityName = 'Australia (Various)';
+        } else if (rawCountry === 'SG' || rawCountry === 'SINGAPORE' || rawCurrency === 'SGD' || rawPhone.startsWith('+65')) {
+          countryCode = 'SG';
+          cityName = 'Singapore';
+        } else if (rawCountry === 'AE' || rawCountry === 'UAE' || rawCurrency === 'AED' || rawPhone.startsWith('+971')) {
+          countryCode = 'AE';
+          cityName = 'Dubai / UAE';
+        } else if (rawCountry && COUNTRY_META[rawCountry]) {
+          countryCode = rawCountry;
+          cityName = COUNTRY_META[rawCountry].name;
+        }
+      }
+
+      // 4. Dynamic Tokenizer Fallback for custom formatted strings (e.g. "Bacolod, Philippines", "Ormoc City")
+      if (!cityName && rawAddress) {
+        const parts = rawAddress.split(',').map(s => s.trim()).filter(Boolean);
+        if (parts.length > 0) {
+          const firstPart = parts[0];
+          if (firstPart.length >= 3 && !firstPart.toLowerCase().includes('philippines') && !firstPart.toLowerCase().includes('metro manila')) {
+            cityName = firstPart.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+          }
+        }
+      }
+
+      // 5. Default Fallback
+      if (!cityName) {
+        cityName = 'Quezon City (Metro Manila)';
+      }
 
       return { countryCode, cityName };
     }
@@ -2843,6 +2992,7 @@
       const countryCounts = {};
       const cityCounts = {};
       const regionDataMap = {};
+      const countryDataMap = {};
 
       let totalRecords = usersData.length;
       let domesticCount = 0;
@@ -2859,9 +3009,10 @@
         countryCounts[meta.name] = (countryCounts[meta.name] || 0) + 1;
         cityCounts[cityName] = (cityCounts[cityName] || 0) + 1;
 
-        const key = `${countryCode}_${cityName}`;
-        if (!regionDataMap[key]) {
-          regionDataMap[key] = {
+        // City level map
+        const cityKey = `${countryCode}_${cityName}`;
+        if (!regionDataMap[cityKey]) {
+          regionDataMap[cityKey] = {
             countryCode,
             countryName: meta.name,
             flag: meta.flag,
@@ -2872,18 +3023,41 @@
             vipCount: 0
           };
         }
-        regionDataMap[key].userCount++;
+        regionDataMap[cityKey].userCount++;
         if (u.isVip || u.profile?.isVip || u.vipPlan || u.accountType === 'vip') {
-          regionDataMap[key].vipCount++;
+          regionDataMap[cityKey].vipCount++;
+        }
+
+        // Country level map
+        if (!countryDataMap[countryCode]) {
+          countryDataMap[countryCode] = {
+            countryCode,
+            countryName: meta.name,
+            flag: meta.flag,
+            isDomestic: meta.isDomestic,
+            cityName: `${meta.name} (All Hubs)`,
+            userCount: 0,
+            clinicCount: 0,
+            vipCount: 0,
+            cityList: new Set()
+          };
+        }
+        countryDataMap[countryCode].userCount++;
+        countryDataMap[countryCode].cityList.add(cityName);
+        if (u.isVip || u.profile?.isVip || u.vipPlan || u.accountType === 'vip') {
+          countryDataMap[countryCode].vipCount++;
         }
       });
 
       // 2. Aggregate Clinics
       clinicsData.forEach(c => {
         const { countryCode, cityName } = resolveRecordCountryAndCity(c);
-        const key = `${countryCode}_${cityName}`;
-        if (regionDataMap[key]) {
-          regionDataMap[key].clinicCount++;
+        const cityKey = `${countryCode}_${cityName}`;
+        if (regionDataMap[cityKey]) {
+          regionDataMap[cityKey].clinicCount++;
+        }
+        if (countryDataMap[countryCode]) {
+          countryDataMap[countryCode].clinicCount++;
         }
       });
 
@@ -2905,15 +3079,20 @@
       const sortedCities = Object.entries(cityCounts).sort((a, b) => b[1] - a[1]);
       if (sortedCities.length > 0) {
         document.getElementById('kpi-geo-top-city').innerText = sortedCities[0][0];
-        document.getElementById('kpi-geo-top-city-sub').innerText = `${sortedCities[0][1]} active accounts`;
+        document.getElementById('kpi-geo-top-city-sub').innerText = `${sortedCities[0][1]} active accounts (${Math.round((sortedCities[0][1] / totalRecords) * 100)}% share)`;
       }
 
       // 4. Update Charts
       renderGeoCharts(countryCounts, sortedCities);
 
-      // 5. Update Table
+      // 5. Store State & Update Table
       geoAggregatedData = Object.values(regionDataMap).sort((a, b) => b.userCount - a.userCount);
-      renderGeoTableRows(geoAggregatedData);
+      geoCountrySummaryData = Object.values(countryDataMap).map(c => ({
+        ...c,
+        cityName: `${c.cityList.size} Active Metros (${Array.from(c.cityList).slice(0, 3).join(', ')}${c.cityList.size > 3 ? '...' : ''})`
+      })).sort((a, b) => b.userCount - a.userCount);
+
+      filterGeoTable();
     }
 
     function renderGeoCharts(countryCounts, sortedCities) {
@@ -2958,16 +3137,16 @@
       if (cityCtx) {
         if (geoCityChartInstance) geoCityChartInstance.destroy();
 
-        const top10 = sortedCities.slice(0, 8);
-        const cityLabels = top10.map(c => c[0]);
-        const cityData = top10.map(c => c[1]);
+        const top8 = sortedCities.slice(0, 8);
+        const cityLabels = top8.map(c => c[0]);
+        const cityData = top8.map(c => c[1]);
 
         geoCityChartInstance = new Chart(cityCtx, {
           type: 'bar',
           data: {
             labels: cityLabels,
             datasets: [{
-              label: 'Users & Density',
+              label: 'Active Users',
               data: cityData,
               backgroundColor: '#8B5CF6',
               borderRadius: 6
@@ -2994,7 +3173,7 @@
       if (!tbody) return;
 
       if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">No matching geographic distribution found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">No matching geographic data found.</td></tr>`;
         return;
       }
 
@@ -3040,6 +3219,22 @@
       }).join('');
     }
 
+    function setGeoViewMode(mode) {
+      currentGeoViewMode = mode;
+      const citiesBtn = document.getElementById('geo-view-cities');
+      const countriesBtn = document.getElementById('geo-view-countries');
+
+      if (mode === 'cities') {
+        if (citiesBtn) citiesBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-400 shadow-sm transition-all";
+        if (countriesBtn) countriesBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-all";
+      } else {
+        if (countriesBtn) countriesBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-400 shadow-sm transition-all";
+        if (citiesBtn) citiesBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-all";
+      }
+
+      filterGeoTable();
+    }
+
     function setGeoSegment(segment) {
       currentGeoSegment = segment;
       ['all', 'ph', 'intl'].forEach(s => {
@@ -3057,13 +3252,21 @@
 
     function filterGeoTable() {
       const q = (document.getElementById('geoSearchInput')?.value || '').toLowerCase().trim();
+      const countryFilter = document.getElementById('geoCountryFilter')?.value || 'all';
 
-      const filtered = geoAggregatedData.filter(item => {
-        // 1. Segment filter
+      const sourceList = currentGeoViewMode === 'countries' ? geoCountrySummaryData : geoAggregatedData;
+
+      const filtered = sourceList.filter(item => {
+        // 1. Country select filter
+        if (countryFilter !== 'all' && item.countryCode !== countryFilter) {
+          return false;
+        }
+
+        // 2. Segment filter (PH vs Intl)
         if (currentGeoSegment === 'ph' && !item.isDomestic) return false;
         if (currentGeoSegment === 'intl' && item.isDomestic) return false;
 
-        // 2. Search query
+        // 3. Search query filter
         if (q) {
           return item.countryName.toLowerCase().includes(q) || item.cityName.toLowerCase().includes(q);
         }
@@ -3074,7 +3277,7 @@
     }
 
     function exportGeoCSV() {
-      let csv = "Country,City,Users,Clinics,VIP_Members,Share_Percent\n";
+      let csv = "Country,City_or_Hub,Users,Clinics,VIP_Members,Share_Percent\n";
       const total = usersData.length || 1;
       geoAggregatedData.forEach(g => {
         const share = Math.round((g.userCount / total) * 100);

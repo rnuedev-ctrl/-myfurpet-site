@@ -1984,14 +1984,12 @@
         rawJoined = '2026-08-01T08:00:00.000Z';
       }
 
-      // 2. Strict Immutable Creation & Registration Fields (Never use updatedAt, vipGrantedAt, or live timestamps)
+      // 2. Strict Immutable Creation & Registration Fields (Never use updatedAt, agreedToPrivacyAt, or live timestamps)
       if (!rawJoined) {
         const immutableCreationFields = [
           u.createdAt, p.createdAt, u.created_at, p.created_at,
-          u.joinedAt, p.joinedAt, u.joined_at, p.joined_at,
           u.registeredAt, p.registeredAt, u.registered_at, p.registered_at,
-          u.agreedToTermsAt, p.agreedToTermsAt,
-          u.agreedToPrivacyAt, p.agreedToPrivacyAt,
+          u.joinedAt, p.joinedAt, u.joined_at, p.joined_at,
           u.dateJoined, p.dateJoined, u.registrationDate, p.registrationDate,
           u.creationTime, p.creationTime
         ];
@@ -2016,9 +2014,16 @@
         const msStr = (u.memberSince || p.memberSince || '').trim();
         if (msStr.toLowerCase().includes('august 2026') || msStr.toLowerCase().includes('aug 2026')) {
           rawJoined = '2026-08-01T08:00:00.000Z';
+        } else if (msStr.toLowerCase().includes('july 2026') || msStr.toLowerCase().includes('jul 2026')) {
+          rawJoined = '2026-07-01T08:00:00.000Z';
         } else {
           rawJoined = msStr;
         }
+      }
+
+      // 5. Default Fallback for Existing Beta Accounts
+      if (!rawJoined) {
+        rawJoined = '2026-08-01T08:00:00.000Z';
       }
 
       let joinedDateObj = null;

@@ -631,8 +631,9 @@
                     <th class="p-4">Territory / Country</th>
                     <th class="p-4">Metro Hub / City</th>
                     <th class="p-4">Total Users</th>
-                    <th class="p-4">Partner Clinics</th>
+                    <th class="p-4">Free Members</th>
                     <th class="p-4">VIP Members</th>
+                    <th class="p-4">Partner Clinics</th>
                     <th class="p-4">Share of Platform</th>
                     <th class="p-4">Market Status</th>
                   </tr>
@@ -3129,6 +3130,31 @@
       return { countryCode, cityName };
     }
 
+    function checkUserIsVip(u) {
+      if (!u) return false;
+      const p = u.profile || u.user || {};
+      return !!(
+        u.isVip || 
+        u.isPremium || 
+        p.isPremium || 
+        p.isVip ||
+        u.role === 'vip' || 
+        p.role === 'vip' || 
+        u.vipTier === 'gold' || 
+        p.vipTier === 'gold' || 
+        u.vipPlan ||
+        p.vipPlan ||
+        u.vipExpiresAt ||
+        p.vipExpiresAt ||
+        u.accountType === 'vip' ||
+        p.accountType === 'vip' ||
+        u.earlyAccess || 
+        p.earlyAccess ||
+        u.isEarlyBeta || 
+        p.isEarlyBeta
+      );
+    }
+
     function renderGeoAnalytics() {
       if (!usersData || usersData.length === 0) return;
 
@@ -3152,6 +3178,8 @@
         countryCounts[meta.name] = (countryCounts[meta.name] || 0) + 1;
         cityCounts[cityName] = (cityCounts[cityName] || 0) + 1;
 
+        const isUserVip = checkUserIsVip(u);
+
         // City level map
         const cityKey = `${countryCode}_${cityName}`;
         if (!regionDataMap[cityKey]) {
@@ -3162,13 +3190,16 @@
             isDomestic: meta.isDomestic,
             cityName,
             userCount: 0,
-            clinicCount: 0,
-            vipCount: 0
+            freeCount: 0,
+            vipCount: 0,
+            clinicCount: 0
           };
         }
         regionDataMap[cityKey].userCount++;
-        if (u.isVip || u.profile?.isVip || u.vipPlan || u.accountType === 'vip') {
+        if (isUserVip) {
           regionDataMap[cityKey].vipCount++;
+        } else {
+          regionDataMap[cityKey].freeCount++;
         }
 
         // Country level map
@@ -3180,27 +3211,59 @@
             isDomestic: meta.isDomestic,
             cityName: `${meta.name} (All Hubs)`,
             userCount: 0,
-            clinicCount: 0,
+            freeCount: 0,
             vipCount: 0,
+            clinicCount: 0,
             cityList: new Set()
           };
         }
         countryDataMap[countryCode].userCount++;
         countryDataMap[countryCode].cityList.add(cityName);
-        if (u.isVip || u.profile?.isVip || u.vipPlan || u.accountType === 'vip') {
+        if (isUserVip) {
           countryDataMap[countryCode].vipCount++;
+        } else {
+          countryDataMap[countryCode].freeCount++;
         }
       });
 
-      // 2. Aggregate Clinics
+      // 2. Aggregate Clinics (accurately map all registered partner clinics)
       clinicsData.forEach(c => {
         const { countryCode, cityName } = resolveRecordCountryAndCity(c);
         const cityKey = `${countryCode}_${cityName}`;
         if (regionDataMap[cityKey]) {
           regionDataMap[cityKey].clinicCount++;
+        } else {
+          const meta = COUNTRY_META[countryCode] || COUNTRY_META.OTHER;
+          regionDataMap[cityKey] = {
+            countryCode,
+            countryName: meta.name,
+            flag: meta.flag,
+            isDomestic: meta.isDomestic,
+            cityName,
+            userCount: 0,
+            freeCount: 0,
+            vipCount: 0,
+            clinicCount: 1
+          };
         }
-        if (countryDataMap[countryCode]) {
+
+        if (!countryDataMap[countryCode]) {
+          const meta = COUNTRY_META[countryCode] || COUNTRY_META.OTHER;
+          countryDataMap[countryCode] = {
+            countryCode,
+            countryName: meta.name,
+            flag: meta.flag,
+            isDomestic: meta.isDomestic,
+            cityName: `${meta.name} (All Hubs)`,
+            userCount: 0,
+            freeCount: 0,
+            vipCount: 0,
+            clinicCount: 1,
+            cityList: new Set([cityName])
+          };
+        } else {
           countryDataMap[countryCode].clinicCount++;
+          countryDataMap[countryCode].cityList.add(cityName);
         }
       });
 
@@ -3316,7 +3379,7 @@
       if (!tbody) return;
 
       if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">No matching geographic data found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-400">No matching geographic data found.</td></tr>`;
         return;
       }
 
@@ -3340,11 +3403,14 @@
             <td class="p-4 font-black font-display text-slate-900 dark:text-white">
               ${item.userCount}
             </td>
+            <td class="p-4 font-bold text-slate-600 dark:text-slate-400">
+              ${item.freeCount > 0 ? `👤 ${item.freeCount}` : '0'}
+            </td>
+            <td class="p-4 font-bold text-amber-600 dark:text-amber-400">
+              ${item.vipCount > 0 ? `👑 ${item.vipCount}` : '0'}
+            </td>
             <td class="p-4 font-bold text-emerald-600 dark:text-emerald-400">
               ${item.clinicCount > 0 ? `🏥 ${item.clinicCount}` : '—'}
-            </td>
-            <td class="p-4 font-bold text-brand-600 dark:text-brand-400">
-              ${item.vipCount > 0 ? `👑 ${item.vipCount}` : '0'}
             </td>
             <td class="p-4">
               <div class="flex items-center gap-2">

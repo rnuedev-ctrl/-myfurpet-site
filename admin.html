@@ -2154,9 +2154,6 @@
         btn.innerText = "Permanently Delete User 🗑️";
       }
     }
-        alert("Error updating VIP status: " + err.message);
-      }
-    }
 
     async function toggleUserSuspension(userId, suspend) {
       if (confirm(suspend ? "Suspend user account?" : "Reactivate user account?")) {

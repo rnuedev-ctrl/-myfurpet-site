@@ -1794,6 +1794,20 @@
         });
       }
 
+      let rawAvatar = p.avatarUrl || u.avatarUrl || p.photoURL || u.photoURL || '';
+      
+      // Filter out stock mock images, Unsplash portraits, and dummy placeholders
+      if (
+        !rawAvatar || 
+        rawAvatar.trim() === '' || 
+        rawAvatar.includes('dummyimage') || 
+        rawAvatar.includes('unsplash.com') ||
+        rawAvatar.includes('gravatar.com/avatar/00000000000000000000000000000000') ||
+        rawAvatar.includes('ui-avatars.com')
+      ) {
+        rawAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(rawName)}&background=7C3AED&color=ffffff&size=64&bold=true`;
+      }
+
       return {
         id: u.id,
         name: rawName,
@@ -1803,7 +1817,7 @@
         role,
         pets,
         petSummary,
-        avatar,
+        avatar: rawAvatar,
         formattedDate,
         formattedTime,
         joinedTimestamp,
@@ -1911,12 +1925,15 @@
                 ${u.isSuspended ? '⛔ Suspended' : '✓ Active'}
               </span>
             </td>
-            <td class="p-4 text-right space-x-2">
+            <td class="p-4 text-right space-x-1.5">
               <button onclick="toggleUserVip('${u.id}', ${!u.isVip})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border border-amber-300 dark:border-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950 text-amber-600 dark:text-amber-400">
                 ${u.isVip ? 'Revoke VIP' : 'Grant VIP'}
               </button>
-              <button onclick="toggleUserSuspension('${u.id}', ${!u.isSuspended})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${u.isSuspended ? 'bg-emerald-600 text-white' : 'border border-rose-300 dark:border-rose-700 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950'}">
+              <button onclick="toggleUserSuspension('${u.id}', ${!u.isSuspended})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${u.isSuspended ? 'bg-emerald-600 text-white' : 'border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}">
                 ${u.isSuspended ? 'Activate' : 'Suspend'}
+              </button>
+              <button onclick="cascadeDeleteUser('${u.id}', '${encodeURIComponent(u.name)}', '${encodeURIComponent(u.email)}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50" title="Permanently delete user and all associated pets/posts">
+                🗑️ Delete
               </button>
             </td>
           </tr>
@@ -1934,14 +1951,92 @@
           isVip: grant,
           isPremium: grant,
           vipTier: grant ? 'gold' : 'free',
+          vipPlan: grant ? 'early_access_beta_1yr' : null,
           vipGrantedAt: grant ? new Date().toISOString() : null,
           "profile.isPremium": grant,
+          "profile.vipPlan": grant ? 'early_access_beta_1yr' : null,
           "profile.role": grant ? 'vip' : 'user',
           "profile.vipTier": grant ? 'gold' : 'free'
         };
         await window.fbMethods.updateDoc(window.fbMethods.doc(window.fbDb, "users", userId), updatePayload);
-        alert(grant ? "👑 Granted VIP Gold membership." : "VIP membership revoked.");
+        alert(grant ? "👑 Granted 1-Year Early Beta VIP membership!" : "VIP membership revoked.");
       } catch (err) {
+        alert("Error updating VIP status: " + err.message);
+      }
+    }
+
+    // ── Cascade Delete User from Cloud Firestore ──
+    async function cascadeDeleteUser(userId, encodedName, encodedEmail) {
+      const cleanName = decodeURIComponent(encodedName || 'User');
+      const cleanEmail = decodeURIComponent(encodedEmail || '').toLowerCase().trim();
+      const promptMsg = `🚨 PERMANENT CASCADE DELETE: Are you sure you want to permanently delete "${cleanName}" (${cleanEmail || userId})?\n\nThis will permanently erase:\n• User Profile record in Cloud Firestore\n• All registered Pets & Health Records\n• All Feed posts and Community comments\n• All PawAlert lost pet reports\n• All clinic bookings & appointments\n\n⚠️ This action CANNOT be undone.\n\nType YES to confirm:`;
+      
+      const confirmInput = prompt(promptMsg);
+      if (confirmInput !== 'YES' && confirmInput !== 'yes') {
+        alert("Action cancelled. User was not deleted.");
+        return;
+      }
+
+      const db = window.fbDb;
+      const { doc, deleteDoc, collection, query, where, getDocs } = window.fbMethods;
+
+      try {
+        let deletedPets = 0;
+        let deletedPosts = 0;
+        let deletedAlerts = 0;
+
+        // 1. Delete associated pets
+        if (cleanEmail || userId) {
+          try {
+            const petsRef = collection(db, "pets");
+            const qPets = cleanEmail ? query(petsRef, where("ownerEmail", "==", cleanEmail)) : query(petsRef, where("userId", "==", userId));
+            const petSnaps = await getDocs(qPets);
+            for (const pDoc of petSnaps.docs) {
+              await deleteDoc(doc(db, "pets", pDoc.id));
+              deletedPets++;
+            }
+          } catch (e) { console.log("Pets cascade notice:", e); }
+        }
+
+        // 2. Delete associated feed posts
+        if (cleanEmail || userId) {
+          try {
+            const postsRef = collection(db, "posts");
+            const qPosts = cleanEmail ? query(postsRef, where("authorEmail", "==", cleanEmail)) : query(postsRef, where("authorId", "==", userId));
+            const postSnaps = await getDocs(qPosts);
+            for (const postDoc of postSnaps.docs) {
+              await deleteDoc(doc(db, "posts", postDoc.id));
+              deletedPosts++;
+            }
+          } catch (e) { console.log("Posts cascade notice:", e); }
+        }
+
+        // 3. Delete associated PawAlerts
+        if (cleanEmail || userId) {
+          try {
+            const alertsRef = collection(db, "lost_pet_alerts");
+            const qAlerts = cleanEmail ? query(alertsRef, where("reporterEmail", "==", cleanEmail)) : query(alertsRef, where("reporterId", "==", userId));
+            const alertSnaps = await getDocs(qAlerts);
+            for (const aDoc of alertSnaps.docs) {
+              await deleteDoc(doc(db, "lost_pet_alerts", aDoc.id));
+              deletedAlerts++;
+            }
+          } catch (e) { console.log("Alerts cascade notice:", e); }
+        }
+
+        // 4. Delete user document from users collection
+        await deleteDoc(doc(db, "users", userId));
+
+        // Optimistically update local usersData array
+        usersData = usersData.filter(u => u.id !== userId);
+        renderUsers();
+        updateOverviewKPIs();
+
+        alert(`✅ Cascade Delete Complete!\n\nDeleted User: ${cleanName}\n• Cleaned ${deletedPets} pet record(s)\n• Cleaned ${deletedPosts} community post(s)\n• Cleaned ${deletedAlerts} PawAlert(s)\n• Purged user document from Firestore.`);
+      } catch (err) {
+        alert("Error executing cascade delete: " + err.message);
+      }
+    }
         alert("Error updating VIP status: " + err.message);
       }
     }

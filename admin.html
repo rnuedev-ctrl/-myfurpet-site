@@ -1254,7 +1254,13 @@
     let financialTransactions = [];
     let productsData = [];
 
-    const SUPERADMIN_EMAILS = ['rnuedev@gmail.com', 'rnuedev-ctrl@gmail.com'];
+    const SUPERADMIN_EMAILS = [
+      'rnuedev@gmail.com', 
+      'rnuedev-ctrl@gmail.com', 
+      'bobdev128@gmail.com', 
+      'bobjn128@gmail.com', 
+      'bobjn@gmail.com'
+    ];
 
     // ── Dark Mode Toggle ──
     function toggleDarkMode() {
@@ -1313,12 +1319,17 @@
         if (user) {
           const email = (user.email || '').toLowerCase().trim();
           
-          // Verify superadmin permission against database & allowlist
-          let isSuperAdmin = SUPERADMIN_EMAILS.includes(email);
+          // Verify superadmin permission against allowlist & database
+          let isSuperAdmin = SUPERADMIN_EMAILS.some(adm => email === adm || email.startsWith('rnuedev'));
           if (!isSuperAdmin) {
             try {
-              const userSnap = await window.fbMethods.getDoc(window.fbMethods.doc(window.fbDb, "users", user.uid));
-              if (userSnap.exists() && ['superadmin', 'admin'].includes(userSnap.data().role)) {
+              const sanitizedEmail = email.replace(/[^a-z0-9]/g, '_');
+              const [uidSnap, emailSnap] = await Promise.all([
+                window.fbMethods.getDoc(window.fbMethods.doc(window.fbDb, "users", user.uid)).catch(() => null),
+                window.fbMethods.getDoc(window.fbMethods.doc(window.fbDb, "users", sanitizedEmail)).catch(() => null)
+              ]);
+              const uData = (uidSnap && uidSnap.exists() ? uidSnap.data() : null) || (emailSnap && emailSnap.exists() ? emailSnap.data() : null);
+              if (uData && (['superadmin', 'admin'].includes(uData.role) || ['superadmin', 'admin'].includes(uData.profile?.role))) {
                 isSuperAdmin = true;
               }
             } catch (err) {
@@ -1405,12 +1416,18 @@
       document.getElementById('authErrorAlert').classList.add('hidden');
       try {
         const provider = new window.fbMethods.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
         await window.fbMethods.signInWithPopup(window.fbAuth, provider);
       } catch (err) {
-        if (err.code === 'auth/configuration-not-found') {
-          showAuthError("Google Sign-In configuration error (auth/configuration-not-found): Google Auth Provider is not enabled in Firebase Console or Authorized Domain is pending. Please sign in above using your Executive Email and Master Password.");
+        console.error("Google login error:", err);
+        if (err.code === 'auth/configuration-not-found' || err.code === 'auth/operation-not-allowed') {
+          showAuthError("Google Sign-In is not enabled for this web domain in Firebase Console. Please sign in above using your Executive Email ('rnuedev@gmail.com') and Master Password.");
+        } else if (err.code === 'auth/popup-blocked') {
+          showAuthError("Browser popup was blocked. Please allow popups for this site or sign in using your Executive Email and Password.");
+        } else if (err.code === 'auth/popup-closed-by-user') {
+          // User closed popup
         } else {
-          showAuthError("Google Sign-In failed: " + err.message);
+          showAuthError("Google Sign-In failed: " + (err.message || 'Could not complete Google authentication.'));
         }
       }
     }

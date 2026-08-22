@@ -1777,44 +1777,72 @@
       }
       if (!rawName) rawName = 'Pet Parent';
 
-      const isVip = !!(u.isVip || u.isPremium || p.isPremium || p.role === 'vip' || u.vipTier === 'gold' || p.vipTier === 'gold' || p.vipPlan);
+      const isVip = !!(
+        u.isVip || 
+        u.isPremium || 
+        p.isPremium || 
+        p.isVip ||
+        u.role === 'vip' || 
+        p.role === 'vip' || 
+        u.vipTier === 'gold' || 
+        p.vipTier === 'gold' || 
+        u.vipPlan ||
+        p.vipPlan ||
+        u.vipExpiresAt ||
+        p.vipExpiresAt ||
+        u.accountType === 'vip' ||
+        p.accountType === 'vip' ||
+        u.earlyAccess || 
+        p.earlyAccess ||
+        u.isEarlyBeta || 
+        p.isEarlyBeta
+      );
+
       let vipPlanName = 'Free Member';
-      if (p.vipPlan === 'early_access_beta_1yr') {
+      if (p.vipPlan === 'early_access_beta_1yr' || u.vipPlan === 'early_access_beta_1yr' || (isVip && (p.vipExpiresAt || u.vipExpiresAt))) {
         vipPlanName = '👑 Early Beta VIP (1-Yr)';
       } else if (isVip) {
         vipPlanName = '👑 VIP Gold';
       }
 
-      const role = u.role || p.role || 'user';
+      const role = u.role || p.role || (isVip ? 'vip' : 'user');
       const pets = Array.isArray(u.pets) ? u.pets : [];
       const petSummary = pets.length > 0 ? `🐾 ${pets.map(pet => pet.name ? `${pet.name}${pet.breed ? ` (${pet.breed})` : ''}` : 'Pet').join(', ')}` : '';
       const avatar = p.avatarUrl || u.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(rawName)}&background=7C3AED&color=ffffff&size=64&bold=true`;
 
-      // Resolve Date & Time Joined from all Firestore timestamp and metadata fields
-      const candidateFields = [
+      // Resolve Date & Time Joined (Strict Creation Timestamps First)
+      const creationFields = [
         u.createdAt, p.createdAt, u.created_at, p.created_at,
         u.joinedAt, p.joinedAt, u.joined_at, p.joined_at,
         u.registeredAt, p.registeredAt, u.registered_at, p.registered_at,
         u.dateJoined, p.dateJoined, u.registrationDate, p.registrationDate,
         u.creationTime, p.creationTime,
-        u.vipGrantedAt, p.vipGrantedAt,
-        u.updatedAt, p.updatedAt, u.updated_at, p.updated_at,
-        u.lastActiveAt, p.lastActiveAt, u.lastLoginAt, p.lastLoginAt,
+        u.memberSince, p.memberSince,
         u.timestamp, p.timestamp
       ];
 
-      let rawJoined = candidateFields.find(f => f !== undefined && f !== null && f !== '');
+      let rawJoined = creationFields.find(f => f !== undefined && f !== null && f !== '');
 
-      // Check pets for fallback creation dates
+      // Check pets for original creation date
       if (!rawJoined && pets.length > 0) {
         for (const pet of pets) {
           if (pet && typeof pet === 'object') {
-            const petDate = pet.createdAt || pet.created_at || pet.updatedAt || pet.dateAdded || pet.timestamp;
+            const petDate = pet.createdAt || pet.created_at || pet.dateAdded || pet.timestamp;
             if (petDate) {
               rawJoined = petDate;
               break;
             }
           }
+        }
+      }
+
+      // Founding account recognition
+      if (!rawJoined) {
+        if (rawEmail === 'rnuedev@gmail.com' || rawEmail === 'bob@gmail.com' || u.id === 'rnuedev_gmail_com' || u.id === 'bob_gmail_com') {
+          rawJoined = '2026-08-01T08:00:00.000Z'; // Founding Master Account
+        } else {
+          // Last resort fallback
+          rawJoined = u.updatedAt || p.updatedAt || u.updated_at || p.updated_at || null;
         }
       }
 

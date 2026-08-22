@@ -250,6 +250,12 @@
           <span>Executive Overview</span>
         </button>
 
+        <button onclick="switchTab('geo')" id="tab-geo" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
+          <span class="text-base">🌍</span>
+          <span>Geo Reach & Analytics</span>
+          <span id="badge-geo-countries" class="ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400">0</span>
+        </button>
+
         <button onclick="switchTab('financials')" id="tab-financials" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
           <span class="text-base">💰</span>
           <span>Financials & Rev</span>
@@ -480,6 +486,144 @@
               </div>
             </div>
 
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- 🌍 GEOGRAPHICAL REACH & GLOBAL ANALYTICS PANEL -->
+        <!-- =============================================================== -->
+        <section id="panel-geo" class="hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 class="text-lg font-black font-display tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                <span>🌍 Global Reach & Demographic Analytics</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400">Live Telemetry</span>
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Worldwide distribution of registered pet parents, verified clinic networks, and international market share.
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="renderGeoAnalytics()" class="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                🔄 Refresh
+              </button>
+              <button onclick="exportGeoCSV()" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition-all shadow-md shadow-brand-600/20 flex items-center gap-1.5">
+                <span>📥</span>
+                <span>Export Geo CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Top Geo KPI Metric Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Active Countries</span>
+                <span class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 text-sm">🌐</span>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span id="kpi-geo-countries-count" class="text-3xl font-black font-display text-slate-900 dark:text-white">0</span>
+                <span class="text-xs text-emerald-500 font-bold">Global Reach</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-2">Active Sovereign Territories</p>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Domestic Base (PH)</span>
+                <span class="p-2 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-sm">🇵🇭</span>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span id="kpi-geo-ph-ratio" class="text-3xl font-black font-display text-slate-900 dark:text-white">0%</span>
+                <span class="text-xs text-blue-500 font-bold" id="kpi-geo-ph-count">0 users</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-2">Philippines Core Demographic</p>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">International Reach</span>
+                <span class="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-sm">✈️</span>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span id="kpi-geo-intl-ratio" class="text-3xl font-black font-display text-slate-900 dark:text-white">0%</span>
+                <span class="text-xs text-indigo-500 font-bold" id="kpi-geo-intl-count">0 users</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-2">Overseas Expansion Market</p>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Top Metro Hub</span>
+                <span class="p-2 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 text-sm">🏙️</span>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span id="kpi-geo-top-city" class="text-xl font-black font-display text-slate-900 dark:text-white truncate">Metro Manila</span>
+              </div>
+              <p id="kpi-geo-top-city-sub" class="text-[11px] text-slate-400 mt-2">Highest Density Cluster</p>
+            </div>
+          </div>
+
+          <!-- Visual Charts Grid (Chart.js) -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm">
+              <h4 class="font-display font-bold text-sm tracking-tight text-slate-900 dark:text-white mb-1">
+                🌐 Global Country Distribution
+              </h4>
+              <p class="text-xs text-slate-400 mb-4">Total registered accounts grouped by country/region</p>
+              <div class="h-64 relative flex items-center justify-center">
+                <canvas id="geoCountryChart"></canvas>
+              </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm">
+              <h4 class="font-display font-bold text-sm tracking-tight text-slate-900 dark:text-white mb-1">
+                🏙️ Top 10 Active Metros & Cities
+              </h4>
+              <p class="text-xs text-slate-400 mb-4">User & partner clinic concentration ranking</p>
+              <div class="h-64 relative flex items-center justify-center">
+                <canvas id="geoCityChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Live Geo Breakdown Table -->
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div class="flex items-center gap-3 w-full sm:w-auto">
+                <div class="relative flex-1 sm:w-64">
+                  <input type="text" id="geoSearchInput" oninput="filterGeoTable()" placeholder="Search city or country..." class="w-full pl-8 pr-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
+                  <span class="absolute left-2.5 top-2.5 text-slate-400 text-xs">🔍</span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-800 self-stretch sm:self-auto overflow-x-auto">
+                <button onclick="setGeoSegment('all')" id="geo-seg-all" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-400 shadow-sm transition-all">All Regions</button>
+                <button onclick="setGeoSegment('ph')" id="geo-seg-ph" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-all">🇵🇭 Philippines</button>
+                <button onclick="setGeoSegment('intl')" id="geo-seg-intl" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-all">✈️ International</button>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider">
+                  <tr>
+                    <th class="p-4">Territory / Country</th>
+                    <th class="p-4">Primary City / Hub</th>
+                    <th class="p-4">Total Users</th>
+                    <th class="p-4">Partner Clinics</th>
+                    <th class="p-4">VIP Members</th>
+                    <th class="p-4">Share of Platform</th>
+                    <th class="p-4">Market Status</th>
+                  </tr>
+                </thead>
+                <tbody id="geoTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
+                  <tr>
+                    <td colspan="7" class="p-8 text-center text-slate-400">Loading live geographical telemetry...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 
@@ -1296,6 +1440,7 @@
 
       const titles = {
         overview: 'Executive Overview',
+        geo: 'Global Reach & Demographic Analytics',
         financials: 'Financials & Rev',
         users: 'Users & VIP Controls',
         clinics: 'Partner Clinics & Vets',
@@ -1450,6 +1595,7 @@
       onSnapshot(collection(db, "users"), (snapshot) => {
         usersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderUsers();
+        renderGeoAnalytics();
         updateOverviewKPIs();
       }, (err) => console.error("Users stream error:", err));
 
@@ -1457,6 +1603,7 @@
       onSnapshot(collection(db, "places"), (snapshot) => {
         clinicsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderClinics();
+        renderGeoAnalytics();
         updateOverviewKPIs();
       }, (err) => console.error("Clinics stream error:", err));
 
@@ -2611,6 +2758,324 @@
       } catch (err) {
         alert("Error toggling maintenance mode: " + err.message);
       }
+    }
+
+    // =========================================================================
+    // 🌍 GEOGRAPHICAL REACH & GLOBAL ANALYTICS ENGINE
+    // =========================================================================
+    let geoCountryChartInstance = null;
+    let geoCityChartInstance = null;
+    let currentGeoSegment = 'all';
+    let geoAggregatedData = [];
+
+    const COUNTRY_META = {
+      PH: { name: 'Philippines', flag: '🇵🇭', isDomestic: true },
+      US: { name: 'United States', flag: '🇺🇸', isDomestic: false },
+      JP: { name: 'Japan', flag: '🇯🇵', isDomestic: false },
+      CA: { name: 'Canada', flag: '🇨🇦', isDomestic: false },
+      GB: { name: 'United Kingdom', flag: '🇬🇧', isDomestic: false },
+      AU: { name: 'Australia', flag: '🇦🇺', isDomestic: false },
+      SG: { name: 'Singapore', flag: '🇸🇬', isDomestic: false },
+      AE: { name: 'United Arab Emirates', flag: '🇦🇪', isDomestic: false },
+      DE: { name: 'Germany', flag: '🇩🇪', isDomestic: false },
+      KR: { name: 'South Korea', flag: '🇰🇷', isDomestic: false },
+      OTHER: { name: 'International / Other', flag: '🌐', isDomestic: false }
+    };
+
+    function resolveRecordCountryAndCity(record) {
+      const p = record.profile || {};
+      const rawCountry = (record.country || p.country || record.countryCode || '').toString().trim().toUpperCase();
+      const rawAddress = (record.address || p.address || record.location || record.city || p.city || '').toString();
+      const rawCurrency = (record.currencyMode || record.currency || '').toString().toUpperCase();
+
+      let countryCode = 'PH';
+      let cityName = 'Metro Manila';
+
+      // 1. Detect Country Code
+      if (rawCountry === 'US' || rawCountry === 'USA' || rawAddress.toLowerCase().includes('united states') || rawAddress.toLowerCase().includes('california') || rawAddress.toLowerCase().includes('texas')) {
+        countryCode = 'US';
+      } else if (rawCountry === 'JP' || rawCountry === 'JAPAN' || rawAddress.toLowerCase().includes('japan') || rawAddress.toLowerCase().includes('tokyo') || rawCurrency === 'JPY') {
+        countryCode = 'JP';
+      } else if (rawCountry === 'CA' || rawCountry === 'CANADA' || rawAddress.toLowerCase().includes('canada') || rawAddress.toLowerCase().includes('toronto') || rawAddress.toLowerCase().includes('vancouver')) {
+        countryCode = 'CA';
+      } else if (rawCountry === 'GB' || rawCountry === 'UK' || rawAddress.toLowerCase().includes('united kingdom') || rawAddress.toLowerCase().includes('london') || rawCurrency === 'GBP') {
+        countryCode = 'GB';
+      } else if (rawCountry === 'AU' || rawCountry === 'AUSTRALIA' || rawAddress.toLowerCase().includes('australia') || rawAddress.toLowerCase().includes('sydney') || rawCurrency === 'AUD') {
+        countryCode = 'AU';
+      } else if (rawCountry === 'SG' || rawCountry === 'SINGAPORE' || rawAddress.toLowerCase().includes('singapore') || rawCurrency === 'SGD') {
+        countryCode = 'SG';
+      } else if (rawCountry === 'AE' || rawCountry === 'UAE' || rawAddress.toLowerCase().includes('dubai') || rawAddress.toLowerCase().includes('emirates')) {
+        countryCode = 'AE';
+      } else if (rawCountry && COUNTRY_META[rawCountry]) {
+        countryCode = rawCountry;
+      } else if (rawCurrency === 'USD') {
+        countryCode = 'US';
+      }
+
+      // 2. Resolve City
+      const lowerAddr = rawAddress.toLowerCase();
+      if (lowerAddr.includes('quezon city')) cityName = 'Quezon City';
+      else if (lowerAddr.includes('makati')) cityName = 'Makati';
+      else if (lowerAddr.includes('taguig') || lowerAddr.includes('bgc')) cityName = 'Taguig (BGC)';
+      else if (lowerAddr.includes('cebu')) cityName = 'Cebu City';
+      else if (lowerAddr.includes('davao')) cityName = 'Davao City';
+      else if (lowerAddr.includes('pasig')) cityName = 'Pasig';
+      else if (lowerAddr.includes('manila')) cityName = 'Manila';
+      else if (lowerAddr.includes('los angeles') || lowerAddr.includes('la')) cityName = 'Los Angeles';
+      else if (lowerAddr.includes('tokyo')) cityName = 'Tokyo';
+      else if (lowerAddr.includes('london')) cityName = 'London';
+      else if (lowerAddr.includes('singapore')) cityName = 'Singapore';
+      else if (lowerAddr.includes('sydney')) cityName = 'Sydney';
+      else if (record.city) cityName = record.city;
+      else if (countryCode !== 'PH') cityName = COUNTRY_META[countryCode]?.name || 'Overseas';
+
+      return { countryCode, cityName };
+    }
+
+    function renderGeoAnalytics() {
+      if (!usersData || usersData.length === 0) return;
+
+      const countryCounts = {};
+      const cityCounts = {};
+      const regionDataMap = {};
+
+      let totalRecords = usersData.length;
+      let domesticCount = 0;
+      let internationalCount = 0;
+
+      // 1. Aggregate Users
+      usersData.forEach(u => {
+        const { countryCode, cityName } = resolveRecordCountryAndCity(u);
+        const meta = COUNTRY_META[countryCode] || COUNTRY_META.OTHER;
+
+        if (meta.isDomestic) domesticCount++;
+        else internationalCount++;
+
+        countryCounts[meta.name] = (countryCounts[meta.name] || 0) + 1;
+        cityCounts[cityName] = (cityCounts[cityName] || 0) + 1;
+
+        const key = `${countryCode}_${cityName}`;
+        if (!regionDataMap[key]) {
+          regionDataMap[key] = {
+            countryCode,
+            countryName: meta.name,
+            flag: meta.flag,
+            isDomestic: meta.isDomestic,
+            cityName,
+            userCount: 0,
+            clinicCount: 0,
+            vipCount: 0
+          };
+        }
+        regionDataMap[key].userCount++;
+        if (u.isVip || u.profile?.isVip || u.vipPlan || u.accountType === 'vip') {
+          regionDataMap[key].vipCount++;
+        }
+      });
+
+      // 2. Aggregate Clinics
+      clinicsData.forEach(c => {
+        const { countryCode, cityName } = resolveRecordCountryAndCity(c);
+        const key = `${countryCode}_${cityName}`;
+        if (regionDataMap[key]) {
+          regionDataMap[key].clinicCount++;
+        }
+      });
+
+      // 3. Update Top KPIs
+      const distinctCountriesCount = Object.keys(countryCounts).length;
+      document.getElementById('kpi-geo-countries-count').innerText = distinctCountriesCount;
+      document.getElementById('badge-geo-countries').innerText = distinctCountriesCount + ' Nations';
+
+      const phRatio = totalRecords > 0 ? Math.round((domesticCount / totalRecords) * 100) : 0;
+      const intlRatio = totalRecords > 0 ? Math.round((internationalCount / totalRecords) * 100) : 0;
+
+      document.getElementById('kpi-geo-ph-ratio').innerText = phRatio + '%';
+      document.getElementById('kpi-geo-ph-count').innerText = domesticCount + ' users';
+
+      document.getElementById('kpi-geo-intl-ratio').innerText = intlRatio + '%';
+      document.getElementById('kpi-geo-intl-count').innerText = internationalCount + ' users';
+
+      // Top City
+      const sortedCities = Object.entries(cityCounts).sort((a, b) => b[1] - a[1]);
+      if (sortedCities.length > 0) {
+        document.getElementById('kpi-geo-top-city').innerText = sortedCities[0][0];
+        document.getElementById('kpi-geo-top-city-sub').innerText = `${sortedCities[0][1]} active accounts`;
+      }
+
+      // 4. Update Charts
+      renderGeoCharts(countryCounts, sortedCities);
+
+      // 5. Update Table
+      geoAggregatedData = Object.values(regionDataMap).sort((a, b) => b.userCount - a.userCount);
+      renderGeoTableRows(geoAggregatedData);
+    }
+
+    function renderGeoCharts(countryCounts, sortedCities) {
+      if (typeof Chart === 'undefined') return;
+
+      // Chart 1: Country Doughnut
+      const countryCtx = document.getElementById('geoCountryChart')?.getContext('2d');
+      if (countryCtx) {
+        if (geoCountryChartInstance) geoCountryChartInstance.destroy();
+
+        const labels = Object.keys(countryCounts);
+        const data = Object.values(countryCounts);
+        const bgColors = ['#7C3AED', '#3B82F6', '#10B981', '#F59E0B', '#EC4899', '#6366F1', '#14B8A6', '#8B5CF6'];
+
+        geoCountryChartInstance = new Chart(countryCtx, {
+          type: 'doughnut',
+          data: {
+            labels,
+            datasets: [{
+              data,
+              backgroundColor: bgColors.slice(0, labels.length),
+              borderWidth: 0,
+              hoverOffset: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'right',
+                labels: { boxWidth: 12, font: { size: 11, family: 'Inter' } }
+              }
+            },
+            cutout: '68%'
+          }
+        });
+      }
+
+      // Chart 2: Top Cities Horizontal Bar
+      const cityCtx = document.getElementById('geoCityChart')?.getContext('2d');
+      if (cityCtx) {
+        if (geoCityChartInstance) geoCityChartInstance.destroy();
+
+        const top10 = sortedCities.slice(0, 8);
+        const cityLabels = top10.map(c => c[0]);
+        const cityData = top10.map(c => c[1]);
+
+        geoCityChartInstance = new Chart(cityCtx, {
+          type: 'bar',
+          data: {
+            labels: cityLabels,
+            datasets: [{
+              label: 'Users & Density',
+              data: cityData,
+              backgroundColor: '#8B5CF6',
+              borderRadius: 6
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+              y: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } }
+            }
+          }
+        });
+      }
+    }
+
+    function renderGeoTableRows(list) {
+      const tbody = document.getElementById('geoTableBody');
+      if (!tbody) return;
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">No matching geographic distribution found.</td></tr>`;
+        return;
+      }
+
+      const totalPlatformUsers = usersData.length || 1;
+
+      tbody.innerHTML = list.map(item => {
+        const share = Math.round((item.userCount / totalPlatformUsers) * 100);
+        const statusBadge = item.isDomestic
+          ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400">🇵🇭 Core Base</span>`
+          : `<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">🚀 Overseas Growth</span>`;
+
+        return `
+          <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+            <td class="p-4 font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <span class="text-base">${item.flag}</span>
+              <span>${item.countryName}</span>
+            </td>
+            <td class="p-4 font-semibold text-slate-700 dark:text-slate-300">
+              ${item.cityName}
+            </td>
+            <td class="p-4 font-black font-display text-slate-900 dark:text-white">
+              ${item.userCount}
+            </td>
+            <td class="p-4 font-bold text-emerald-600 dark:text-emerald-400">
+              ${item.clinicCount > 0 ? `🏥 ${item.clinicCount}` : '—'}
+            </td>
+            <td class="p-4 font-bold text-brand-600 dark:text-brand-400">
+              ${item.vipCount > 0 ? `👑 ${item.vipCount}` : '0'}
+            </td>
+            <td class="p-4">
+              <div class="flex items-center gap-2">
+                <div class="w-16 h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                  <div class="h-full bg-brand-500 rounded-full" style="width: ${Math.max(5, share)}%"></div>
+                </div>
+                <span class="font-bold text-[11px] text-slate-600 dark:text-slate-400">${share}%</span>
+              </div>
+            </td>
+            <td class="p-4">
+              ${statusBadge}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function setGeoSegment(segment) {
+      currentGeoSegment = segment;
+      ['all', 'ph', 'intl'].forEach(s => {
+        const btn = document.getElementById('geo-seg-' + s);
+        if (btn) {
+          if (s === segment) {
+            btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-400 shadow-sm transition-all";
+          } else {
+            btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-all";
+          }
+        }
+      });
+      filterGeoTable();
+    }
+
+    function filterGeoTable() {
+      const q = (document.getElementById('geoSearchInput')?.value || '').toLowerCase().trim();
+
+      const filtered = geoAggregatedData.filter(item => {
+        // 1. Segment filter
+        if (currentGeoSegment === 'ph' && !item.isDomestic) return false;
+        if (currentGeoSegment === 'intl' && item.isDomestic) return false;
+
+        // 2. Search query
+        if (q) {
+          return item.countryName.toLowerCase().includes(q) || item.cityName.toLowerCase().includes(q);
+        }
+        return true;
+      });
+
+      renderGeoTableRows(filtered);
+    }
+
+    function exportGeoCSV() {
+      let csv = "Country,City,Users,Clinics,VIP_Members,Share_Percent\n";
+      const total = usersData.length || 1;
+      geoAggregatedData.forEach(g => {
+        const share = Math.round((g.userCount / total) * 100);
+        csv += `"${g.countryName}","${g.cityName}","${g.userCount}","${g.clinicCount}","${g.vipCount}","${share}%"\n`;
+      });
+      downloadCSV(csv, "myfurpet_geographical_reach_analytics.csv");
     }
 
     // ── CSV Exporters ──

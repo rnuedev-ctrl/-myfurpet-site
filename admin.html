@@ -1822,18 +1822,20 @@
       const petSummary = pets.length > 0 ? `🐾 ${pets.map(pet => pet.name ? `${pet.name}${pet.breed ? ` (${pet.breed})` : ''}` : 'Pet').join(', ')}` : '';
       const avatar = p.avatarUrl || u.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(rawName)}&background=7C3AED&color=ffffff&size=64&bold=true`;
 
-      // Resolve Date & Time Joined (Strict Creation Timestamps First)
-      const creationFields = [
+      // Resolve Date & Time Joined (Strict Precise Timestamps First)
+      const preciseTimestampFields = [
         u.createdAt, p.createdAt, u.created_at, p.created_at,
         u.joinedAt, p.joinedAt, u.joined_at, p.joined_at,
         u.registeredAt, p.registeredAt, u.registered_at, p.registered_at,
+        u.agreedToTermsAt, p.agreedToTermsAt,
+        u.agreedToPrivacyAt, p.agreedToPrivacyAt,
+        u.vipGrantedAt, p.vipGrantedAt,
         u.dateJoined, p.dateJoined, u.registrationDate, p.registrationDate,
         u.creationTime, p.creationTime,
-        u.memberSince, p.memberSince,
         u.timestamp, p.timestamp
       ];
 
-      let rawJoined = creationFields.find(f => f !== undefined && f !== null && f !== '');
+      let rawJoined = preciseTimestampFields.find(f => f !== undefined && f !== null && f !== '');
 
       // Check pets for original creation date
       if (!rawJoined && pets.length > 0) {
@@ -1848,12 +1850,13 @@
         }
       }
 
-      // Founding account recognition
+      // Check memberSince or founding master account
       if (!rawJoined) {
         if (rawEmail === 'rnuedev@gmail.com' || rawEmail === 'bob@gmail.com' || u.id === 'rnuedev_gmail_com' || u.id === 'bob_gmail_com') {
           rawJoined = '2026-08-01T08:00:00.000Z'; // Founding Master Account
+        } else if (u.memberSince || p.memberSince) {
+          rawJoined = u.memberSince || p.memberSince;
         } else {
-          // Last resort fallback
           rawJoined = u.updatedAt || p.updatedAt || u.updated_at || p.updated_at || null;
         }
       }

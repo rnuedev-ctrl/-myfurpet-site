@@ -148,7 +148,9 @@
     };
 
     // Trigger auth state listener once ready
-    window.initAdminAuth();
+    if (typeof window.initAdminAuth === 'function') {
+      window.initAdminAuth();
+    }
   </script>
 </head>
 <body class="bg-slate-50 dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 min-h-screen flex flex-col selection:bg-brand-500 selection:text-white transition-colors duration-200">
@@ -1183,6 +1185,56 @@
       </div>
     </div>
   </div>
+  <!-- ========================================================================= -->
+  <!-- 🛡️ MULTI-LAYER CASCADE USER DELETION SECURITY MODAL -->
+  <!-- ========================================================================= -->
+  <div id="cascadeDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 hidden">
+    <div class="bg-white dark:bg-slate-900 border-2 border-rose-500/50 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative overflow-hidden text-left space-y-5">
+      <div class="flex items-center gap-3 text-rose-600 dark:text-rose-400">
+        <span class="text-3xl">🚨</span>
+        <div>
+          <h3 class="text-lg font-black font-display tracking-tight text-slate-900 dark:text-white">
+            Cascade User Deletion Barrier
+          </h3>
+          <p class="text-xs text-rose-500 font-semibold">
+            Irreversible Multi-Collection Purge Protocol
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 rounded-2xl p-4 space-y-2">
+        <p class="text-xs font-bold text-rose-900 dark:text-rose-200">
+          Target Account: <span id="cascadeTargetUserDisplay" class="font-mono underline"></span>
+        </p>
+        <p class="text-[11px] text-rose-700 dark:text-rose-300">
+          Executing this deletion will permanently purge:
+        </p>
+        <ul class="text-[11px] text-rose-600 dark:text-rose-400 space-y-1 list-disc pl-5">
+          <li>User Account Document in Cloud Firestore</li>
+          <li>All Associated Pets & Medical Passport Records</li>
+          <li>All Community Feed Posts, Stories & Comments</li>
+          <li>All PawAlert Lost / Found Pet Reports</li>
+          <li>All Clinic Bookings & Appointment Threads</li>
+        </ul>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+          Security Verification: Type <span id="cascadePhrasePrompt" class="font-mono font-black text-rose-600 dark:text-rose-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded"></span> below to unlock deletion:
+        </label>
+        <input type="text" id="cascadeVerificationInput" oninput="validateCascadeInput()" placeholder="Type exact phrase to confirm..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-rose-500">
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button onclick="closeCascadeDeleteModal()" class="px-4 py-2 rounded-xl text-xs font-bold border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300">
+          Cancel & Abort
+        </button>
+        <button id="confirmCascadeDeleteBtn" onclick="executeVerifiedCascadeDelete()" disabled class="px-5 py-2 rounded-xl text-xs font-black bg-rose-600 text-white hover:bg-rose-500 disabled:opacity-40 disabled:cursor-not-allowed shadow-md shadow-rose-600/20">
+          Permanently Delete User 🗑️
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- ========================================================================= -->
   <!-- 📜 CLIENT JAVASCRIPT CONTROLLER -->
@@ -1256,6 +1308,7 @@
     // ── Auth Gate Controller ──
     window.initAdminAuth = function() {
       const auth = window.fbAuth;
+      if (!auth) return;
       window.fbMethods.onAuthStateChanged(auth, async (user) => {
         if (user) {
           const email = (user.email || '').toLowerCase().trim();
@@ -1294,6 +1347,16 @@
         }
       });
     };
+
+    // Auto-initialize if auth module is already loaded
+    if (window.fbAuth) {
+      window.initAdminAuth();
+    }
+    window.addEventListener('load', () => {
+      if (window.fbAuth) {
+        window.initAdminAuth();
+      }
+    });
 
     function showAuthError(msg) {
       const el = document.getElementById('authErrorAlert');
@@ -1932,7 +1995,7 @@
               <button onclick="toggleUserSuspension('${u.id}', ${!u.isSuspended})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${u.isSuspended ? 'bg-emerald-600 text-white' : 'border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}">
                 ${u.isSuspended ? 'Activate' : 'Suspend'}
               </button>
-              <button onclick="cascadeDeleteUser('${u.id}', '${encodeURIComponent(u.name)}', '${encodeURIComponent(u.email)}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50" title="Permanently delete user and all associated pets/posts">
+              <button onclick="openCascadeDeleteModal('${u.id}', '${encodeURIComponent(u.name)}', '${encodeURIComponent(u.email)}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50" title="Safely delete user with multi-protection verification">
                 🗑️ Delete
               </button>
             </td>
@@ -1965,17 +2028,50 @@
       }
     }
 
-    // ── Cascade Delete User from Cloud Firestore ──
-    async function cascadeDeleteUser(userId, encodedName, encodedEmail) {
+    // ── Multi-Protected Cascade User Deletion ──
+    let pendingCascadeTarget = null;
+
+    function openCascadeDeleteModal(userId, encodedName, encodedEmail) {
       const cleanName = decodeURIComponent(encodedName || 'User');
       const cleanEmail = decodeURIComponent(encodedEmail || '').toLowerCase().trim();
-      const promptMsg = `🚨 PERMANENT CASCADE DELETE: Are you sure you want to permanently delete "${cleanName}" (${cleanEmail || userId})?\n\nThis will permanently erase:\n• User Profile record in Cloud Firestore\n• All registered Pets & Health Records\n• All Feed posts and Community comments\n• All PawAlert lost pet reports\n• All clinic bookings & appointments\n\n⚠️ This action CANNOT be undone.\n\nType YES to confirm:`;
       
-      const confirmInput = prompt(promptMsg);
-      if (confirmInput !== 'YES' && confirmInput !== 'yes') {
-        alert("Action cancelled. User was not deleted.");
+      // Protection Layer 1: Prevent Self-Deletion
+      if (currentAdminUser && currentAdminUser.email && currentAdminUser.email.toLowerCase() === cleanEmail) {
+        alert("⛔ Access Denied: You cannot delete your own active SuperAdmin account.");
         return;
       }
+
+      const expectedPhrase = `DELETE ${cleanName.toUpperCase().replace(/[^A-Z0-9]/g, '')}`;
+      pendingCascadeTarget = { userId, cleanName, cleanEmail, expectedPhrase };
+
+      document.getElementById('cascadeTargetUserDisplay').innerText = `${cleanName} (${cleanEmail || userId})`;
+      document.getElementById('cascadePhrasePrompt').innerText = expectedPhrase;
+      document.getElementById('cascadeVerificationInput').value = '';
+      document.getElementById('confirmCascadeDeleteBtn').disabled = true;
+      document.getElementById('cascadeDeleteModal').classList.remove('hidden');
+    }
+
+    function validateCascadeInput() {
+      const input = document.getElementById('cascadeVerificationInput').value.trim();
+      const btn = document.getElementById('confirmCascadeDeleteBtn');
+      if (pendingCascadeTarget && input === pendingCascadeTarget.expectedPhrase) {
+        btn.disabled = false;
+      } else {
+        btn.disabled = true;
+      }
+    }
+
+    function closeCascadeDeleteModal() {
+      pendingCascadeTarget = null;
+      document.getElementById('cascadeDeleteModal').classList.add('hidden');
+    }
+
+    async function executeVerifiedCascadeDelete() {
+      if (!pendingCascadeTarget) return;
+      const { userId, cleanName, cleanEmail } = pendingCascadeTarget;
+      const btn = document.getElementById('confirmCascadeDeleteBtn');
+      btn.disabled = true;
+      btn.innerText = "Purging Data Records...";
 
       const db = window.fbDb;
       const { doc, deleteDoc, collection, query, where, getDocs } = window.fbMethods;
@@ -2031,10 +2127,14 @@
         usersData = usersData.filter(u => u.id !== userId);
         renderUsers();
         updateOverviewKPIs();
+        closeCascadeDeleteModal();
 
         alert(`✅ Cascade Delete Complete!\n\nDeleted User: ${cleanName}\n• Cleaned ${deletedPets} pet record(s)\n• Cleaned ${deletedPosts} community post(s)\n• Cleaned ${deletedAlerts} PawAlert(s)\n• Purged user document from Firestore.`);
       } catch (err) {
         alert("Error executing cascade delete: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Permanently Delete User 🗑️";
       }
     }
         alert("Error updating VIP status: " + err.message);

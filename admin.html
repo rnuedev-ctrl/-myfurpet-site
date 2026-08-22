@@ -536,13 +536,20 @@
               </p>
             </div>
             
-            <div class="flex items-center gap-3">
-              <input type="text" id="userSearchInput" oninput="filterUsersList()" placeholder="🔍 Search name, email, or role..." class="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs w-64 focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <div class="flex flex-wrap items-center gap-3">
+              <input type="text" id="userSearchInput" oninput="filterUsersList()" placeholder="🔍 Search name, email, or role..." class="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs w-60 focus:outline-none focus:ring-2 focus:ring-brand-500">
               <select id="userRoleFilter" onchange="filterUsersList()" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold">
                 <option value="ALL">All Roles</option>
                 <option value="VIP">VIP Members</option>
                 <option value="ADMIN">Admins</option>
                 <option value="SUSPENDED">Suspended</option>
+              </select>
+              <select id="userSortSelect" onchange="handleUserSortSelect(this.value)" class="px-3 py-2 rounded-xl border border-brand-300 dark:border-brand-700 bg-brand-50/50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 text-xs font-bold focus:outline-none">
+                <option value="joined_desc">📅 Newest Joined First</option>
+                <option value="joined_asc">📅 Oldest Joined First</option>
+                <option value="name_asc">🔤 Name (A → Z)</option>
+                <option value="name_desc">🔤 Name (Z → A)</option>
+                <option value="vip_first">👑 VIP Members First</option>
               </select>
             </div>
           </div>
@@ -550,11 +557,12 @@
           <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider">
+                <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider select-none">
                   <tr>
-                    <th class="p-4">User</th>
+                    <th class="p-4 cursor-pointer hover:text-brand-500 transition-colors" onclick="toggleHeaderSort('name')">User ↕</th>
                     <th class="p-4">Email</th>
-                    <th class="p-4">VIP Status</th>
+                    <th class="p-4 cursor-pointer hover:text-brand-500 transition-colors" onclick="toggleHeaderSort('joined')">Date & Time Joined 📅 ↕</th>
+                    <th class="p-4 cursor-pointer hover:text-brand-500 transition-colors" onclick="toggleHeaderSort('vip')">VIP Status ↕</th>
                     <th class="p-4">Role</th>
                     <th class="p-4">Account Status</th>
                     <th class="p-4 text-right">Actions</th>
@@ -562,7 +570,7 @@
                 </thead>
                 <tbody id="usersTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
                   <tr>
-                    <td colspan="6" class="p-8 text-center text-slate-400">Streaming live users from Cloud Firestore...</td>
+                    <td colspan="7" class="p-8 text-center text-slate-400">Streaming live users from Cloud Firestore...</td>
                   </tr>
                 </tbody>
               </table>
@@ -1657,6 +1665,27 @@
       alert("📋 Copied universal affiliate link to clipboard!");
     }
 
+    // ── User Sorting State ──
+    let userSortMode = 'joined_desc';
+
+    function handleUserSortSelect(val) {
+      userSortMode = val;
+      renderUsers();
+    }
+
+    function toggleHeaderSort(type) {
+      if (type === 'joined') {
+        userSortMode = userSortMode === 'joined_desc' ? 'joined_asc' : 'joined_desc';
+      } else if (type === 'name') {
+        userSortMode = userSortMode === 'name_asc' ? 'name_desc' : 'name_asc';
+      } else if (type === 'vip') {
+        userSortMode = 'vip_first';
+      }
+      const select = document.getElementById('userSortSelect');
+      if (select) select.value = userSortMode;
+      renderUsers();
+    }
+
     // ── User Schema Resolver Helper ──
     function resolveAdminUser(u) {
       const p = u.profile || u.user || {};
@@ -1681,6 +1710,43 @@
       const petSummary = pets.length > 0 ? `🐾 ${pets.map(pet => pet.name ? `${pet.name}${pet.breed ? ` (${pet.breed})` : ''}` : 'Pet').join(', ')}` : '';
       const avatar = p.avatarUrl || u.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(rawName)}&background=7C3AED&color=ffffff&size=64&bold=true`;
 
+      // Resolve Date & Time Joined
+      let rawJoined = u.createdAt || u.joinedAt || u.registeredAt || p.createdAt || p.joinedAt || p.registeredAt || u.timestamp || p.timestamp || null;
+      let joinedDateObj = null;
+      if (rawJoined) {
+        if (rawJoined.toDate) {
+          joinedDateObj = rawJoined.toDate();
+        } else if (rawJoined.seconds) {
+          joinedDateObj = new Date(rawJoined.seconds * 1000);
+        } else if (typeof rawJoined === 'number' || !isNaN(Number(rawJoined))) {
+          joinedDateObj = new Date(Number(rawJoined));
+        } else {
+          joinedDateObj = new Date(rawJoined);
+        }
+      } else if (u.id && u.id.includes('-') && !isNaN(Number(u.id.split('-')[1]))) {
+        const possibleTime = Number(u.id.split('-')[1]);
+        if (possibleTime > 1600000000000 && possibleTime < 2500000000000) {
+          joinedDateObj = new Date(possibleTime);
+        }
+      }
+
+      let formattedDate = 'N/A';
+      let formattedTime = '';
+      let joinedTimestamp = 0;
+      if (joinedDateObj && !isNaN(joinedDateObj.getTime())) {
+        joinedTimestamp = joinedDateObj.getTime();
+        formattedDate = joinedDateObj.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        });
+        formattedTime = joinedDateObj.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        });
+      }
+
       return {
         id: u.id,
         name: rawName,
@@ -1691,6 +1757,9 @@
         pets,
         petSummary,
         avatar,
+        formattedDate,
+        formattedTime,
+        joinedTimestamp,
         isSuspended: !!(u.isSuspended || p.isSuspended)
       };
     }
@@ -1736,8 +1805,30 @@
         return matchesQuery;
       });
 
+      // Apply Multi-Criteria Sorting
+      filtered.sort((a, b) => {
+        if (userSortMode === 'joined_desc') {
+          return (b.joinedTimestamp || 0) - (a.joinedTimestamp || 0);
+        }
+        if (userSortMode === 'joined_asc') {
+          return (a.joinedTimestamp || 0) - (b.joinedTimestamp || 0);
+        }
+        if (userSortMode === 'name_asc') {
+          return a.name.localeCompare(b.name);
+        }
+        if (userSortMode === 'name_desc') {
+          return b.name.localeCompare(a.name);
+        }
+        if (userSortMode === 'vip_first') {
+          if (a.isVip && !b.isVip) return -1;
+          if (!a.isVip && b.isVip) return 1;
+          return (b.joinedTimestamp || 0) - (a.joinedTimestamp || 0);
+        }
+        return 0;
+      });
+
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No users match criteria.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">No users match criteria.</td></tr>`;
         return;
       }
 
@@ -1745,13 +1836,19 @@
         return `
           <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
             <td class="p-4 flex items-center gap-3">
-              <img src="${u.avatar}" class="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 shadow-sm" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=7C3AED&color=ffffff'">
+              <img src="${u.avatar}" class="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 shadow-sm flex-shrink-0" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=7C3AED&color=ffffff'">
               <div>
                 <p class="font-bold text-slate-900 dark:text-white text-xs">${u.name}</p>
                 ${u.petSummary ? `<p class="text-[11px] text-brand-600 dark:text-brand-400 font-medium">${u.petSummary}</p>` : `<p class="text-[10px] text-slate-400">UID: ${u.id.substring(0, 12)}...</p>`}
               </div>
             </td>
             <td class="p-4 font-mono text-slate-600 dark:text-slate-300 text-xs">${u.email}</td>
+            <td class="p-4 whitespace-nowrap">
+              <div class="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                <span>🗓️</span> ${u.formattedDate}
+              </div>
+              ${u.formattedTime ? `<div class="text-[10px] text-slate-400 font-mono pl-5">⏰ ${u.formattedTime}</div>` : ''}
+            </td>
             <td class="p-4">
               <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${u.isVip ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-700' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}">
                 ${u.vipPlanName}

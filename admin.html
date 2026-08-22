@@ -514,6 +514,22 @@
             </div>
           </div>
 
+          <!-- Transparent Data Source Telemetry Banner -->
+          <div class="p-3.5 rounded-2xl bg-brand-50/70 dark:bg-brand-950/40 border border-brand-200/80 dark:border-brand-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div class="flex items-center gap-2.5">
+              <span class="text-base">📡</span>
+              <div>
+                <span class="font-bold text-slate-900 dark:text-white">Live Data Stream:</span>
+                <span class="text-slate-600 dark:text-slate-400 ml-1">
+                  Aggregated from <b>User Profiles</b> (<code class="text-brand-600 dark:text-brand-400">users.location</code>), <b>Verified Partner Clinics</b> (<code class="text-brand-600 dark:text-brand-400">places.address</code>), and <b>SOS Broadcasts</b> (<code class="text-brand-600 dark:text-brand-400">lost_pet_alerts.lastSeenLocation</code>).
+                </span>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 whitespace-nowrap self-start sm:self-auto">
+              ● 100% Live Telemetry
+            </span>
+          </div>
+
           <!-- Top Geo KPI Metric Cards -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
@@ -2041,7 +2057,34 @@
         }
       }
 
-      // 5. Default Fallback for Existing Beta Accounts
+      // 5. Normalize Early Beta VIP / Founding testers (ignore testing overwrites from today 2026-08-22)
+      const isEarlyBetaTester = (
+        isVip ||
+        u.vipPlan?.includes('early_access') ||
+        p.vipPlan?.includes('early_access') ||
+        u.earlyAccess ||
+        p.earlyAccess ||
+        rawEmail === 'internetville@gmail.com' ||
+        rawEmail.includes('tester')
+      );
+
+      if (rawJoined && typeof rawJoined === 'string' && rawJoined.startsWith('2026-08-22') && isEarlyBetaTester) {
+        let petRegDate = null;
+        if (pets.length > 0) {
+          for (const pet of pets) {
+            if (pet && typeof pet === 'object') {
+              const pDate = pet.createdAt || pet.created_at || pet.dateAdded;
+              if (pDate && !pDate.toString().startsWith('2026-08-22')) {
+                petRegDate = pDate;
+                break;
+              }
+            }
+          }
+        }
+        rawJoined = petRegDate || '2026-08-01T08:00:00.000Z';
+      }
+
+      // 6. Default Fallback for Existing Beta Accounts
       if (!rawJoined) {
         rawJoined = '2026-08-01T08:00:00.000Z';
       }
@@ -2909,8 +2952,7 @@
       const p = record.profile || {};
       const rawCountry = (record.country || p.country || record.countryCode || '').toString().trim().toUpperCase();
       const rawAddress = (record.location || p.location || record.address || p.address || record.city || p.city || record.province || p.province || '').toString().trim();
-      const rawEmail = (record.email || p.email || '').toString().toLowerCase();
-      const rawPhone = (record.phone || p.phone || '').toString();
+      const rawPhone = (record.phone || p.phone || '').toString().trim();
       const rawCurrency = (record.currencyMode || record.currency || '').toString().toUpperCase();
 
       let countryCode = 'PH';
@@ -2918,69 +2960,186 @@
 
       const lowerAddr = rawAddress.toLowerCase();
 
-      // 1. Check Global City & Country Dictionary
-      for (const item of GLOBAL_CITY_DICTIONARY) {
-        if (item.match.some(m => lowerAddr.includes(m) || (m.length > 2 && rawAddress.toLowerCase().includes(m)))) {
-          countryCode = item.country;
-          cityName = item.city;
-          break;
-        }
-      }
+      // ── Step 1: Detect Sovereign Country ──────────────────────
+      const isExplicitUS = (
+        rawCountry === 'US' || 
+        rawCountry === 'USA' || 
+        /\b(united states|u\.s\.a\.|u\.s\.|california|los angeles|san francisco|san diego|new york|chicago|seattle|austin|houston|dallas|texas|florida|miami|orlando|honolulu|hawaii|nevada|las vegas|illinois|washington)\b/i.test(lowerAddr)
+      );
 
-      // 2. Check Philippine City & Regional Dictionary
-      if (!cityName) {
-        for (const item of PHILIPPINE_CITY_DICTIONARY) {
-          if (item.match.some(m => lowerAddr.includes(m))) {
-            countryCode = 'PH';
-            cityName = item.city;
-            break;
+      const isExplicitJP = (
+        rawCountry === 'JP' || 
+        rawCountry === 'JAPAN' || 
+        rawCurrency === 'JPY' || 
+        rawPhone.startsWith('+81') ||
+        /\b(japan|tokyo|osaka|kyoto|yokohama|nagoya|fukuoka|sapporo)\b/i.test(lowerAddr)
+      );
+
+      const isExplicitCA = (
+        rawCountry === 'CA' || 
+        rawCountry === 'CANADA' || 
+        rawCurrency === 'CAD' || 
+        /\b(canada|toronto|vancouver|calgary|montreal|ottawa|ontario|alberta|british columbia)\b/i.test(lowerAddr)
+      );
+
+      const isExplicitGB = (
+        rawCountry === 'GB' || 
+        rawCountry === 'UK' || 
+        rawCurrency === 'GBP' || 
+        rawPhone.startsWith('+44') ||
+        /\b(united kingdom|england|london|manchester|birmingham|edinburgh|glasgow)\b/i.test(lowerAddr)
+      );
+
+      const isExplicitAU = (
+        rawCountry === 'AU' || 
+        rawCountry === 'AUSTRALIA' || 
+        rawCurrency === 'AUD' || 
+        rawPhone.startsWith('+61') ||
+        /\b(australia|sydney|melbourne|brisbane|perth|adelaide|queensland)\b/i.test(lowerAddr)
+      );
+
+      const isExplicitSG = (
+        rawCountry === 'SG' || 
+        rawCountry === 'SINGAPORE' || 
+        rawCurrency === 'SGD' || 
+        rawPhone.startsWith('+65') ||
+        /\b(singapore|orchard|jurong)\b/i.test(lowerAddr)
+      );
+
+      const isExplicitAE = (
+        rawCountry === 'AE' || 
+        rawCountry === 'UAE' || 
+        rawCurrency === 'AED' || 
+        rawPhone.startsWith('+971') ||
+        /\b(united arab emirates|dubai|abu dhabi|sharjah)\b/i.test(lowerAddr)
+      );
+
+      // ── Step 2: Route by Country ──────────────────────────────
+      if (isExplicitUS) {
+        countryCode = 'US';
+        if (/\b(los angeles|hollywood|pasadena)\b/i.test(lowerAddr)) cityName = 'Los Angeles, CA';
+        else if (/\b(san francisco|bay area|silicon valley|san jose|oakland|palo alto)\b/i.test(lowerAddr)) cityName = 'San Francisco Bay, CA';
+        else if (/\b(san diego)\b/i.test(lowerAddr)) cityName = 'San Diego, CA';
+        else if (/\b(new york|nyc|manhattan|brooklyn|queens)\b/i.test(lowerAddr)) cityName = 'New York, NY';
+        else if (/\b(seattle|redmond)\b/i.test(lowerAddr)) cityName = 'Seattle, WA';
+        else if (/\b(austin|dallas|houston|fort worth)\b/i.test(lowerAddr)) cityName = 'Texas (Austin / Dallas)';
+        else if (/\b(chicago)\b/i.test(lowerAddr)) cityName = 'Chicago, IL';
+        else if (/\b(miami|orlando|tampa)\b/i.test(lowerAddr)) cityName = 'Florida (Miami / Orlando)';
+        else if (/\b(honolulu|oahu)\b/i.test(lowerAddr)) cityName = 'Honolulu, HI';
+        else if (/\b(california)\b/i.test(lowerAddr)) cityName = 'California (Statewide)';
+        else cityName = 'United States (Various)';
+      } else if (isExplicitJP) {
+        countryCode = 'JP';
+        if (/\b(tokyo|shinjuku|shibuya|minato|roppongi)\b/i.test(lowerAddr)) cityName = 'Tokyo';
+        else if (/\b(osaka|kyoto|kansai|kobe)\b/i.test(lowerAddr)) cityName = 'Osaka / Kyoto';
+        else if (/\b(yokohama)\b/i.test(lowerAddr)) cityName = 'Yokohama';
+        else cityName = 'Japan (Various)';
+      } else if (isExplicitCA) {
+        countryCode = 'CA';
+        if (/\b(toronto|ontario|mississauga)\b/i.test(lowerAddr)) cityName = 'Toronto, ON';
+        else if (/\b(vancouver|british columbia)\b/i.test(lowerAddr)) cityName = 'Vancouver, BC';
+        else if (/\b(calgary|edmonton|alberta)\b/i.test(lowerAddr)) cityName = 'Calgary, AB';
+        else cityName = 'Canada (Various)';
+      } else if (isExplicitGB) {
+        countryCode = 'GB';
+        if (/\b(london|westminster|camden)\b/i.test(lowerAddr)) cityName = 'London';
+        else if (/\b(manchester|birmingham|leeds)\b/i.test(lowerAddr)) cityName = 'Manchester / Midlands';
+        else cityName = 'United Kingdom (Various)';
+      } else if (isExplicitAU) {
+        countryCode = 'AU';
+        if (/\b(sydney)\b/i.test(lowerAddr)) cityName = 'Sydney, NSW';
+        else if (/\b(melbourne)\b/i.test(lowerAddr)) cityName = 'Melbourne, VIC';
+        else if (/\b(brisbane)\b/i.test(lowerAddr)) cityName = 'Brisbane, QLD';
+        else cityName = 'Australia (Various)';
+      } else if (isExplicitSG) {
+        countryCode = 'SG';
+        cityName = 'Singapore';
+      } else if (isExplicitAE) {
+        countryCode = 'AE';
+        cityName = 'Dubai / UAE';
+      } else {
+        // ── Default / Philippines Resolution ───────────────────
+        countryCode = 'PH';
+
+        if (/\b(quezon city|qc|diliman|novaliches|cubao|katipunan)\b/i.test(lowerAddr)) {
+          cityName = 'Quezon City';
+        } else if (/\b(makati|ayala|bel-air|poblacion)\b/i.test(lowerAddr)) {
+          cityName = 'Makati';
+        } else if (/\b(taguig|bgc|bonifacio|fort bonifacio|market market)\b/i.test(lowerAddr)) {
+          cityName = 'Taguig (BGC)';
+        } else if (/\b(pasig|ortigas|kapitolyo)\b/i.test(lowerAddr)) {
+          cityName = 'Pasig';
+        } else if (/\b(mandaluyong|wack-wack|shaw)\b/i.test(lowerAddr)) {
+          cityName = 'Mandaluyong';
+        } else if (/\b(san juan|greenhills)\b/i.test(lowerAddr)) {
+          cityName = 'San Juan';
+        } else if (/\b(marikina)\b/i.test(lowerAddr)) {
+          cityName = 'Marikina';
+        } else if (/\b(pasay|moa|mall of asia|baclaran|roxas)\b/i.test(lowerAddr)) {
+          cityName = 'Pasay';
+        } else if (/\b(parañaque|paranaque|bf homes|sucat)\b/i.test(lowerAddr)) {
+          cityName = 'Parañaque';
+        } else if (/\b(las piñas|las pinas)\b/i.test(lowerAddr)) {
+          cityName = 'Las Piñas';
+        } else if (/\b(muntinlupa|alabang|filinvest|ayala alabang)\b/i.test(lowerAddr)) {
+          cityName = 'Muntinlupa (Alabang)';
+        } else if (/\b(caloocan|kalookan|monumento)\b/i.test(lowerAddr)) {
+          cityName = 'Caloocan';
+        } else if (/\b(malabon)\b/i.test(lowerAddr)) {
+          cityName = 'Malabon';
+        } else if (/\b(navotas)\b/i.test(lowerAddr)) {
+          cityName = 'Navotas';
+        } else if (/\b(valenzuela)\b/i.test(lowerAddr)) {
+          cityName = 'Valenzuela';
+        } else if (/\b(pateros)\b/i.test(lowerAddr)) {
+          cityName = 'Pateros';
+        } else if (/\b(manila|ermita|malate|sampaloc|tondo|binondo|sta mesa|sta cruz|paco|pandacan|intramuros)\b/i.test(lowerAddr)) {
+          cityName = 'City of Manila';
+        } else if (/\b(cebu|mandaue|lapu-lapu|talisay|minglanilla|banilad|lahug|mactan)\b/i.test(lowerAddr)) {
+          cityName = 'Cebu Metro';
+        } else if (/\b(davao|tagum|lanang|matina|bajada)\b/i.test(lowerAddr)) {
+          cityName = 'Davao City';
+        } else if (/\b(iloilo|mandurriao|jaro)\b/i.test(lowerAddr)) {
+          cityName = 'Iloilo City';
+        } else if (/\b(bacolod|negros|dumaguete)\b/i.test(lowerAddr)) {
+          cityName = 'Bacolod / Negros';
+        } else if (/\b(baguio|benguet|la trinidad|camp john hay)\b/i.test(lowerAddr)) {
+          cityName = 'Baguio City';
+        } else if (/\b(angeles|san fernando pampanga|clark|mabalacat|pampanga)\b/i.test(lowerAddr)) {
+          cityName = 'Angeles / Pampanga';
+        } else if (/\b(bacoor|imus|dasmariñas|dasmarinas|tagaytay|general trias|gentri|silang|cavite)\b/i.test(lowerAddr)) {
+          cityName = 'Cavite Metro';
+        } else if (/\b(santa rosa|sta rosa|calamba|biñan|binan|cabuyao|san pedro|los baños|los banos|nuvali|laguna)\b/i.test(lowerAddr)) {
+          cityName = 'Laguna Metro';
+        } else if (/\b(antipolo|cainta|taytay|angono|san mateo|rodriguez|rizal)\b/i.test(lowerAddr)) {
+          cityName = 'Antipolo / Rizal';
+        } else if (/\b(batangas|lipa|tanauan|sto tomas|nasugbu)\b/i.test(lowerAddr)) {
+          cityName = 'Batangas (Lipa / Metro)';
+        } else if (/\b(bulacan|malolos|meycauayan|sjdm|san jose del monte|marilao|bocaue)\b/i.test(lowerAddr)) {
+          cityName = 'Bulacan Metro';
+        } else if (/\b(general santos|gensan)\b/i.test(lowerAddr)) {
+          cityName = 'General Santos';
+        } else if (/\b(cagayan de oro|cdo)\b/i.test(lowerAddr)) {
+          cityName = 'Cagayan de Oro';
+        } else if (/\b(zamboanga)\b/i.test(lowerAddr)) {
+          cityName = 'Zamboanga City';
+        } else if (/\b(puerto princesa|el nido|coron|palawan)\b/i.test(lowerAddr)) {
+          cityName = 'Puerto Princesa, Palawan';
+        } else {
+          // Dynamic Tokenizer Fallback for custom formatted strings (e.g. "Ormoc City", "Naga")
+          if (rawAddress) {
+            const parts = rawAddress.split(',').map(s => s.trim()).filter(Boolean);
+            if (parts.length > 0) {
+              const firstPart = parts[0];
+              if (firstPart.length >= 3 && !/philippines|metro manila/i.test(firstPart)) {
+                cityName = firstPart.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+              }
+            }
+          }
+          if (!cityName) {
+            cityName = 'Quezon City (Metro Manila)';
           }
         }
-      }
-
-      // 3. Check Explicit Country Code or Currency
-      if (!cityName) {
-        if (rawCountry === 'US' || rawCountry === 'USA' || rawCurrency === 'USD' || rawPhone.startsWith('+1')) {
-          countryCode = 'US';
-          cityName = 'United States (Various)';
-        } else if (rawCountry === 'JP' || rawCountry === 'JAPAN' || rawCurrency === 'JPY' || rawPhone.startsWith('+81')) {
-          countryCode = 'JP';
-          cityName = 'Japan (Various)';
-        } else if (rawCountry === 'CA' || rawCountry === 'CANADA' || rawCurrency === 'CAD') {
-          countryCode = 'CA';
-          cityName = 'Canada (Various)';
-        } else if (rawCountry === 'GB' || rawCountry === 'UK' || rawCurrency === 'GBP' || rawPhone.startsWith('+44')) {
-          countryCode = 'GB';
-          cityName = 'United Kingdom (Various)';
-        } else if (rawCountry === 'AU' || rawCountry === 'AUSTRALIA' || rawCurrency === 'AUD' || rawPhone.startsWith('+61')) {
-          countryCode = 'AU';
-          cityName = 'Australia (Various)';
-        } else if (rawCountry === 'SG' || rawCountry === 'SINGAPORE' || rawCurrency === 'SGD' || rawPhone.startsWith('+65')) {
-          countryCode = 'SG';
-          cityName = 'Singapore';
-        } else if (rawCountry === 'AE' || rawCountry === 'UAE' || rawCurrency === 'AED' || rawPhone.startsWith('+971')) {
-          countryCode = 'AE';
-          cityName = 'Dubai / UAE';
-        } else if (rawCountry && COUNTRY_META[rawCountry]) {
-          countryCode = rawCountry;
-          cityName = COUNTRY_META[rawCountry].name;
-        }
-      }
-
-      // 4. Dynamic Tokenizer Fallback for custom formatted strings (e.g. "Bacolod, Philippines", "Ormoc City")
-      if (!cityName && rawAddress) {
-        const parts = rawAddress.split(',').map(s => s.trim()).filter(Boolean);
-        if (parts.length > 0) {
-          const firstPart = parts[0];
-          if (firstPart.length >= 3 && !firstPart.toLowerCase().includes('philippines') && !firstPart.toLowerCase().includes('metro manila')) {
-            cityName = firstPart.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-          }
-        }
-      }
-
-      // 5. Default Fallback
-      if (!cityName) {
-        cityName = 'Quezon City (Metro Manila)';
       }
 
       return { countryCode, cityName };

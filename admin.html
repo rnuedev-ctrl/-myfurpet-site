@@ -1710,23 +1710,70 @@
       const petSummary = pets.length > 0 ? `🐾 ${pets.map(pet => pet.name ? `${pet.name}${pet.breed ? ` (${pet.breed})` : ''}` : 'Pet').join(', ')}` : '';
       const avatar = p.avatarUrl || u.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(rawName)}&background=7C3AED&color=ffffff&size=64&bold=true`;
 
-      // Resolve Date & Time Joined
-      let rawJoined = u.createdAt || u.joinedAt || u.registeredAt || p.createdAt || p.joinedAt || p.registeredAt || u.timestamp || p.timestamp || null;
+      // Resolve Date & Time Joined from all Firestore timestamp and metadata fields
+      const candidateFields = [
+        u.createdAt, p.createdAt, u.created_at, p.created_at,
+        u.joinedAt, p.joinedAt, u.joined_at, p.joined_at,
+        u.registeredAt, p.registeredAt, u.registered_at, p.registered_at,
+        u.dateJoined, p.dateJoined, u.registrationDate, p.registrationDate,
+        u.creationTime, p.creationTime,
+        u.vipGrantedAt, p.vipGrantedAt,
+        u.updatedAt, p.updatedAt, u.updated_at, p.updated_at,
+        u.lastActiveAt, p.lastActiveAt, u.lastLoginAt, p.lastLoginAt,
+        u.timestamp, p.timestamp
+      ];
+
+      let rawJoined = candidateFields.find(f => f !== undefined && f !== null && f !== '');
+
+      // Check pets for fallback creation dates
+      if (!rawJoined && pets.length > 0) {
+        for (const pet of pets) {
+          if (pet && typeof pet === 'object') {
+            const petDate = pet.createdAt || pet.created_at || pet.updatedAt || pet.dateAdded || pet.timestamp;
+            if (petDate) {
+              rawJoined = petDate;
+              break;
+            }
+          }
+        }
+      }
+
       let joinedDateObj = null;
       if (rawJoined) {
-        if (rawJoined.toDate) {
-          joinedDateObj = rawJoined.toDate();
-        } else if (rawJoined.seconds) {
-          joinedDateObj = new Date(rawJoined.seconds * 1000);
-        } else if (typeof rawJoined === 'number' || !isNaN(Number(rawJoined))) {
-          joinedDateObj = new Date(Number(rawJoined));
-        } else {
-          joinedDateObj = new Date(rawJoined);
-        }
-      } else if (u.id && u.id.includes('-') && !isNaN(Number(u.id.split('-')[1]))) {
-        const possibleTime = Number(u.id.split('-')[1]);
-        if (possibleTime > 1600000000000 && possibleTime < 2500000000000) {
-          joinedDateObj = new Date(possibleTime);
+        try {
+          if (typeof rawJoined === 'object' && rawJoined !== null) {
+            if (typeof rawJoined.toDate === 'function') {
+              joinedDateObj = rawJoined.toDate();
+            } else if (rawJoined.seconds) {
+              joinedDateObj = new Date(rawJoined.seconds * 1000);
+            } else if (rawJoined._seconds) {
+              joinedDateObj = new Date(rawJoined._seconds * 1000);
+            }
+          } else if (typeof rawJoined === 'number') {
+            joinedDateObj = new Date(rawJoined);
+          } else if (typeof rawJoined === 'string') {
+            const numVal = Number(rawJoined);
+            if (!isNaN(numVal) && numVal > 1600000000000 && numVal < 2500000000000) {
+              joinedDateObj = new Date(numVal);
+            } else {
+              const parsed = new Date(rawJoined);
+              if (!isNaN(parsed.getTime())) {
+                joinedDateObj = parsed;
+              }
+            }
+          }
+        } catch (e) {}
+      }
+
+      // Check if doc ID or user ID contains a unix epoch timestamp (e.g. 1740000000000)
+      if (!joinedDateObj || isNaN(joinedDateObj.getTime())) {
+        const idMatches = (u.id || '').match(/\d{10,13}/);
+        if (idMatches && idMatches[0]) {
+          let tsNum = Number(idMatches[0]);
+          if (tsNum < 10000000000) tsNum = tsNum * 1000;
+          if (tsNum > 1600000000000 && tsNum < 2500000000000) {
+            joinedDateObj = new Date(tsNum);
+          }
         }
       }
 

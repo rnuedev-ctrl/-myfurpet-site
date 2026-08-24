@@ -863,24 +863,62 @@
     /* Footer */
     footer {
       border-top: 1px solid var(--border-glass);
-      padding: 40px 0;
+      padding: 48px 0 36px 0;
       text-align: center;
       color: var(--text-muted);
       font-size: 13px;
     }
     .footer-links {
       display: flex;
+      flex-wrap: wrap;
       justify-content: center;
-      gap: 24px;
-      margin-bottom: 16px;
+      align-items: center;
+      gap: 10px 14px;
+      margin-bottom: 24px;
+      max-width: 960px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .footer-links a {
-      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #94A3B8;
       text-decoration: none;
-      transition: color 0.2s;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .footer-links a:hover {
       color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+    .footer-links a.footer-danger {
+      color: #F87171;
+      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.25);
+    }
+    .footer-links a.footer-danger:hover {
+      color: #FECACA;
+      background: rgba(239, 68, 68, 0.18);
+      border-color: rgba(239, 68, 68, 0.45);
+    }
+    .footer-links a.footer-accent {
+      color: #A78BFA;
+      background: rgba(124, 58, 237, 0.1);
+      border-color: rgba(167, 139, 250, 0.25);
+    }
+    .footer-links a.footer-accent:hover {
+      color: #C4B5FD;
+      background: rgba(124, 58, 237, 0.2);
+      border-color: rgba(167, 139, 250, 0.45);
     }
 
     /* Toast Notification */
@@ -913,6 +951,18 @@
       .interactive-grid { grid-template-columns: 1fr; }
       .nav-links { display: none; }
       .form-row { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .footer-links {
+        gap: 8px 8px;
+        margin-bottom: 20px;
+      }
+      .footer-links a {
+        font-size: 12px;
+        padding: 6px 12px;
+        border-radius: 999px;
+      }
     }
   </style>
 </head>
@@ -1909,19 +1959,19 @@
     <!-- Footer -->
     <footer>
       <div class="footer-links">
-        <a href="privacy.html">Privacy Policy</a>
-        <a href="terms.html">Terms of Service</a>
-        <a href="#feedback">💡 Suggest a Feature</a>
+        <a href="privacy.html">🔒 Privacy Policy</a>
+        <a href="terms.html">📜 Terms of Service</a>
+        <a href="#feedback" class="footer-accent">💡 Suggest a Feature</a>
         <a href="#feedback">🚨 Report a Problem</a>
-        <a href="delete-account.html" style="color: #FCA5A5; font-weight: 700;">🗑️ Delete Account & Data</a>
-        <a href="#features">App Features</a>
-        <a href="tag.html?petId=demo&name=Chiqui&species=Dog&breed=Golden+Retriever&phone=%2B639171234567">Smart Collar Tag Demo</a>
-        <a href="#tools">Free QR Tag Generator</a>
+        <a href="delete-account.html" class="footer-danger">🗑️ Delete Account &amp; Data</a>
+        <a href="#features">🐾 App Features</a>
+        <a href="tag.html?petId=demo&name=Chiqui&species=Dog&breed=Golden+Retriever&phone=%2B639171234567">🏷️ Smart Collar Tag Demo</a>
+        <a href="#tools">✨ Free Micro-Tools</a>
       </div>
-      <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px; max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+      <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px; max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.6; padding: 0 12px;">
         📢 <strong>Affiliate Disclosure:</strong> MyFurPet is a participant in the <strong>Amazon Services LLC Associates Program</strong> (an affiliate advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to Amazon.com) and the <strong>Shopee Affiliate Program</strong>. Tapping product links and purchasing pet supplies may earn MyFurPet a referral commission at <strong>zero additional cost to you</strong>. Non-prescription supplies are curated for wellness and do not substitute professional veterinary diagnoses.
       </div>
-      <div>
+      <div style="font-size: 12.5px; color: var(--text-muted); padding: 0 12px;">
         © 2026 MyFurPet. All rights reserved. Crafted with 💜 for pet parents &amp; veterinary partners everywhere.
       </div>
     </footer>

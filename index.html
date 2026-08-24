@@ -614,8 +614,8 @@
     /* Interactive Web Demos Grid */
     .interactive-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 32px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
       margin-bottom: 80px;
     }
     .interactive-card {
@@ -1142,6 +1142,48 @@
           <h3>PawPoints™ Rewards Vault</h3>
           <p>Earn points for completing daily GPS walks, checking off medication pillbox doses, and care streaks. Redeem points for free VIP Premium months and custom avatar flair.</p>
         </div>
+
+        <div class="glass-card feature-card">
+          <div class="feature-icon-box icon-pink">🎂</div>
+          <h3>Pet Birthday Hub &amp; Story Creator</h3>
+          <p>Count down to your pet’s special day, generate custom 9:16 vertical &amp; 1:1 square celebration story cards, browse vet-approved cake recipes, and share interactive passport wish greetings.</p>
+        </div>
+
+        <div class="glass-card feature-card">
+          <div class="feature-icon-box icon-amber">💊</div>
+          <h3>Smart Pillbox &amp; Lockscreen Alarms</h3>
+          <p>Multi-slot daily medication schedules with high-priority lockscreen alarms, today's dose completion logs, streak tracking, and automatic low-supply refill warnings (≤ 7 days).</p>
+        </div>
+
+        <div class="glass-card feature-card">
+          <div class="feature-icon-box icon-emerald">📅</div>
+          <h3>Pet Welfare Calendar &amp; Breed Days</h3>
+          <p>Year-round global pet health observances, season-specific wellness focus themes, and automatic breed celebration matches (e.g. Golden Retriever Day, Pug Day) with daily care tips.</p>
+        </div>
+
+        <div class="glass-card feature-card">
+          <div class="feature-icon-box icon-purple">🧬</div>
+          <h3>Pet DNA &amp; Hereditary Risk Profile</h3>
+          <p>Visual breed ancestry composition analysis and hereditary health risk screening with 1-tap preventive vet checkup guidance to protect your pet’s future.</p>
+        </div>
+
+        <div class="glass-card feature-card">
+          <div class="feature-icon-box icon-emerald">💰</div>
+          <h3>Pet Expense Tracker &amp; Budgeting</h3>
+          <p>Track and categorize monthly pet expenses across food, vet consultations, medications, and grooming with visual budget meters and spending analytics.</p>
+        </div>
+
+        <div class="glass-card feature-card">
+          <div class="feature-icon-box icon-rose">📸</div>
+          <h3>Pet Photo Albums &amp; Memory Vault</h3>
+          <p>Dedicated photo albums for every pet in your family with timestamped memory captions, age milestone tagging, and full-resolution media export.</p>
+        </div>
+
+        <div class="glass-card feature-card">
+          <div class="feature-icon-box icon-blue">🏡</div>
+          <h3>Dog Park Radar &amp; Rescue Adoption</h3>
+          <p>Explore verified community dog parks with amenity badges (fenced, off-leash, water station) and browse verified shelter rescue listings with direct adoption inquiries.</p>
+        </div>
       </div>
 
       <!-- ✨ Medical Hub Phase 2 Showcase -->
@@ -1322,6 +1364,40 @@
             <div class="calorie-num" id="calc-output">650 kcal / day</div>
             <div style="font-size: 12px; color: #E2E8F0; margin-top: 4px;" id="calc-breakdown">
               Equivalent to approx. 180g of standard dry kibble split into 2 daily meals.
+            </div>
+          </div>
+        </div>
+
+        <!-- Tool 3: Birthday Countdown & Vet Cake Recipe Preview -->
+        <div class="glass-card interactive-card">
+          <h3>🎂 Birthday Hub &amp; Cake Recipe</h3>
+          <p>Calculate your pet’s next birthday countdown and preview a certified vet-approved homemade cake recipe.</p>
+          
+          <div class="demo-input-group">
+            <label>Pet's Name</label>
+            <input type="text" id="bday-pet-name" class="demo-input" placeholder="e.g. Max" value="Max">
+          </div>
+          <div class="demo-input-group">
+            <label>Species</label>
+            <select id="bday-species" class="demo-input" style="background: #0F172A;">
+              <option value="dog">🐕 Dog (Peanut Butter &amp; Pumpkin Cake)</option>
+              <option value="cat">🐈 Cat (Wild Salmon &amp; Tuna Paté)</option>
+            </select>
+          </div>
+          <div class="demo-input-group">
+            <label>Birthdate (or Adoption Date)</label>
+            <input type="date" id="bday-date" class="demo-input" value="2022-09-15">
+          </div>
+          <button class="demo-btn" style="background: linear-gradient(135deg, #EC4899, #F43F5E);" onclick="previewBirthdayParty()">🎉 Preview Birthday Celebration</button>
+
+          <div id="bday-result-box" class="calorie-result-box" style="background: rgba(236, 72, 153, 0.15); border-color: rgba(244, 114, 182, 0.4);">
+            <div style="font-size: 12px; font-weight: 800; color: #FBCFE8; text-transform: uppercase;" id="bday-output-title">Max's Birthday Celebration</div>
+            <div class="calorie-num" style="color: #F472B6; font-size: 24px;" id="bday-countdown-num">🎉 Countdown: 22 Days Left!</div>
+            <div style="font-size: 12px; color: #FCE7F3; margin-top: 6px; line-height: 1.5;" id="bday-recipe-box">
+              🍰 <strong>Vet Cake Recipe:</strong> Organic oat flour, peanut butter, pumpkin puree, and greek yogurt frosting.
+            </div>
+            <div style="margin-top: 10px;">
+              <button onclick="copyBirthdayWishDemo()" style="padding: 6px 14px; background: #EC4899; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer;">💬 Copy Shareable Birthday Wish</button>
             </div>
           </div>
         </div>
@@ -1943,6 +2019,52 @@
       document.getElementById('calc-output').textContent = `${totalKcal.toLocaleString()} kcal / day`;
       document.getElementById('calc-breakdown').textContent = `Target: approx. ${kibbleGrams.toLocaleString()}g of standard dry food (${mealGrams.toLocaleString()}g per meal for 2 meals/day).`;
       document.getElementById('calc-result-box').style.display = 'block';
+    }
+
+    // Birthday Party Preview & Countdown Logic
+    function previewBirthdayParty() {
+      const name = (document.getElementById('bday-pet-name').value || '').trim() || 'Your Pet';
+      const species = document.getElementById('bday-species').value;
+      const bdayInput = document.getElementById('bday-date').value;
+
+      let daysLeft = 30;
+      let turningAge = 3;
+      if (bdayInput) {
+        const bday = new Date(bdayInput);
+        const now = new Date();
+        if (!isNaN(bday.getTime())) {
+          let nextBday = new Date(now.getFullYear(), bday.getMonth(), bday.getDate());
+          if (nextBday.getTime() < now.getTime() - 24 * 60 * 60 * 1000) {
+            nextBday.setFullYear(nextBday.getFullYear() + 1);
+          }
+          daysLeft = Math.max(0, Math.ceil((nextBday.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+          turningAge = Math.max(1, nextBday.getFullYear() - bday.getFullYear());
+        }
+      }
+
+      document.getElementById('bday-output-title').textContent = `${name}'s Birthday Hub 🎂`;
+      document.getElementById('bday-countdown-num').textContent = daysLeft === 0
+        ? `🎉 TODAY IS ${name.toUpperCase()}'S BIRTHDAY!`
+        : `🎉 Countdown: ${daysLeft} Day${daysLeft === 1 ? '' : 's'} Until ${name} Turns ${turningAge}!`;
+
+      const recipeText = species === 'dog'
+        ? `🍰 <strong>Vet-Approved Dog Cake:</strong> 1 cup oat flour, 1/3 cup natural unsalted peanut butter, 1/2 cup pumpkin puree, 1 egg, baked at 175°C for 25 mins. Frost with plain Greek yogurt!`
+        : `🐟 <strong>Vet-Approved Cat Cake:</strong> 1 can wild salmon or tuna in water, 2 tbsp boiled shredded chicken, 1 tbsp mashed pumpkin, chilled and garnished with organic catnip!`;
+
+      document.getElementById('bday-recipe-box').innerHTML = recipeText;
+      document.getElementById('bday-result-box').style.display = 'block';
+    }
+
+    function copyBirthdayWishDemo() {
+      const name = (document.getElementById('bday-pet-name').value || '').trim() || 'My Pet';
+      const text = `🎉 Wish ${name} a Happy Birthday! 🐾\nCelebrated with verified medical records & digital passport on MyFurPet 🐶🎂\nhttps://rnuedev-ctrl.github.io/-myfurpet-site/`;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(`📋 ${name}'s birthday greeting link copied to clipboard!`);
+        });
+      } else {
+        showToast(`📋 ${name}'s birthday greeting copied!`);
+      }
     }
 
     // FAQ Accordion Toggle

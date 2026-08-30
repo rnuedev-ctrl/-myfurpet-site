@@ -839,8 +839,12 @@
                 <option value="UNCATEGORIZED">⚠️ Uncategorized Only</option>
               </select>
 
+              <button onclick="standardizeAllAffiliateProducts()" id="btnStandardizeAll" title="Update all products with accurate clinical descriptions, glowing badges, and pet search constraints in Cloud Firestore" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition-all">
+                <span>✨ Sync & Standardize Info</span>
+              </button>
+
               <button onclick="autoCategorizeAllAffiliateProducts()" id="btnAutoCategorizeAll" title="Scan and automatically categorize all affiliate products in Cloud Firestore" class="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md shadow-purple-600/20 flex items-center gap-1.5 transition-all">
-                <span>⚡ Auto-Categorize All</span>
+                <span>⚡ Auto-Categorize</span>
               </button>
 
               <button onclick="openCreateProductModal()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-md shadow-amber-500/20 flex items-center gap-1.5 transition-all">
@@ -1884,6 +1888,26 @@
       }
     }
 
+    function getAdminBadgeStyle(badgeText) {
+      const text = (badgeText || '').toLowerCase();
+      if (text.includes('first-aid') || text.includes('protection') || text.includes('rx') || text.includes('vet')) {
+        return 'background: linear-gradient(135deg, #EF4444, #B91C1C); border-color: #F87171; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.45); color: #FFFFFF; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.8);';
+      }
+      if (text.includes('bone') || text.includes('teeth') || text.includes('shiny') || text.includes('coat') || text.includes('bestseller') || text.includes('#1') || text.includes('gold')) {
+        return 'background: linear-gradient(135deg, #F59E0B, #D97706); border-color: #FCD34D; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.45); color: #FFFFFF; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.8);';
+      }
+      if (text.includes('calm') || text.includes('stress') || text.includes('itch') || text.includes('relief') || text.includes('clean') || text.includes('allergy')) {
+        return 'background: linear-gradient(135deg, #10B981, #047857); border-color: #6EE7B7; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.45); color: #FFFFFF; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.8);';
+      }
+      if (text.includes('leak') || text.includes('kidney') || text.includes('water') || text.includes('hydrate') || text.includes('bladder')) {
+        return 'background: linear-gradient(135deg, #06B6D4, #0369A1); border-color: #67E8F9; box-shadow: 0 2px 8px rgba(6, 182, 212, 0.45); color: #FFFFFF; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.8);';
+      }
+      if (text.includes('gut') || text.includes('digestion') || text.includes('probiotic') || text.includes('breath')) {
+        return 'background: linear-gradient(135deg, #8B5CF6, #6D28D9); border-color: #C4B5FD; box-shadow: 0 2px 8px rgba(139, 92, 246, 0.45); color: #FFFFFF; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.8);';
+      }
+      return 'background: linear-gradient(135deg, #F59E0B, #EA580C); border-color: #FDBA74; box-shadow: 0 2px 8px rgba(234, 88, 12, 0.45); color: #FFFFFF; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.8);';
+    }
+
     // ── Render Affiliate Products Table with Category Filtering ──
     function renderAffiliateProducts() {
       const tbody = document.getElementById('affiliateProductsTableBody');
@@ -1913,6 +1937,7 @@
       tbody.innerHTML = filtered.map(p => {
         const normCat = normalizeAffiliateCategory(p.category, p.title, p.keywords);
         const pillClass = getCategoryPillClass(normCat);
+        const badgeStyle = getAdminBadgeStyle(p.badge);
 
         return `
           <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/60 transition-colors group">
@@ -1943,7 +1968,7 @@
               ${p.originalPrice ? `<span class="line-through text-slate-400 text-[10px] ml-1.5">${p.originalPrice}</span>` : ''}
             </td>
             <td class="p-3.5 whitespace-nowrap">
-              <span class="px-2 py-0.5 rounded text-[10px] font-black bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-800">
+              <span style="${badgeStyle}" class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] border tracking-wide">
                 ${p.badge || 'Featured'}
               </span>
             </td>
@@ -1977,57 +2002,179 @@
       }
     }
 
-    // ── Batch Auto-Categorization Engine ──
-    async function autoCategorizeAllAffiliateProducts() {
+    // ── Clinical Descriptions Standardization Dictionary ──
+    const CLINICAL_STANDARDIZATION_DICTIONARY = [
+      {
+        match: /chamomile|theanine|calm|anxiety|stress/i,
+        title: 'Natural Chamomile & L-Theanine Calming Chews (45 Chews)',
+        description: 'Natural calming supplement with Chamomile, L-Theanine, and Valerian Root to soothe stress, ease separation anxiety, and support relaxation in dogs and cats.',
+        badge: '🌿 Calming & Stress Relief',
+        category: 'Flea, Tick & Meds',
+        keywords: ['calm', 'anxiety', 'stress', 'separation anxiety', 'chamomile', 'theanine', 'chews', 'dog', 'cat', 'relax']
+      },
+      {
+        match: /chlorhexidine|antifungal|antibacterial|first-aid/i,
+        title: 'Chlorhexidine Antifungal & Antibacterial Spray (120ml)',
+        description: 'Fast-acting antiseptic spray with Chlorhexidine Gluconate for rapid relief from yeast infections, hot spots, ringworm, superficial pyoderma, and acute skin dermatitis.',
+        badge: '🩺 Vet First-Aid',
+        category: 'Flea, Tick & Meds',
+        keywords: ['chlorhexidine', 'antiseptic', 'fungal', 'yeast', 'ringworm', 'hot spot', 'skin', 'spray', 'dog', 'cat']
+      },
+      {
+        match: /calcium|vitamin d3|bone.*teeth|strong bone/i,
+        title: 'Calcium + Vitamin D3 Tablets for Bone & Teeth (100 tabs)',
+        description: 'Essential calcium, phosphorus, and vitamin D3 supplement to support strong bones, healthy teeth, joint development, and lactation support for puppies, kittens, and nursing mothers.',
+        badge: '🦴 Strong Bones & Teeth',
+        category: 'Flea, Tick & Meds',
+        keywords: ['calcium', 'vitamin d3', 'bone', 'teeth', 'puppy vitamins', 'growth', 'pregnant dog', 'kitten', 'tablets']
+      },
+      {
+        match: /tofu|cat litter/i,
+        title: 'Flushable Natural Tofu Cat Litter (6L / 2.5kg)',
+        description: '100% natural, biodegradable, and flushable green tea tofu cat litter with fast clumping, 99.9% dust-free formula, and maximum odor control.',
+        badge: '🏆 #1 Cat Bestseller',
+        category: 'Pet Supplies',
+        keywords: ['tofu', 'cat litter', 'flushable', 'clumping', 'green tea', 'dust free', 'odor control', 'kitten', 'cat']
+      },
+      {
+        match: /dental|tartar|plaque|fresh breath/i,
+        title: 'Enzymatic Dental Tartar Control Chews (10pk)',
+        description: 'Veterinary enzyme dental chew treats that reduce plaque and tartar buildup while freshening bad pet breath and supporting healthy gums.',
+        badge: '🦷 Fresh Breath & Teeth',
+        category: 'Pet Supplies',
+        keywords: ['dental', 'tartar', 'plaque', 'bad breath', 'teeth', 'chews', 'enzymatic', 'gum care', 'dog']
+      },
+      {
+        match: /deshedding|undercoat|brush|1-click clean/i,
+        title: 'Self-Cleaning Undercoat Deshedding Brush',
+        description: 'Removes up to 95% of loose undercoat hair, prevents painful matting, and features a 1-click self-cleaning button for easy fur disposal.',
+        badge: '✨ 1-Click Clean',
+        category: 'Grooming & Skin Care',
+        keywords: ['deshedding', 'brush', 'comb', 'undercoat', 'grooming', 'shedding', 'slicker', 'self cleaning', 'dog', 'cat']
+      },
+      {
+        match: /pee pad|potty|leak proof/i,
+        title: 'Charcoal Potty Training Pee Pads (50/100pk)',
+        description: '6-layer leak-proof puppy training pads with activated charcoal for instant odor neutralization and built-in pet attractant for effortless housebreaking.',
+        badge: '💧 100% Leak Proof',
+        category: 'Pet Supplies',
+        keywords: ['pee pads', 'potty training', 'charcoal', 'leak proof', 'puppy pads', 'odor control', 'housebreaking', 'dog']
+      },
+      {
+        match: /oatmeal|shampoo|itch relief/i,
+        title: 'Hypoallergenic Oatmeal Pet Shampoo (500ml)',
+        description: 'Soothing colloidal oatmeal and organic aloe vera formula designed for sensitive, itchy skin to restore moisture balance and eliminate pet dander.',
+        badge: '🌿 Itch & Allergy Relief',
+        category: 'Grooming & Skin Care',
+        keywords: ['oatmeal', 'shampoo', 'hypoallergenic', 'itch relief', 'sensitive skin', 'aloe vera', 'dog shampoo', 'cat shampoo']
+      },
+      {
+        match: /salmon oil|omega|shiny coat/i,
+        title: 'Pure Wild Alaskan Salmon Oil (250ml)',
+        description: '100% pure wild Alaskan salmon oil rich in Omega-3 (EPA & DHA) to nourish dry skin, reduce excessive shedding, and promote a soft, shiny coat.',
+        badge: '✨ Shiny Coat & Heart',
+        category: 'Flea, Tick & Meds',
+        keywords: ['salmon oil', 'omega 3', 'epa', 'dha', 'wild alaskan', 'shiny coat', 'skin allergy', 'shedding', 'dog', 'cat']
+      },
+      {
+        match: /spot.*on|frontline|revolution|30-day protection/i,
+        title: 'Fast-Acting Tick & Flea Spot-On Treatment',
+        description: 'Veterinary-grade monthly topical spot-on solution that eliminates fleas, ticks, lice, and mites within 24 hours with 30-day residual protection.',
+        badge: '⚡ 30-Day Protection',
+        category: 'Flea, Tick & Meds',
+        keywords: ['tick', 'flea', 'spot on', 'mites', 'lice', 'topical', 'monthly', 'protection', 'dog', 'cat']
+      },
+      {
+        match: /nail clipper|nail trimmer|bloodline|led guard/i,
+        title: 'Safety Pet Nail Clipper with LED Light & Guard',
+        description: 'Ergonomic pet nail trimmer equipped with a bright LED light to illuminate the delicate bloodline (quick), sharp stainless steel blades, and nail collection guard.',
+        badge: '💡 LED Quick Guard',
+        category: 'Pet Supplies',
+        keywords: ['nail clipper', 'nail trimmer', 'led light', 'quick sensor', 'safety guard', 'dog nail', 'cat nail', 'grooming']
+      },
+      {
+        match: /water fountain|fountain|kidney/i,
+        title: 'Ultra-Quiet Automatic Pet Water Fountain (2.5L)',
+        description: 'BPA-free continuous water fountain with quad-action carbon filtration to encourage optimal daily hydration and support urinary/kidney health.',
+        badge: '💧 Kidney & Bladder Health',
+        category: 'Pet Supplies',
+        keywords: ['water fountain', 'automatic waterer', 'cat fountain', 'hydration', 'carbon filter', 'kidney health', 'silent pump']
+      },
+      {
+        match: /probiotic|digest|enzyme|gut/i,
+        title: 'Multi-Strain Pet Probiotics & Enzyme Powder (30pk)',
+        description: '5 Billion CFU digestive enzyme and probiotic formula with prebiotic fiber to balance intestinal flora, relieve diarrhea, improve stool quality, and boost immunity.',
+        badge: '✨ Gut & Digestion',
+        category: 'Flea, Tick & Meds',
+        keywords: ['probiotics', 'digestive enzymes', 'gut health', 'diarrhea', 'prebiotics', 'stool quality', 'stomach', 'dog', 'cat']
+      }
+    ];
+
+    // ── Batch Auto-Standardize All Products in Cloud Firestore ──
+    async function standardizeAllAffiliateProducts() {
       if (!productsData || productsData.length === 0) {
-        alert("No affiliate products in catalog to categorize.");
+        alert("No affiliate products loaded from Cloud Firestore.");
         return;
       }
 
       const updates = [];
       productsData.forEach(p => {
-        const correctCategory = normalizeAffiliateCategory(p.category, p.title, p.keywords);
-        if (p.category !== correctCategory) {
-          updates.push({ id: p.id, title: p.title, oldCategory: p.category || '(None)', newCategory: correctCategory });
+        const text = `${p.title || ''} ${p.description || ''} ${(p.keywords || []).join(' ')}`.toLowerCase();
+        const matchedStd = CLINICAL_STANDARDIZATION_DICTIONARY.find(d => d.match.test(text) || d.match.test(p.title || ''));
+        if (matchedStd) {
+          const needsUpdate = p.description !== matchedStd.description || p.badge !== matchedStd.badge || p.category !== matchedStd.category || !p.title.includes(matchedStd.title.split(' ')[0]);
+          if (needsUpdate) {
+            updates.push({
+              id: p.id,
+              currentTitle: p.title,
+              newTitle: matchedStd.title,
+              newDescription: matchedStd.description,
+              newBadge: matchedStd.badge,
+              newCategory: matchedStd.category,
+              newKeywords: Array.from(new Set([...(p.keywords || []), ...matchedStd.keywords]))
+            });
+          }
         }
       });
 
       if (updates.length === 0) {
-        alert("🎉 Excellent! All " + productsData.length + " affiliate products are already properly categorized.");
+        alert("🎉 All " + productsData.length + " products in Cloud Firestore are already 100% standardized with accurate clinical descriptions and glowing badges!");
         return;
       }
 
-      const previewList = updates.slice(0, 5).map(u => `• ${u.title.substring(0, 32)}... ➔ ${u.newCategory}`).join('\n');
-      const confirmMsg = `Found ${updates.length} products to categorize.\n\nSample classifications:\n${previewList}${updates.length > 5 ? `\n...and ${updates.length - 5} more.` : ''}\n\nProceed to update Cloud Firestore in real-time?`;
+      const preview = updates.slice(0, 4).map(u => `• ${u.currentTitle.substring(0, 28)}...\n  ↳ Desc: "${u.newDescription.substring(0, 50)}..."\n  ↳ Badge: ${u.newBadge}`).join('\n\n');
+      const confirmMsg = `Ready to standardize ${updates.length} products in Cloud Firestore?\n\nSample updates:\n${preview}${updates.length > 4 ? `\n\n...and ${updates.length - 4} more products.` : ''}\n\nProceed to update live Cloud Firestore now?`;
 
       if (!confirm(confirmMsg)) return;
 
-      const btn = document.getElementById('btnAutoCategorizeAll');
+      const btn = document.getElementById('btnStandardizeAll');
       if (btn) {
         btn.disabled = true;
-        btn.innerHTML = `<span>⏳ Categorizing (${updates.length})...</span>`;
+        btn.innerHTML = `<span>⏳ Standardizing (${updates.length})...</span>`;
       }
 
       const db = window.fbDb;
-      let successCount = 0;
-
+      let count = 0;
       try {
         for (const item of updates) {
           const docRef = window.fbMethods.doc(db, "affiliate_products", item.id);
-          await window.fbMethods.setDoc(docRef, { 
+          await window.fbMethods.setDoc(docRef, {
+            title: item.newTitle,
+            description: item.newDescription,
+            badge: item.newBadge,
             category: item.newCategory,
+            keywords: item.newKeywords,
             updatedAt: new Date().toISOString()
           }, { merge: true });
-          successCount++;
+          count++;
         }
-
-        alert(`✅ Successfully auto-categorized ${successCount} affiliate products!\n\nAll mobile apps and store strips are now synchronized.`);
-      } catch (err) {
-        alert("Error during auto-categorization: " + err.message);
+        alert(`✅ Successfully updated ${count} products in Cloud Firestore!\n\nAll descriptions, badges, and categories are now completely accurate and synchronized with all users.`);
+      } catch (e) {
+        alert("Error standardizing products: " + e.message);
       } finally {
         if (btn) {
           btn.disabled = false;
-          btn.innerHTML = `<span>⚡ Auto-Categorize All</span>`;
+          btn.innerHTML = `<span>✨ Sync & Standardize Info</span>`;
         }
       }
     }

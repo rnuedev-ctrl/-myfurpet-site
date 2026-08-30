@@ -857,18 +857,35 @@
             </button>
           </div>
 
-          <!-- Products Table -->
+          <!-- Products Table Container with Sticky Columns & Scroll Controls -->
           <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider">
+            <!-- Scroll Navigation Bar -->
+            <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-800/40 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+              <div class="flex items-center gap-2">
+                <span class="text-sm">↔️</span>
+                <span class="text-[11px] font-semibold">Table Horizontal Navigation: Product name is pinned on left & Action buttons on right</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button type="button" onclick="scrollAffiliateTable(-300)" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-[11px] font-bold text-slate-700 dark:text-slate-200 shadow-sm flex items-center gap-1 transition-all">
+                  <span>←</span> <span>Scroll Left</span>
+                </button>
+                <button type="button" onclick="scrollAffiliateTable(300)" class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-[11px] font-bold text-slate-700 dark:text-slate-200 shadow-sm flex items-center gap-1 transition-all">
+                  <span>Scroll Right</span> <span>→</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Table Overflow Container -->
+            <div id="affiliateTableScrollContainer" class="overflow-x-auto custom-scrollbar scroll-smooth">
+              <table class="w-full text-left text-xs min-w-[860px] border-collapse">
+                <thead class="bg-slate-50 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider sticky top-0 z-20">
                   <tr>
-                    <th class="p-4">Product</th>
-                    <th class="p-4">Category</th>
-                    <th class="p-4">Price</th>
-                    <th class="p-4">Badge / Highlight</th>
-                    <th class="p-4">Target Search Keywords</th>
-                    <th class="p-4 text-right">Actions</th>
+                    <th class="p-3.5 min-w-[240px] sm:min-w-[280px] sticky left-0 bg-slate-50 dark:bg-slate-800 z-30 border-r border-slate-200 dark:border-slate-700/80 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.15)]">Product</th>
+                    <th class="p-3.5 min-w-[140px]">Category</th>
+                    <th class="p-3.5 min-w-[110px]">Price</th>
+                    <th class="p-3.5 min-w-[125px]">Badge / Highlight</th>
+                    <th class="p-3.5 min-w-[180px]">Target Search Keywords</th>
+                    <th class="p-3.5 text-right min-w-[155px] sticky right-0 bg-slate-50 dark:bg-slate-800 z-30 border-l border-slate-200 dark:border-slate-700/80 shadow-[-2px_0_6px_-2px_rgba(0,0,0,0.15)]">Actions</th>
                   </tr>
                 </thead>
                 <tbody id="affiliateProductsTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
@@ -1870,47 +1887,49 @@
         const isStandard = p.category && STANDARD_AFFILIATE_CATEGORIES.includes(p.category);
 
         return `
-          <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
-            <td class="p-4 flex items-center gap-3">
-              ${p.imageUrl ? `
-                <div class="relative w-11 h-11 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center overflow-hidden flex-shrink-0">
-                  <img src="${p.imageUrl}" class="w-full h-full object-contain" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.title || 'Product')}&background=F59E0B&color=ffffff'">
+          <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/60 transition-colors group">
+            <td class="p-3.5 sticky left-0 bg-white group-hover:bg-slate-50/90 dark:bg-slate-900 dark:group-hover:bg-slate-800/90 z-10 border-r border-slate-100 dark:border-slate-800 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.08)]">
+              <div class="flex items-center gap-3">
+                ${p.imageUrl ? `
+                  <div class="relative w-10 h-10 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <img src="${p.imageUrl}" class="w-full h-full object-contain" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.title || 'Product')}&background=F59E0B&color=ffffff'">
+                  </div>
+                ` : `
+                  <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 flex items-center justify-center text-xl flex-shrink-0">
+                    ${p.icon || '🛍️'}
+                  </div>
+                `}
+                <div class="min-w-0 max-w-[200px] sm:max-w-xs">
+                  <p class="font-bold text-slate-900 dark:text-white text-xs truncate" title="${p.title || 'Product'}">${p.title || 'Product'}</p>
+                  <p class="text-[10px] text-slate-400 truncate">${p.description || (p.keywords || []).slice(0, 3).join(', ') || ''}</p>
                 </div>
-              ` : `
-                <div class="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 flex items-center justify-center text-2xl flex-shrink-0">
-                  ${p.icon || '🛍️'}
-                </div>
-              `}
-              <div class="min-w-0">
-                <p class="font-bold text-slate-900 dark:text-white text-xs truncate max-w-sm" title="${p.title || 'Product'}">${p.title || 'Product'}</p>
-                <p class="text-[10px] text-slate-400 truncate max-w-xs">${p.description || (p.keywords || []).slice(0, 3).join(', ') || ''}</p>
               </div>
             </td>
-            <td class="p-4 whitespace-nowrap">
+            <td class="p-3.5 whitespace-nowrap">
               <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold ${isStandard ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700' : 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-300'}">
                 ${normCat}
               </span>
             </td>
-            <td class="p-4 font-bold text-slate-900 dark:text-white whitespace-nowrap">
+            <td class="p-3.5 font-bold text-slate-900 dark:text-white whitespace-nowrap">
               ${p.price || '₱0'}
               ${p.originalPrice ? `<span class="line-through text-slate-400 text-[10px] ml-1.5">${p.originalPrice}</span>` : ''}
             </td>
-            <td class="p-4 whitespace-nowrap">
+            <td class="p-3.5 whitespace-nowrap">
               <span class="px-2 py-0.5 rounded text-[10px] font-black bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-800">
                 ${p.badge || 'Featured'}
               </span>
             </td>
-            <td class="p-4 text-slate-500 font-mono text-[10px] max-w-xs truncate">
+            <td class="p-3.5 text-slate-500 font-mono text-[10px] max-w-xs truncate" title="${(p.keywords || []).join(', ')}">
               ${(p.keywords || []).join(', ') || 'No keywords'}
             </td>
-            <td class="p-4 text-right space-x-1.5 whitespace-nowrap">
+            <td class="p-3.5 text-right space-x-1.5 whitespace-nowrap sticky right-0 bg-white group-hover:bg-slate-50/90 dark:bg-slate-900 dark:group-hover:bg-slate-800/90 z-10 border-l border-slate-100 dark:border-slate-800 shadow-[-2px_0_6px_-2px_rgba(0,0,0,0.08)]">
               <button onclick="testAffiliateLink('${encodeURIComponent(p.shopeeUrl || '')}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-500 text-white hover:bg-amber-600 shadow-sm transition-all">
                 🛒 Link
               </button>
               <button onclick="openEditProductModal('${p.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">
                 ✏️ Edit
               </button>
-              <button onclick="deleteProduct('${p.id}')" class="px-2 py-1 rounded-lg text-[11px] font-bold border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50">
+              <button onclick="deleteProduct('${p.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50">
                 🗑️
               </button>
             </td>
@@ -1921,6 +1940,13 @@
 
     function filterAffiliateProducts() {
       renderAffiliateProducts();
+    }
+
+    function scrollAffiliateTable(offset) {
+      const container = document.getElementById('affiliateTableScrollContainer');
+      if (container) {
+        container.scrollBy({ left: offset, behavior: 'smooth' });
+      }
     }
 
     // ── Batch Auto-Categorization Engine ──

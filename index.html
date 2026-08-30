@@ -2422,6 +2422,38 @@
       }
       if (liveSuppliesData.length > 0) {
         renderLiveSuppliesGrid(liveSuppliesData);
+      } else {
+        document.querySelectorAll('.supply-card').forEach(card => {
+          const phpPrice = card.getAttribute('data-php-price');
+          const usdPrice = card.getAttribute('data-usd-price');
+          const phpOrig = card.getAttribute('data-php-orig');
+          const usdOrig = card.getAttribute('data-usd-orig');
+          const shopeeUrl = card.getAttribute('data-shopee-url');
+          const amazonKw = card.getAttribute('data-amazon-keyword');
+          const priceEl = card.querySelector('.supply-price');
+          const origPriceEl = card.querySelector('.supply-orig-price');
+          const btnEl = card.querySelector('.shopee-web-btn');
+
+          if (store === 'amazon') {
+            if (priceEl && usdPrice) priceEl.innerText = usdPrice;
+            if (origPriceEl && usdOrig) origPriceEl.innerText = usdOrig;
+            if (btnEl) {
+              btnEl.href = `https://www.amazon.com/s?k=${encodeURIComponent(amazonKw || 'pet')}&tag=myfurpet-20`;
+              btnEl.style.background = 'linear-gradient(135deg, #F59E0B, #D97706)';
+              btnEl.style.color = '#111827';
+              btnEl.innerHTML = `<span class="btn-cart-icon">🛒</span><span>Buy on Amazon</span><span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>`;
+            }
+          } else {
+            if (priceEl && phpPrice) priceEl.innerText = phpPrice;
+            if (origPriceEl && phpOrig) origPriceEl.innerText = phpOrig;
+            if (btnEl) {
+              btnEl.href = shopeeUrl || '#';
+              btnEl.style.background = 'linear-gradient(135deg, #EE4D2D, #FF5722)';
+              btnEl.style.color = '#FFFFFF';
+              btnEl.innerHTML = `<span class="btn-cart-icon">🛒</span><span>Buy on Shopee</span><span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>`;
+            }
+          }
+        });
       }
     }
 
@@ -2450,6 +2482,35 @@
       return '🛍️';
     }
 
+    function formatWebsitePrice(priceStr, store) {
+      if (!priceStr) return '';
+      const trimmed = priceStr.trim();
+      if (store === 'amazon') {
+        if (trimmed.startsWith('₱')) {
+          const num = parseFloat(trimmed.replace(/[^0-9.]/g, ''));
+          if (!isNaN(num)) {
+            const usd = (num / 56.5).toFixed(2);
+            return `$${usd}`;
+          }
+        }
+        if (!trimmed.startsWith('$')) {
+          const num = parseFloat(trimmed.replace(/[^0-9.]/g, ''));
+          if (!isNaN(num)) {
+            return `$${(num / 56.5).toFixed(2)}`;
+          }
+        }
+        return trimmed;
+      } else {
+        if (trimmed.startsWith('$')) {
+          const num = parseFloat(trimmed.replace(/[^0-9.]/g, ''));
+          if (!isNaN(num)) {
+            return `₱${Math.round(num * 56.5).toLocaleString()}`;
+          }
+        }
+        return trimmed.startsWith('₱') ? trimmed : `₱${trimmed}`;
+      }
+    }
+
     function renderLiveSuppliesGrid(products) {
       const grid = document.getElementById('curatedSuppliesGrid');
       if (!grid) return;
@@ -2464,6 +2525,8 @@
         const targetLink = isAmazon ? amazonLink : shopeeLink;
         const btnLabel = isAmazon ? 'Buy on Amazon' : 'Buy on Shopee';
         const btnStyle = isAmazon ? 'background: linear-gradient(135deg, #F59E0B, #D97706); color: #111827;' : '';
+        const currentPrice = formatWebsitePrice(p.price || '₱0', activeMarketplaceStore);
+        const origPrice = p.originalPrice ? formatWebsitePrice(p.originalPrice, activeMarketplaceStore) : '';
 
         return `
           <div class="glass-card supply-card">
@@ -2481,9 +2544,9 @@
             <div>
               <div class="supply-footer">
                 <div class="supply-price-box">
-                  <span class="supply-price">${p.price || '₱0'}</span>
-                  ${p.originalPrice ? `<span class="supply-orig-price">${p.originalPrice}</span>` : ''}
-                  ${p.originalPrice ? `<span class="supply-discount-tag">-SALE</span>` : ''}
+                  <span class="supply-price">${currentPrice}</span>
+                  ${origPrice ? `<span class="supply-orig-price">${origPrice}</span>` : ''}
+                  ${origPrice ? `<span class="supply-discount-tag">-SALE</span>` : ''}
                 </div>
                 <span class="supply-rating">⭐ 4.9 (Verified)</span>
               </div>

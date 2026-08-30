@@ -1864,6 +1864,26 @@
       return 'Pet Supplies';
     }
 
+    function getCategoryPillClass(category) {
+      switch (category) {
+        case 'Rx Diets & Nutrition':
+          return 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800';
+        case 'Flea, Tick & Meds':
+          return 'bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800';
+        case 'Grooming & Skin Care':
+          return 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
+        case 'Toys & Training':
+          return 'bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800';
+        case 'Puppy & Kitten':
+          return 'bg-pink-50 dark:bg-pink-950/60 text-pink-700 dark:text-pink-300 border-pink-200 dark:border-pink-800';
+        case 'Senior Pet Care':
+          return 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800';
+        case 'Pet Supplies':
+        default:
+          return 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800';
+      }
+    }
+
     // ── Render Affiliate Products Table with Category Filtering ──
     function renderAffiliateProducts() {
       const tbody = document.getElementById('affiliateProductsTableBody');
@@ -1892,14 +1912,14 @@
 
       tbody.innerHTML = filtered.map(p => {
         const normCat = normalizeAffiliateCategory(p.category, p.title, p.keywords);
-        const isStandard = p.category && STANDARD_AFFILIATE_CATEGORIES.includes(p.category);
+        const pillClass = getCategoryPillClass(normCat);
 
         return `
           <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/60 transition-colors group">
             <td class="p-3.5 sticky left-0 bg-white group-hover:bg-slate-50/90 dark:bg-slate-900 dark:group-hover:bg-slate-800/90 z-10 border-r border-slate-100 dark:border-slate-800 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.08)]">
               <div class="flex items-center gap-3">
                 ${p.imageUrl ? `
-                  <div class="relative w-10 h-10 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center overflow-hidden flex-shrink-0">
+                  <div class="relative w-10 h-10 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center overflow-hidden flex-shrink-0 p-0.5">
                     <img src="${p.imageUrl}" class="w-full h-full object-contain" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.title || 'Product')}&background=F59E0B&color=ffffff'">
                   </div>
                 ` : `
@@ -1914,7 +1934,7 @@
               </div>
             </td>
             <td class="p-3.5 whitespace-nowrap">
-              <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold ${isStandard ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700' : 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-300'}">
+              <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold border ${pillClass}">
                 ${normCat}
               </span>
             </td>
@@ -2306,9 +2326,32 @@
       }
     }
 
+    function constrainPetKeyword(rawKw) {
+      const kw = (rawKw || '').trim();
+      if (!kw) return 'pet supplies';
+      const hasPet = /\b(pet|pets|dog|dogs|cat|cats|puppy|puppies|kitten|kittens|canine|feline|veterinary|vet|animal|animals)\b/i.test(kw.toLowerCase());
+      return hasPet ? kw : `${kw} for dogs and cats pet`;
+    }
+
     function testAffiliateLink(encodedUrl) {
-      const url = decodeURIComponent(encodedUrl);
+      let url = decodeURIComponent(encodedUrl);
       if (url && url.startsWith('http')) {
+        try {
+          const parsed = new URL(url);
+          if (parsed.hostname.includes('shopee.ph') && parsed.pathname.includes('search')) {
+            const kw = parsed.searchParams.get('keyword');
+            if (kw && !/\b(pet|pets|dog|dogs|cat|cats|puppy|kitten|vet)\b/i.test(kw)) {
+              parsed.searchParams.set('keyword', `${kw} for dogs and cats pet`);
+              url = parsed.toString();
+            }
+          } else if (parsed.hostname.includes('amazon.') && parsed.pathname.includes('s')) {
+            const kw = parsed.searchParams.get('k');
+            if (kw && !/\b(pet|pets|dog|dogs|cat|cats|puppy|kitten|vet)\b/i.test(kw)) {
+              parsed.searchParams.set('k', `${kw} for dogs and cats pet`);
+              url = parsed.toString();
+            }
+          }
+        } catch (e) {}
         window.open(url, '_blank');
       } else {
         alert("Invalid URL: " + url);
@@ -2324,7 +2367,8 @@
     }
 
     function generateTrackingLink() {
-      const kw = document.getElementById('utmKeywordInput').value.trim() || 'Pet Supplies';
+      const rawKw = document.getElementById('utmKeywordInput').value.trim() || 'Pet Supplies';
+      const kw = constrainPetKeyword(rawKw);
       const platform = document.getElementById('utmPlatformSelect').value;
       let target = "";
 

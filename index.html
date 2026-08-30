@@ -526,34 +526,74 @@
       margin-bottom: 70px;
     }
     .supply-card {
-      padding: 22px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
       position: relative;
+      border-radius: 20px;
     }
     .supply-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(238, 77, 45, 0.4);
+      transform: translateY(-6px);
+      border-color: rgba(238, 77, 45, 0.5);
+      box-shadow: 0 16px 32px -8px rgba(238, 77, 45, 0.25);
     }
-    .supply-top {
+    .supply-img-wrapper {
+      position: relative;
+      width: 100%;
+      height: 165px;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .supply-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .supply-card:hover .supply-img {
+      transform: scale(1.06);
+    }
+    .supply-top-overlay {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      right: 8px;
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
+      align-items: center;
+      z-index: 2;
+      pointer-events: none;
     }
-    .supply-emoji {
-      font-size: 32px;
+    .supply-emoji-box {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
     }
     .supply-badge {
       font-size: 11px;
       font-weight: 800;
-      background: rgba(254, 243, 199, 0.15);
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
       color: #FBBF24;
-      border: 1px solid rgba(251, 191, 36, 0.3);
-      padding: 3px 8px;
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      padding: 4px 10px;
       border-radius: 999px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }
     .supply-title {
       font-size: 15px;
@@ -1478,9 +1518,12 @@
       <div class="supplies-grid">
         <!-- 1. Flushable Natural Tofu Cat Litter -->
         <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=tofu%20cat%20litter&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Flushable Tofu Cat Litter" data-php-price="₱165" data-php-orig="₱250" data-usd-price="$14.99" data-usd-orig="$19.99">
-          <div class="supply-top">
-            <span class="supply-emoji">🐱</span>
-            <span class="supply-badge">🏆 #1 Cat Bestseller</span>
+          <div class="supply-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=600&q=80" alt="Flushable Natural Tofu Cat Litter" class="supply-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <div class="supply-top-overlay">
+              <div class="supply-emoji-box">🐱</div>
+              <span class="supply-badge">🏆 #1 Cat Bestseller</span>
+            </div>
           </div>
           <div>
             <h4 class="supply-title">Flushable Natural Tofu Cat Litter (6L)</h4>
@@ -1502,9 +1545,12 @@
 
         <!-- 2. Ultra-Absorbent Charcoal Pee Pads -->
         <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=charcoal%20pet%20pee%20pads&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Charcoal Dog Pee Pads Leak Proof" data-php-price="₱280" data-php-orig="₱420" data-usd-price="$18.50" data-usd-orig="$24.00">
-          <div class="supply-top">
-            <span class="supply-emoji">🐾</span>
-            <span class="supply-badge">💧 100% Leak Proof</span>
+          <div class="supply-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=600&q=80" alt="Charcoal Potty Training Pee Pads" class="supply-img" loading="lazy" onerror="this.style.display='none';" />
+            <div class="supply-top-overlay">
+              <div class="supply-emoji-box">🐾</div>
+              <span class="supply-badge">💧 100% Leak Proof</span>
+            </div>
           </div>
           <div>
             <h4 class="supply-title">Charcoal Potty Training Pee Pads (50/100pk)</h4>
@@ -1526,9 +1572,12 @@
 
         <!-- 3. Hypoallergenic Oatmeal Pet Shampoo -->
         <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=oatmeal%20pet%20shampoo&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Hypoallergenic Oatmeal Dog Shampoo" data-php-price="₱249" data-php-orig="₱350" data-usd-price="$11.99" data-usd-orig="$16.50">
-          <div class="supply-top">
-            <span class="supply-emoji">🧴</span>
-            <span class="supply-badge">🌿 Itch Relief</span>
+          <div class="supply-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1535294435445-d7249524ef2e?auto=format&fit=crop&w=600&q=80" alt="Hypoallergenic Oatmeal Pet Shampoo" class="supply-img" loading="lazy" onerror="this.style.display='none';" />
+            <div class="supply-top-overlay">
+              <div class="supply-emoji-box">🧴</div>
+              <span class="supply-badge">🌿 Itch Relief</span>
+            </div>
           </div>
           <div>
             <h4 class="supply-title">Hypoallergenic Oatmeal Pet Shampoo (500ml)</h4>
@@ -1550,9 +1599,12 @@
 
         <!-- 4. Pure Wild Alaskan Salmon Oil -->
         <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=wild%20alaskan%20salmon%20oil%20dog%20cat&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Wild Alaskan Salmon Oil for Dogs and Cats" data-php-price="₱389" data-php-orig="₱499" data-usd-price="$19.95" data-usd-orig="$26.00">
-          <div class="supply-top">
-            <span class="supply-emoji">🐟</span>
-            <span class="supply-badge">✨ Shiny Coat</span>
+          <div class="supply-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1628134708706-e3d6439f074d?auto=format&fit=crop&w=600&q=80" alt="Pure Wild Alaskan Salmon Oil" class="supply-img" loading="lazy" onerror="this.style.display='none';" />
+            <div class="supply-top-overlay">
+              <div class="supply-emoji-box">🐟</div>
+              <span class="supply-badge">✨ Shiny Coat</span>
+            </div>
           </div>
           <div>
             <h4 class="supply-title">Pure Wild Alaskan Salmon Oil (250ml)</h4>
@@ -1574,9 +1626,12 @@
 
         <!-- 5. Tick & Flea Spot-On Treatment -->
         <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=tick%20and%20flea%20spot%20on&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Flea and Tick Treatment for Dogs Cats" data-php-price="₱185" data-php-orig="₱280" data-usd-price="$16.99" data-usd-orig="$22.50">
-          <div class="supply-top">
-            <span class="supply-emoji">🛡️</span>
-            <span class="supply-badge">⚡ 30-Day Protection</span>
+          <div class="supply-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80" alt="Fast-Acting Tick & Flea Spot-On Treatment" class="supply-img" loading="lazy" onerror="this.style.display='none';" />
+            <div class="supply-top-overlay">
+              <div class="supply-emoji-box">🛡️</div>
+              <span class="supply-badge">⚡ 30-Day Protection</span>
+            </div>
           </div>
           <div>
             <h4 class="supply-title">Fast-Acting Tick &amp; Flea Spot-On Treatment</h4>
@@ -1598,9 +1653,12 @@
 
         <!-- 6. Safety Pet Nail Clipper with LED Light -->
         <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=pet%20nail%20clipper%20led&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Pet Nail Clippers with LED Light Quick Sensor" data-php-price="₱189" data-php-orig="₱299" data-usd-price="$12.99" data-usd-orig="$18.00">
-          <div class="supply-top">
-            <span class="supply-emoji">✂️</span>
-            <span class="supply-badge">💡 LED Bloodline Guard</span>
+          <div class="supply-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=600&q=80" alt="Safety Pet Nail Clipper with LED Light & Guard" class="supply-img" loading="lazy" onerror="this.style.display='none';" />
+            <div class="supply-top-overlay">
+              <div class="supply-emoji-box">✂️</div>
+              <span class="supply-badge">💡 LED Bloodline Guard</span>
+            </div>
           </div>
           <div>
             <h4 class="supply-title">Safety Pet Nail Clipper with LED Light &amp; Guard</h4>
@@ -1622,9 +1680,12 @@
 
         <!-- 7. Automatic Pet Water Fountain -->
         <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=automatic%20pet%20water%20fountain&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Automatic Pet Water Fountain Filter" data-php-price="₱380" data-php-orig="₱550" data-usd-price="$22.99" data-usd-orig="$29.99">
-          <div class="supply-top">
-            <span class="supply-emoji">🥤</span>
-            <span class="supply-badge">💧 Kidney Health</span>
+          <div class="supply-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=600&q=80" alt="Ultra-Quiet Automatic Pet Water Fountain" class="supply-img" loading="lazy" onerror="this.style.display='none';" />
+            <div class="supply-top-overlay">
+              <div class="supply-emoji-box">🥤</div>
+              <span class="supply-badge">💧 Kidney Health</span>
+            </div>
           </div>
           <div>
             <h4 class="supply-title">Ultra-Quiet Automatic Pet Water Fountain (2.5L)</h4>
@@ -1646,9 +1707,12 @@
 
         <!-- 8. Multi-Strain Pet Probiotics & Enzymes -->
         <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=pet%20probiotics%20powder&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Multi Strain Pet Probiotics Enzyme Powder Dogs Cats" data-php-price="₱340" data-php-orig="₱450" data-usd-price="$17.50" data-usd-orig="$23.00">
-          <div class="supply-top">
-            <span class="supply-emoji">🦠</span>
-            <span class="supply-badge">✨ Digestion &amp; Gut</span>
+          <div class="supply-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=600&q=80" alt="Multi-Strain Pet Probiotics & Enzyme Powder" class="supply-img" loading="lazy" onerror="this.style.display='none';" />
+            <div class="supply-top-overlay">
+              <div class="supply-emoji-box">🦠</div>
+              <span class="supply-badge">✨ Digestion &amp; Gut</span>
+            </div>
           </div>
           <div>
             <h4 class="supply-title">Multi-Strain Pet Probiotics &amp; Enzyme Powder (30pk)</h4>

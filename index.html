@@ -2489,18 +2489,11 @@
       if (!priceStr) return '';
       const trimmed = priceStr.trim();
       if (store === 'amazon') {
-        if (trimmed.startsWith('₱')) {
-          const num = parseFloat(trimmed.replace(/[^0-9.]/g, ''));
-          if (!isNaN(num)) {
-            const usd = (num / 56.5).toFixed(2);
-            return `$${usd}`;
-          }
-        }
-        if (!trimmed.startsWith('$')) {
-          const num = parseFloat(trimmed.replace(/[^0-9.]/g, ''));
-          if (!isNaN(num)) {
-            return `$${(num / 56.5).toFixed(2)}`;
-          }
+        if (trimmed.startsWith('$')) return trimmed;
+        const num = parseFloat(trimmed.replace(/[^0-9.]/g, ''));
+        if (!isNaN(num)) {
+          const usd = (num / 56.5).toFixed(2);
+          return `$${usd}`;
         }
         return trimmed;
       } else {

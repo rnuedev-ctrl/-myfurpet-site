@@ -2813,10 +2813,7 @@
       submitBtn.innerHTML = '<span>🚨 Submit Problem Report</span>';
     }
 
-    // ── Smart Marketplace Store Switcher (Shopee PH vs Amazon Global) ──
-    const AMAZON_TAG = 'myfurpet-20';
-    let activeStore = 'shopee';
-
+    // ── Smart Marketplace Store Auto-Detection on Load ──
     function initGeoMarketplace() {
       try {
         const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
@@ -2826,63 +2823,9 @@
           return;
         }
       } catch (e) {}
-      setMarketplaceStore('shopee');
-    }
-
-    function setMarketplaceStore(store) {
-      activeStore = store;
-      const btnShopee = document.getElementById('store-btn-shopee');
-      const btnAmazon = document.getElementById('store-btn-amazon');
-      if (btnShopee && btnAmazon) {
-        if (store === 'amazon') {
-          btnAmazon.style.background = 'linear-gradient(135deg, #FF9900, #FFB84D)';
-          btnAmazon.style.color = '#111827';
-          btnShopee.style.background = 'transparent';
-          btnShopee.style.color = '#94A3B8';
-        } else {
-          btnShopee.style.background = 'linear-gradient(135deg, #EE4D2D, #FF5722)';
-          btnShopee.style.color = '#FFFFFF';
-          btnAmazon.style.background = 'transparent';
-          btnAmazon.style.color = '#94A3B8';
-        }
-      }
-
-      document.querySelectorAll('.supply-card').forEach((card) => {
-        const btn = card.querySelector('.shopee-web-btn');
-        const priceEl = card.querySelector('.supply-price');
-        const origPriceEl = card.querySelector('.supply-orig-price');
-
-        const shopeeUrl = card.getAttribute('data-shopee-url');
-        const amazonKeyword = card.getAttribute('data-amazon-keyword');
-        const phpPrice = card.getAttribute('data-php-price');
-        const phpOrig = card.getAttribute('data-php-orig');
-        const usdPrice = card.getAttribute('data-usd-price');
-        const usdOrig = card.getAttribute('data-usd-orig');
-
-        if (store === 'amazon') {
-          if (priceEl && usdPrice) priceEl.textContent = usdPrice;
-          if (origPriceEl && usdOrig) origPriceEl.textContent = usdOrig;
-          if (btn) {
-            btn.href = `https://www.amazon.com/s?k=${encodeURIComponent(amazonKeyword || 'Pet Supplies')}&tag=${AMAZON_TAG}`;
-            btn.style.background = 'linear-gradient(135deg, #FF9900, #F59E0B)';
-            btn.style.color = '#111827';
-            btn.innerHTML = '<span class="btn-cart-icon">🛒</span> <span>Buy on Amazon</span> <span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>';
-          }
-        } else {
-          if (priceEl && phpPrice) priceEl.textContent = phpPrice;
-          if (origPriceEl && phpOrig) origPriceEl.textContent = phpOrig;
-          if (btn) {
-            btn.href = shopeeUrl || '#';
-            btn.style.background = 'linear-gradient(135deg, #EE4D2D, #FF5722)';
-            btn.style.color = '#FFFFFF';
-            btn.innerHTML = '<span class="btn-cart-icon">🛒</span> <span>Buy on Shopee</span> <span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>';
-          }
-        }
-      });
     }
 
     document.addEventListener('DOMContentLoaded', initGeoMarketplace);
-    initGeoMarketplace();
 
     function showToast(msg) {
       const t = document.getElementById('toast');

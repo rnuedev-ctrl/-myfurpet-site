@@ -2412,52 +2412,47 @@
       activeMarketplaceStore = store;
       const shopeeBtn = document.getElementById('store-btn-shopee');
       const amazonBtn = document.getElementById('store-btn-amazon');
-      if (store === 'shopee') {
-        shopeeBtn.style.background = 'linear-gradient(135deg, #EE4D2D, #FF5722)';
-        shopeeBtn.style.color = '#FFF';
-        amazonBtn.style.background = 'transparent';
-        amazonBtn.style.color = '#94A3B8';
-      } else {
-        amazonBtn.style.background = 'linear-gradient(135deg, #F59E0B, #D97706)';
-        amazonBtn.style.color = '#111827';
-        shopeeBtn.style.background = 'transparent';
-        shopeeBtn.style.color = '#94A3B8';
+      if (shopeeBtn && amazonBtn) {
+        if (store === 'shopee') {
+          shopeeBtn.style.background = 'linear-gradient(135deg, #EE4D2D, #FF5722)';
+          shopeeBtn.style.color = '#FFF';
+          amazonBtn.style.background = 'transparent';
+          amazonBtn.style.color = '#94A3B8';
+        } else {
+          amazonBtn.style.background = 'linear-gradient(135deg, #F59E0B, #D97706)';
+          amazonBtn.style.color = '#111827';
+          shopeeBtn.style.background = 'transparent';
+          shopeeBtn.style.color = '#94A3B8';
+        }
       }
-      if (liveSuppliesData.length > 0) {
-        renderLiveSuppliesGrid(liveSuppliesData);
-      } else {
-        document.querySelectorAll('.supply-card').forEach(card => {
-          const phpPrice = card.getAttribute('data-php-price');
-          const usdPrice = card.getAttribute('data-usd-price');
-          const phpOrig = card.getAttribute('data-php-orig');
-          const usdOrig = card.getAttribute('data-usd-orig');
-          const shopeeUrl = card.getAttribute('data-shopee-url');
-          const amazonKw = card.getAttribute('data-amazon-keyword');
-          const priceEl = card.querySelector('.supply-price');
-          const origPriceEl = card.querySelector('.supply-orig-price');
-          const btnEl = card.querySelector('.shopee-web-btn');
 
-          if (store === 'amazon') {
-            if (priceEl && usdPrice) priceEl.innerText = usdPrice;
-            if (origPriceEl && usdOrig) origPriceEl.innerText = usdOrig;
-            if (btnEl) {
-              btnEl.href = `https://www.amazon.com/s?k=${encodeURIComponent(amazonKw || 'pet')}&tag=myfurpet-20`;
-              btnEl.style.background = 'linear-gradient(135deg, #F59E0B, #D97706)';
-              btnEl.style.color = '#111827';
-              btnEl.innerHTML = `<span class="btn-cart-icon">🛒</span><span>Buy on Amazon</span><span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>`;
-            }
-          } else {
-            if (priceEl && phpPrice) priceEl.innerText = phpPrice;
-            if (origPriceEl && phpOrig) origPriceEl.innerText = phpOrig;
-            if (btnEl) {
-              btnEl.href = shopeeUrl || '#';
-              btnEl.style.background = 'linear-gradient(135deg, #EE4D2D, #FF5722)';
-              btnEl.style.color = '#FFFFFF';
-              btnEl.innerHTML = `<span class="btn-cart-icon">🛒</span><span>Buy on Shopee</span><span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>`;
-            }
-          }
-        });
+      if (liveSuppliesData && liveSuppliesData.length > 0) {
+        renderLiveSuppliesGrid(liveSuppliesData);
       }
+
+      // Direct DOM safeguard: update all price elements in-place immediately
+      document.querySelectorAll('.supply-card').forEach(card => {
+        const priceEl = card.querySelector('.supply-price');
+        const origPriceEl = card.querySelector('.supply-orig-price');
+        const btnEl = card.querySelector('.shopee-web-btn');
+        if (priceEl && priceEl.innerText) {
+          priceEl.innerText = formatWebsitePrice(priceEl.innerText, store);
+        }
+        if (origPriceEl && origPriceEl.innerText) {
+          origPriceEl.innerText = formatWebsitePrice(origPriceEl.innerText, store);
+        }
+        if (btnEl) {
+          if (store === 'amazon') {
+            btnEl.style.background = 'linear-gradient(135deg, #F59E0B, #D97706)';
+            btnEl.style.color = '#111827';
+            btnEl.innerHTML = `<span class="btn-cart-icon">🛒</span><span>Buy on Amazon</span><span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>`;
+          } else {
+            btnEl.style.background = 'linear-gradient(135deg, #EE4D2D, #FF5722)';
+            btnEl.style.color = '#FFFFFF';
+            btnEl.innerHTML = `<span class="btn-cart-icon">🛒</span><span>Buy on Shopee</span><span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>`;
+          }
+        }
+      });
     }
 
     function getWebsiteBadgeClass(badgeText) {

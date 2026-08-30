@@ -245,24 +245,50 @@
       color: #F8FAFC;
     }
     .nav-cta-btn {
-      background: linear-gradient(135deg, #7C3AED, #9333EA);
+      position: relative;
+      background: linear-gradient(135deg, #7C3AED 0%, #DB2777 50%, #7C3AED 100%);
+      background-size: 200% 200%;
       color: #FFFFFF;
-      padding: 9px 20px;
-      border-radius: 12px;
-      font-weight: 700;
+      padding: 10px 22px;
+      border-radius: 14px;
+      font-weight: 800;
       font-size: 13.5px;
       text-decoration: none;
-      box-shadow: 0 4px 14px var(--primary-glow);
-      transition: all 0.2s ease;
+      box-shadow: 0 4px 18px rgba(124, 58, 237, 0.45), 0 0 12px rgba(219, 39, 119, 0.3);
+      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
       white-space: nowrap;
       flex-shrink: 0;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      overflow: hidden;
+      animation: gradientShift 6s ease infinite;
+    }
+    .nav-cta-btn::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+      transform: rotate(25deg);
+      animation: shimmerSweep 4s infinite;
+      pointer-events: none;
     }
     .nav-cta-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6);
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 8px 25px rgba(124, 58, 237, 0.65), 0 0 20px rgba(219, 39, 119, 0.5);
+    }
+    .nav-cta-btn:hover .nav-rocket-icon {
+      transform: translateY(-3px) rotate(-12deg) scale(1.2);
+    }
+    .nav-cta-btn:active {
+      transform: translateY(0) scale(0.97);
+    }
+    .nav-rocket-icon {
+      display: inline-block;
+      transition: transform 0.3s ease;
     }
 
     /* Hero Section */
@@ -312,43 +338,116 @@
       margin-bottom: 36px;
     }
     .btn-primary {
-      background: linear-gradient(135deg, #7C3AED 0%, #DB2777 100%);
+      position: relative;
+      background: linear-gradient(135deg, #2563EB 0%, #7C3AED 50%, #DB2777 100%);
+      background-size: 200% 200%;
       color: #FFFFFF;
-      padding: 16px 28px;
-      border-radius: 16px;
+      padding: 16px 30px;
+      border-radius: 18px;
       font-size: 16px;
       font-weight: 800;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      box-shadow: 0 10px 25px -5px rgba(219, 39, 119, 0.4);
-      transition: all 0.25s ease;
+      box-shadow: 0 10px 28px -4px rgba(37, 99, 235, 0.5), 0 0 20px rgba(124, 58, 237, 0.35);
+      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
       border: none;
       cursor: pointer;
+      overflow: hidden;
+      animation: gradientShift 5s ease infinite;
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 35%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transform: rotate(25deg);
+      animation: shimmerSweep 4.5s infinite;
+      pointer-events: none;
     }
     .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 15px 30px -5px rgba(219, 39, 119, 0.6);
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 16px 35px -4px rgba(37, 99, 235, 0.65), 0 0 30px rgba(219, 39, 119, 0.55);
     }
+    .btn-primary:hover .cta-arrow {
+      transform: translateX(6px);
+    }
+    .btn-primary:hover .cta-apple-icon {
+      transform: rotate(-12deg) scale(1.22);
+    }
+    .btn-primary:active {
+      transform: translateY(-1px) scale(0.98);
+    }
+    .cta-apple-icon, .cta-arrow {
+      display: inline-block;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.08);
+      position: relative;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
       color: #FFFFFF;
-      padding: 16px 26px;
-      border-radius: 16px;
+      padding: 16px 28px;
+      border-radius: 18px;
       font-size: 16px;
       font-weight: 700;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      transition: all 0.25s ease;
+      gap: 12px;
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.4), 0 0 15px rgba(16, 185, 129, 0.15);
+      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
     }
     .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.3);
-      transform: translateY(-2px);
+      background: rgba(30, 41, 59, 0.85);
+      border-color: rgba(52, 211, 153, 0.7);
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 14px 30px -4px rgba(0, 0, 0, 0.5), 0 0 25px rgba(16, 185, 129, 0.35);
+    }
+    .btn-secondary:hover .cta-bot-icon {
+      animation: botWiggle 0.6s ease infinite alternate;
+    }
+    .btn-secondary:active {
+      transform: translateY(-1px) scale(0.98);
+    }
+    .cta-bot-icon {
+      display: inline-block;
+      transition: transform 0.25s ease;
+    }
+    .btn-badge-free {
+      font-size: 11px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: #FFFFFF;
+      padding: 3px 9px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
+      animation: badgePulseFast 2s infinite;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    @keyframes shimmerSweep {
+      0% { left: -60%; opacity: 0; }
+      20% { opacity: 1; }
+      40%, 100% { left: 160%; opacity: 0; }
+    }
+    @keyframes botWiggle {
+      0% { transform: rotate(-8deg) scale(1.1); }
+      100% { transform: rotate(8deg) scale(1.1); }
+    }
+    @keyframes badgePulseFast {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); box-shadow: 0 2px 12px rgba(52, 211, 153, 0.75); }
     }
 
     .social-proof-strip {
@@ -521,8 +620,8 @@
     /* Curated Pet Supplies Grid */
     .supplies-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
       margin-bottom: 70px;
     }
     .supply-card {
@@ -530,24 +629,27 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       position: relative;
-      border-radius: 20px;
+      border-radius: 22px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
     }
     .supply-card:hover {
-      transform: translateY(-6px);
-      border-color: rgba(238, 77, 45, 0.5);
-      box-shadow: 0 16px 32px -8px rgba(238, 77, 45, 0.25);
+      transform: translateY(-8px) scale(1.02);
+      border-color: rgba(238, 77, 45, 0.6);
+      box-shadow: 0 20px 40px -10px rgba(238, 77, 45, 0.35), 0 0 20px rgba(245, 158, 11, 0.2);
     }
     .supply-img-wrapper {
       position: relative;
       width: 100%;
-      height: 165px;
-      border-radius: 14px;
+      height: 170px;
+      border-radius: 16px;
       overflow: hidden;
       margin-bottom: 14px;
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+      border: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -556,16 +658,16 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.4s ease;
+      transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
     .supply-card:hover .supply-img {
-      transform: scale(1.06);
+      transform: scale(1.09);
     }
     .supply-top-overlay {
       position: absolute;
-      top: 8px;
-      left: 8px;
-      right: 8px;
+      top: 9px;
+      left: 9px;
+      right: 9px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -573,34 +675,72 @@
       pointer-events: none;
     }
     .supply-emoji-box {
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 17px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s ease;
+    }
+    .supply-card:hover .supply-emoji-box {
+      transform: scale(1.1) rotate(-6deg);
     }
     .supply-badge {
-      font-size: 11px;
-      font-weight: 800;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(8px);
-      color: #FBBF24;
-      border: 1px solid rgba(251, 191, 36, 0.4);
-      padding: 4px 10px;
+      font-size: 11.5px;
+      font-weight: 900;
+      letter-spacing: 0.3px;
+      color: #FFFFFF;
+      background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 4px 11px;
       border-radius: 999px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.55), 0 1px 3px rgba(0, 0, 0, 0.6);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      animation: badgeBreathe 3s ease-in-out infinite;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .badge-gold {
+      background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.55), 0 1px 3px rgba(0, 0, 0, 0.6);
+    }
+    .badge-emerald {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.55), 0 1px 3px rgba(0, 0, 0, 0.6);
+    }
+    .badge-purple {
+      background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+      box-shadow: 0 4px 14px rgba(139, 92, 246, 0.55), 0 1px 3px rgba(0, 0, 0, 0.6);
+    }
+    .badge-cyan {
+      background: linear-gradient(135deg, #06B6D4 0%, #0284C7 100%);
+      box-shadow: 0 4px 14px rgba(6, 182, 212, 0.55), 0 1px 3px rgba(0, 0, 0, 0.6);
+    }
+    .badge-rose {
+      background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%);
+      box-shadow: 0 4px 14px rgba(244, 63, 94, 0.55), 0 1px 3px rgba(0, 0, 0, 0.6);
+    }
+    @keyframes badgeBreathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
     }
     .supply-title {
       font-size: 15px;
-      font-weight: 700;
+      font-weight: 800;
       color: #FFFFFF;
       margin-bottom: 6px;
-      line-height: 1.4;
+      line-height: 1.35;
+      transition: color 0.2s ease;
+    }
+    .supply-card:hover .supply-title {
+      color: #FBBF24;
     }
     .supply-desc {
       font-size: 12px;
@@ -614,8 +754,13 @@
       align-items: center;
       margin-bottom: 14px;
     }
+    .supply-price-box {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
     .supply-price {
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 900;
       color: #EE4D2D;
     }
@@ -623,32 +768,70 @@
       font-size: 12px;
       color: var(--text-muted);
       text-decoration: line-through;
-      margin-left: 4px;
+    }
+    .supply-discount-tag {
+      font-size: 10px;
+      font-weight: 900;
+      color: #EF4444;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 2px 6px;
+      border-radius: 6px;
     }
     .supply-rating {
       font-size: 12px;
       font-weight: 700;
       color: #FBBF24;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
     .shopee-web-btn {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
       width: 100%;
-      background: #EE4D2D;
+      background: linear-gradient(135deg, #EE4D2D 0%, #FF5722 100%);
       color: #FFFFFF;
       text-decoration: none;
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 800;
-      padding: 10px 14px;
-      border-radius: 10px;
-      transition: opacity 0.2s ease, transform 0.2s ease;
-      box-shadow: 0 4px 14px rgba(238, 77, 45, 0.3);
+      padding: 11px 16px;
+      border-radius: 12px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(238, 77, 45, 0.35);
+      overflow: hidden;
+    }
+    .shopee-web-btn::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 30%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transform: rotate(25deg);
+      transition: left 0.6s ease;
+      pointer-events: none;
     }
     .shopee-web-btn:hover {
-      opacity: 0.92;
-      transform: scale(1.02);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 8px 22px rgba(238, 77, 45, 0.55);
+    }
+    .shopee-web-btn:hover::after {
+      left: 140%;
+    }
+    .shopee-web-btn:hover .btn-cart-icon {
+      transform: scale(1.2) rotate(-8deg);
+    }
+    .shopee-web-btn:active {
+      transform: translateY(0) scale(0.97);
+    }
+    .btn-cart-icon {
+      display: inline-block;
+      transition: transform 0.25s ease;
     }
 
     /* Interactive Web Demos Grid */
@@ -1030,7 +1213,10 @@
         <a href="#tools" class="nav-link">Free Tools</a>
         <a href="#faq" class="nav-link">FAQ</a>
       </div>
-      <a href="#beta" class="nav-cta-btn">🚀 Download App</a>
+      <a href="#beta" class="nav-cta-btn">
+        <span class="nav-rocket-icon">🚀</span>
+        <span>Download App</span>
+      </a>
     </nav>
 
     <!-- Hero Section -->
@@ -1050,13 +1236,15 @@
 
         <!-- CTA Buttons -->
         <div class="hero-cta-group">
-          <a href="https://testflight.apple.com/join/g2zwG5Cc" target="_blank" class="btn-primary" id="hero-cta-ios" style="background: linear-gradient(135deg, #2563EB, #7C3AED);">
-            <span>🍏 iOS TestFlight App</span>
-            <span>➔</span>
+          <a href="https://testflight.apple.com/join/g2zwG5Cc" target="_blank" class="btn-primary" id="hero-cta-ios">
+            <span class="cta-apple-icon" style="font-size: 20px;">🍏</span>
+            <span>iOS TestFlight App</span>
+            <span class="cta-arrow" style="font-weight: 900; font-size: 16px;">➔</span>
           </a>
           <a href="#beta" class="btn-secondary" id="hero-cta-download">
-            <span>🤖 Android Google Play</span>
-            <span style="font-size: 11px; background: rgba(255,255,255,0.15); padding: 3px 8px; border-radius: 6px;">Get App</span>
+            <span class="cta-bot-icon" style="font-size: 20px;">🤖</span>
+            <span>Android Google Play</span>
+            <span class="btn-badge-free">⚡ FREE</span>
           </a>
         </div>
 
@@ -1519,10 +1707,10 @@
         <!-- 1. Flushable Natural Tofu Cat Litter -->
         <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=tofu%20cat%20litter&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Flushable Tofu Cat Litter" data-php-price="₱165" data-php-orig="₱250" data-usd-price="$14.99" data-usd-orig="$19.99">
           <div class="supply-img-wrapper">
-            <img src="https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=600&q=80" alt="Flushable Natural Tofu Cat Litter" class="supply-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80" alt="Flushable Natural Tofu Cat Litter" class="supply-img" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1573865526739-10659fec78a5?auto=format&fit=crop&w=600&q=80';" />
             <div class="supply-top-overlay">
               <div class="supply-emoji-box">🐱</div>
-              <span class="supply-badge">🏆 #1 Cat Bestseller</span>
+              <span class="supply-badge badge-gold">🏆 #1 Cat Bestseller</span>
             </div>
           </div>
           <div>
@@ -1531,14 +1719,17 @@
           </div>
           <div>
             <div class="supply-footer">
-              <div>
+              <div class="supply-price-box">
                 <span class="supply-price">₱165</span>
                 <span class="supply-orig-price">₱250</span>
+                <span class="supply-discount-tag">-34%</span>
               </div>
               <span class="supply-rating">⭐ 4.9 (25k+ sold)</span>
             </div>
             <a href="https://shopee.ph/search?keyword=tofu%20cat%20litter&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" target="_blank" rel="noopener" class="shopee-web-btn">
-              <span>🛒 Buy on Shopee</span>
+              <span class="btn-cart-icon">🛒</span>
+              <span>Buy on Shopee</span>
+              <span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>
             </a>
           </div>
         </div>
@@ -1549,7 +1740,7 @@
             <img src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=600&q=80" alt="Charcoal Potty Training Pee Pads" class="supply-img" loading="lazy" onerror="this.style.display='none';" />
             <div class="supply-top-overlay">
               <div class="supply-emoji-box">🐾</div>
-              <span class="supply-badge">💧 100% Leak Proof</span>
+              <span class="supply-badge badge-cyan">💧 100% Leak Proof</span>
             </div>
           </div>
           <div>
@@ -1558,14 +1749,17 @@
           </div>
           <div>
             <div class="supply-footer">
-              <div>
+              <div class="supply-price-box">
                 <span class="supply-price">₱280</span>
                 <span class="supply-orig-price">₱420</span>
+                <span class="supply-discount-tag">-33%</span>
               </div>
               <span class="supply-rating">⭐ 4.9 (18k+ sold)</span>
             </div>
             <a href="https://shopee.ph/search?keyword=charcoal%20pet%20pee%20pads&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" target="_blank" rel="noopener" class="shopee-web-btn">
-              <span>🛒 Buy on Shopee</span>
+              <span class="btn-cart-icon">🛒</span>
+              <span>Buy on Shopee</span>
+              <span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>
             </a>
           </div>
         </div>
@@ -1576,7 +1770,7 @@
             <img src="https://images.unsplash.com/photo-1535294435445-d7249524ef2e?auto=format&fit=crop&w=600&q=80" alt="Hypoallergenic Oatmeal Pet Shampoo" class="supply-img" loading="lazy" onerror="this.style.display='none';" />
             <div class="supply-top-overlay">
               <div class="supply-emoji-box">🧴</div>
-              <span class="supply-badge">🌿 Itch Relief</span>
+              <span class="supply-badge badge-emerald">🌿 Itch Relief</span>
             </div>
           </div>
           <div>
@@ -1585,14 +1779,17 @@
           </div>
           <div>
             <div class="supply-footer">
-              <div>
+              <div class="supply-price-box">
                 <span class="supply-price">₱249</span>
                 <span class="supply-orig-price">₱350</span>
+                <span class="supply-discount-tag">-29%</span>
               </div>
               <span class="supply-rating">⭐ 4.9 (12k+ sold)</span>
             </div>
             <a href="https://shopee.ph/search?keyword=oatmeal%20pet%20shampoo&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" target="_blank" rel="noopener" class="shopee-web-btn">
-              <span>🛒 Buy on Shopee</span>
+              <span class="btn-cart-icon">🛒</span>
+              <span>Buy on Shopee</span>
+              <span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>
             </a>
           </div>
         </div>
@@ -1600,10 +1797,10 @@
         <!-- 4. Pure Wild Alaskan Salmon Oil -->
         <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=wild%20alaskan%20salmon%20oil%20dog%20cat&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Wild Alaskan Salmon Oil for Dogs and Cats" data-php-price="₱389" data-php-orig="₱499" data-usd-price="$19.95" data-usd-orig="$26.00">
           <div class="supply-img-wrapper">
-            <img src="https://images.unsplash.com/photo-1628134708706-e3d6439f074d?auto=format&fit=crop&w=600&q=80" alt="Pure Wild Alaskan Salmon Oil" class="supply-img" loading="lazy" onerror="this.style.display='none';" />
+            <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80" alt="Pure Wild Alaskan Salmon Oil" class="supply-img" loading="lazy" onerror="this.style.display='none';" />
             <div class="supply-top-overlay">
               <div class="supply-emoji-box">🐟</div>
-              <span class="supply-badge">✨ Shiny Coat</span>
+              <span class="supply-badge badge-gold">✨ Shiny Coat</span>
             </div>
           </div>
           <div>
@@ -1612,14 +1809,17 @@
           </div>
           <div>
             <div class="supply-footer">
-              <div>
+              <div class="supply-price-box">
                 <span class="supply-price">₱389</span>
                 <span class="supply-orig-price">₱499</span>
+                <span class="supply-discount-tag">-22%</span>
               </div>
               <span class="supply-rating">⭐ 4.9 (8.4k+ sold)</span>
             </div>
             <a href="https://shopee.ph/search?keyword=wild%20alaskan%20salmon%20oil%20dog%20cat&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" target="_blank" rel="noopener" class="shopee-web-btn">
-              <span>🛒 Buy on Shopee</span>
+              <span class="btn-cart-icon">🛒</span>
+              <span>Buy on Shopee</span>
+              <span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>
             </a>
           </div>
         </div>
@@ -1630,7 +1830,7 @@
             <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80" alt="Fast-Acting Tick & Flea Spot-On Treatment" class="supply-img" loading="lazy" onerror="this.style.display='none';" />
             <div class="supply-top-overlay">
               <div class="supply-emoji-box">🛡️</div>
-              <span class="supply-badge">⚡ 30-Day Protection</span>
+              <span class="supply-badge badge-rose">⚡ 30-Day Protection</span>
             </div>
           </div>
           <div>
@@ -1639,14 +1839,17 @@
           </div>
           <div>
             <div class="supply-footer">
-              <div>
+              <div class="supply-price-box">
                 <span class="supply-price">₱185</span>
                 <span class="supply-orig-price">₱280</span>
+                <span class="supply-discount-tag">-34%</span>
               </div>
               <span class="supply-rating">⭐ 4.8 (19k+ sold)</span>
             </div>
             <a href="https://shopee.ph/search?keyword=tick%20and%20flea%20spot%20on&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" target="_blank" rel="noopener" class="shopee-web-btn">
-              <span>🛒 Buy on Shopee</span>
+              <span class="btn-cart-icon">🛒</span>
+              <span>Buy on Shopee</span>
+              <span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>
             </a>
           </div>
         </div>
@@ -1657,7 +1860,7 @@
             <img src="https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=600&q=80" alt="Safety Pet Nail Clipper with LED Light & Guard" class="supply-img" loading="lazy" onerror="this.style.display='none';" />
             <div class="supply-top-overlay">
               <div class="supply-emoji-box">✂️</div>
-              <span class="supply-badge">💡 LED Bloodline Guard</span>
+              <span class="supply-badge badge-gold">💡 LED Bloodline Guard</span>
             </div>
           </div>
           <div>
@@ -1666,14 +1869,17 @@
           </div>
           <div>
             <div class="supply-footer">
-              <div>
+              <div class="supply-price-box">
                 <span class="supply-price">₱189</span>
                 <span class="supply-orig-price">₱299</span>
+                <span class="supply-discount-tag">-37%</span>
               </div>
               <span class="supply-rating">⭐ 4.8 (8.7k+ sold)</span>
             </div>
             <a href="https://shopee.ph/search?keyword=pet%20nail%20clipper%20led&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" target="_blank" rel="noopener" class="shopee-web-btn">
-              <span>🛒 Buy on Shopee</span>
+              <span class="btn-cart-icon">🛒</span>
+              <span>Buy on Shopee</span>
+              <span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>
             </a>
           </div>
         </div>
@@ -1684,7 +1890,7 @@
             <img src="https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=600&q=80" alt="Ultra-Quiet Automatic Pet Water Fountain" class="supply-img" loading="lazy" onerror="this.style.display='none';" />
             <div class="supply-top-overlay">
               <div class="supply-emoji-box">🥤</div>
-              <span class="supply-badge">💧 Kidney Health</span>
+              <span class="supply-badge badge-cyan">💧 Kidney Health</span>
             </div>
           </div>
           <div>
@@ -1693,14 +1899,17 @@
           </div>
           <div>
             <div class="supply-footer">
-              <div>
+              <div class="supply-price-box">
                 <span class="supply-price">₱380</span>
                 <span class="supply-orig-price">₱550</span>
+                <span class="supply-discount-tag">-31%</span>
               </div>
               <span class="supply-rating">⭐ 4.9 (11k+ sold)</span>
             </div>
             <a href="https://shopee.ph/search?keyword=automatic%20pet%20water%20fountain&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" target="_blank" rel="noopener" class="shopee-web-btn">
-              <span>🛒 Buy on Shopee</span>
+              <span class="btn-cart-icon">🛒</span>
+              <span>Buy on Shopee</span>
+              <span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>
             </a>
           </div>
         </div>
@@ -1708,10 +1917,10 @@
         <!-- 8. Multi-Strain Pet Probiotics & Enzymes -->
         <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=pet%20probiotics%20powder&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Multi Strain Pet Probiotics Enzyme Powder Dogs Cats" data-php-price="₱340" data-php-orig="₱450" data-usd-price="$17.50" data-usd-orig="$23.00">
           <div class="supply-img-wrapper">
-            <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=600&q=80" alt="Multi-Strain Pet Probiotics & Enzyme Powder" class="supply-img" loading="lazy" onerror="this.style.display='none';" />
+            <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=600&q=80" alt="Multi-Strain Pet Probiotics & Enzyme Powder" class="supply-img" loading="lazy" onerror="this.style.display='none';" />
             <div class="supply-top-overlay">
               <div class="supply-emoji-box">🦠</div>
-              <span class="supply-badge">✨ Digestion &amp; Gut</span>
+              <span class="supply-badge badge-purple">✨ Digestion &amp; Gut</span>
             </div>
           </div>
           <div>
@@ -1720,14 +1929,17 @@
           </div>
           <div>
             <div class="supply-footer">
-              <div>
+              <div class="supply-price-box">
                 <span class="supply-price">₱340</span>
                 <span class="supply-orig-price">₱450</span>
+                <span class="supply-discount-tag">-24%</span>
               </div>
               <span class="supply-rating">⭐ 4.9 (6.8k+ sold)</span>
             </div>
             <a href="https://shopee.ph/search?keyword=pet%20probiotics%20powder&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" target="_blank" rel="noopener" class="shopee-web-btn">
-              <span>🛒 Buy on Shopee</span>
+              <span class="btn-cart-icon">🛒</span>
+              <span>Buy on Shopee</span>
+              <span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>
             </a>
           </div>
         </div>
@@ -2456,7 +2668,7 @@
             btn.href = `https://www.amazon.com/s?k=${encodeURIComponent(amazonKeyword || 'Pet Supplies')}&tag=${AMAZON_TAG}`;
             btn.style.background = 'linear-gradient(135deg, #FF9900, #F59E0B)';
             btn.style.color = '#111827';
-            btn.innerHTML = '<span>🛒 Buy on Amazon</span>';
+            btn.innerHTML = '<span class="btn-cart-icon">🛒</span> <span>Buy on Amazon</span> <span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>';
           }
         } else {
           if (priceEl && phpPrice) priceEl.textContent = phpPrice;
@@ -2465,7 +2677,7 @@
             btn.href = shopeeUrl || '#';
             btn.style.background = 'linear-gradient(135deg, #EE4D2D, #FF5722)';
             btn.style.color = '#FFFFFF';
-            btn.innerHTML = '<span>🛒 Buy on Shopee</span>';
+            btn.innerHTML = '<span class="btn-cart-icon">🛒</span> <span>Buy on Shopee</span> <span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>';
           }
         }
       });

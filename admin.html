@@ -111,6 +111,7 @@
     import {
       getStorage,
       ref,
+      uploadBytes,
       uploadBytesResumable,
       uploadString,
       getDownloadURL
@@ -131,9 +132,10 @@
     const db = getFirestore(app);
     let storage = null;
     try {
-      storage = getStorage(app);
+      storage = getStorage(app, "gs://myfurpet-7de31.firebasestorage.app");
     } catch (e) {
       console.warn("Storage init note:", e);
+      try { storage = getStorage(app); } catch (e2) {}
     }
 
     // Export to window for vanilla integration
@@ -161,6 +163,7 @@
       onSnapshot,
       getStorage,
       ref,
+      uploadBytes,
       uploadBytesResumable,
       uploadString,
       getDownloadURL
@@ -2081,71 +2084,80 @@
 
       const statusEl = document.getElementById('photoUploadStatus');
       const nameDisplay = document.getElementById('photoFileNameDisplay');
+      const saveBtn = document.getElementById('saveProductSubmitBtn');
+
       if (statusEl) {
         statusEl.classList.remove('hidden');
-        statusEl.innerText = "Processing image...";
+        statusEl.innerText = "⏳ Compressing image...";
       }
       if (nameDisplay) {
         nameDisplay.innerText = file.name;
       }
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerText = "⏳ Processing photo...";
+      }
 
-      // 1. Read file as Image & create compressed data URL
-      const reader = new FileReader();
-      reader.onload = async function(event) {
-        const rawDataUrl = event.target.result;
-        
+      try {
+        // 1. Read file as Image & create compressed data URL
+        const rawDataUrl = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = e => resolve(e.target.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+
         // Show immediate local preview
         previewProductImage(rawDataUrl);
 
-        try {
-          const compressedDataUrl = await compressImageCanvas(rawDataUrl, 1000, 1000, 0.88);
-          previewProductImage(compressedDataUrl);
+        // 2. Compress via Canvas to Blob
+        const { blob, dataUrl } = await compressImageToBlob(rawDataUrl, 1000, 1000, 0.85);
+        previewProductImage(dataUrl);
 
-          // 2. Upload to Firebase Storage if available
-          const storage = window.fbStorage;
-          const fbMethods = window.fbMethods;
+        // 3. Upload Blob to Firebase Storage
+        const storage = window.fbStorage;
+        const fbMethods = window.fbMethods;
 
-          if (storage && fbMethods && fbMethods.ref && fbMethods.uploadString && fbMethods.getDownloadURL) {
-            if (statusEl) statusEl.innerText = "Uploading to Cloud Storage...";
-            try {
-              const safeFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
-              const storagePath = `affiliate_products/${Date.now()}_${safeFileName}`;
-              const storageRef = fbMethods.ref(storage, storagePath);
+        if (storage && fbMethods && fbMethods.ref && fbMethods.uploadBytes && fbMethods.getDownloadURL) {
+          if (statusEl) statusEl.innerText = "☁️ Uploading to Cloud Storage...";
+          const safeFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+          const storagePath = `affiliate_products/${Date.now()}_${safeFileName}`;
+          const storageRef = fbMethods.ref(storage, storagePath);
 
-              await fbMethods.uploadString(storageRef, compressedDataUrl, 'data_url');
-              const downloadUrl = await fbMethods.getDownloadURL(storageRef);
+          const snapshot = await fbMethods.uploadBytes(storageRef, blob, { contentType: 'image/jpeg' });
+          const downloadUrl = await fbMethods.getDownloadURL(snapshot.ref);
 
-              document.getElementById('modalProductImageUrl').value = downloadUrl;
-              previewProductImage(downloadUrl);
+          document.getElementById('modalProductImageUrl').value = downloadUrl;
+          previewProductImage(downloadUrl);
 
-              if (statusEl) {
-                statusEl.innerText = "✓ Uploaded to Cloud";
-                setTimeout(() => statusEl.classList.add('hidden'), 2500);
-              }
-              return;
-            } catch (storageErr) {
-              console.warn("Storage upload fallback to base64:", storageErr);
-            }
-          }
-
-          // Fallback: Use optimized Base64 data URL directly
-          document.getElementById('modalProductImageUrl').value = compressedDataUrl;
           if (statusEl) {
-            statusEl.innerText = "✓ Photo Ready";
+            statusEl.innerText = "✓ Cloud Upload Complete!";
+            setTimeout(() => statusEl.classList.add('hidden'), 3000);
+          }
+        } else {
+          // Direct fallback if storage not loaded
+          document.getElementById('modalProductImageUrl').value = dataUrl;
+          if (statusEl) {
+            statusEl.innerText = "✓ Photo Ready (Local)";
             setTimeout(() => statusEl.classList.add('hidden'), 2000);
           }
-        } catch (compErr) {
-          console.error("Compression error:", compErr);
-          document.getElementById('modalProductImageUrl').value = rawDataUrl;
-          if (statusEl) statusEl.classList.add('hidden');
         }
-      };
-
-      reader.readAsDataURL(file);
+      } catch (err) {
+        console.error("Photo upload error:", err);
+        alert("Upload note: " + (err.message || "Failed to upload to cloud."));
+        if (statusEl) {
+          statusEl.innerText = "⚠️ Upload error, please retry";
+        }
+      } finally {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.innerText = "Save Item to Cloud";
+        }
+      }
     }
 
-    function compressImageCanvas(dataUrl, maxWidth = 1000, maxHeight = 1000, quality = 0.88) {
-      return new Promise((resolve) => {
+    function compressImageToBlob(dataUrl, maxWidth = 1000, maxHeight = 1000, quality = 0.85) {
+      return new Promise((resolve, reject) => {
         const img = new Image();
         img.onload = () => {
           let width = img.width;
@@ -2167,8 +2179,16 @@
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
 
-          resolve(canvas.toDataURL('image/jpeg', quality));
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+          canvas.toBlob(blob => {
+            if (blob) {
+              resolve({ blob, dataUrl: compressedDataUrl });
+            } else {
+              resolve({ blob: new Blob([]), dataUrl: compressedDataUrl });
+            }
+          }, 'image/jpeg', quality);
         };
+        img.onerror = reject;
         img.src = dataUrl;
       });
     }

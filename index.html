@@ -1710,7 +1710,7 @@
         </div>
       </div>
 
-      <div class="supplies-grid">
+      <div class="supplies-grid" id="curatedSuppliesGrid">
         <!-- 1. Flushable Natural Tofu Cat Litter -->
         <div class="glass-card supply-card" data-shopee-url="https://shopee.ph/search?keyword=tofu%20cat%20litter&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100" data-amazon-keyword="Flushable Tofu Cat Litter" data-php-price="₱165" data-php-orig="₱250" data-usd-price="$14.99" data-usd-orig="$19.99">
           <div class="supply-img-wrapper">
@@ -2398,6 +2398,142 @@
       } else {
         showToast(`📋 ${name}'s birthday greeting copied!`);
       }
+    }
+
+    // ── Live Cloud Firestore Curated Supplies Sync ──
+    let activeMarketplaceStore = 'shopee';
+    let liveSuppliesData = [];
+
+    function setMarketplaceStore(store) {
+      activeMarketplaceStore = store;
+      const shopeeBtn = document.getElementById('store-btn-shopee');
+      const amazonBtn = document.getElementById('store-btn-amazon');
+      if (store === 'shopee') {
+        shopeeBtn.style.background = 'linear-gradient(135deg, #EE4D2D, #FF5722)';
+        shopeeBtn.style.color = '#FFF';
+        amazonBtn.style.background = 'transparent';
+        amazonBtn.style.color = '#94A3B8';
+      } else {
+        amazonBtn.style.background = 'linear-gradient(135deg, #F59E0B, #D97706)';
+        amazonBtn.style.color = '#111827';
+        shopeeBtn.style.background = 'transparent';
+        shopeeBtn.style.color = '#94A3B8';
+      }
+      if (liveSuppliesData.length > 0) {
+        renderLiveSuppliesGrid(liveSuppliesData);
+      }
+    }
+
+    function getWebsiteBadgeClass(badgeText) {
+      const text = (badgeText || '').toLowerCase();
+      if (text.includes('first-aid') || text.includes('protection') || text.includes('30-day') || text.includes('vet')) return 'badge-rose';
+      if (text.includes('bone') || text.includes('teeth') || text.includes('shiny') || text.includes('bestseller') || text.includes('#1') || text.includes('gold') || text.includes('bloodline') || text.includes('quick')) return 'badge-gold';
+      if (text.includes('calm') || text.includes('stress') || text.includes('itch') || text.includes('relief') || text.includes('allergy')) return 'badge-emerald';
+      if (text.includes('leak') || text.includes('kidney') || text.includes('bladder') || text.includes('proof')) return 'badge-cyan';
+      if (text.includes('gut') || text.includes('digestion') || text.includes('probiotic')) return 'badge-purple';
+      return 'badge-gold';
+    }
+
+    function getWebsiteCategoryIcon(category, title) {
+      const text = `${category || ''} ${title || ''}`.toLowerCase();
+      if (text.includes('cat') || text.includes('tofu') || text.includes('kitten')) return '🐱';
+      if (text.includes('shampoo') || text.includes('groom')) return '🧴';
+      if (text.includes('salmon') || text.includes('oil')) return '🐟';
+      if (text.includes('spray') || text.includes('med') || text.includes('first-aid')) return '🩺';
+      if (text.includes('fountain') || text.includes('water')) return '🥤';
+      if (text.includes('nail') || text.includes('clipper')) return '✂️';
+      if (text.includes('probiotic') || text.includes('enzyme')) return '🦠';
+      if (text.includes('pee pad') || text.includes('pad')) return '🐾';
+      if (text.includes('calcium') || text.includes('bone')) return '🦴';
+      if (text.includes('calm') || text.includes('chew')) return '🌿';
+      return '🛍️';
+    }
+
+    function renderLiveSuppliesGrid(products) {
+      const grid = document.getElementById('curatedSuppliesGrid');
+      if (!grid) return;
+
+      grid.innerHTML = products.map(p => {
+        const badgeClass = getWebsiteBadgeClass(p.badge);
+        const icon = p.icon || getWebsiteCategoryIcon(p.category, p.title);
+        const searchKw = p.title.replace(/\([^)]*\)/g, '').trim();
+        const shopeeLink = p.shopeeUrl || `https://shopee.ph/search?keyword=${encodeURIComponent(searchKw + ' for dogs and cats pet')}&utm_source=an_13324520100&utm_medium=affiliates&mmp_pid=an_13324520100`;
+        const amazonLink = `https://www.amazon.com/s?k=${encodeURIComponent(searchKw + ' pet')}&tag=myfurpet-20`;
+        const isAmazon = activeMarketplaceStore === 'amazon';
+        const targetLink = isAmazon ? amazonLink : shopeeLink;
+        const btnLabel = isAmazon ? 'Buy on Amazon' : 'Buy on Shopee';
+        const btnStyle = isAmazon ? 'background: linear-gradient(135deg, #F59E0B, #D97706); color: #111827;' : '';
+
+        return `
+          <div class="glass-card supply-card">
+            <div class="supply-img-wrapper">
+              <img src="${p.imageUrl || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(p.title) + '&background=0F172A&color=F59E0B&size=400'}" alt="${p.title}" class="supply-img" loading="lazy" style="object-fit: contain; padding: 6px; background: #0F172A;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.title)}&background=0F172A&color=F59E0B&size=400'" />
+              <div class="supply-top-overlay">
+                <div class="supply-emoji-box">${icon}</div>
+                <span class="supply-badge ${badgeClass}">${p.badge || '⭐ Featured'}</span>
+              </div>
+            </div>
+            <div>
+              <h4 class="supply-title">${p.title}</h4>
+              <p class="supply-desc">${p.description || ''}</p>
+            </div>
+            <div>
+              <div class="supply-footer">
+                <div class="supply-price-box">
+                  <span class="supply-price">${p.price || '₱0'}</span>
+                  ${p.originalPrice ? `<span class="supply-orig-price">${p.originalPrice}</span>` : ''}
+                  ${p.originalPrice ? `<span class="supply-discount-tag">-SALE</span>` : ''}
+                </div>
+                <span class="supply-rating">⭐ 4.9 (Verified)</span>
+              </div>
+              <a href="${targetLink}" target="_blank" rel="noopener" class="shopee-web-btn" style="${btnStyle}">
+                <span class="btn-cart-icon">🛒</span>
+                <span>${btnLabel}</span>
+                <span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadLiveSuppliesFromCloud() {
+      try {
+        const res = await fetch('https://firestore.googleapis.com/v1/projects/myfurpet-7de31/databases/(default)/documents/affiliate_products');
+        if (!res.ok) return;
+        const data = await res.json();
+        const docs = (data.documents || []).map(d => {
+          const f = d.fields || {};
+          const id = d.name.split('/').pop();
+          return {
+            id,
+            title: f.title?.stringValue || '',
+            description: f.description?.stringValue || '',
+            category: f.category?.stringValue || 'Pet Supplies',
+            badge: f.badge?.stringValue || 'Featured',
+            price: f.price?.stringValue || '₱0',
+            originalPrice: f.originalPrice?.stringValue || '',
+            imageUrl: f.imageUrl?.stringValue || '',
+            icon: f.icon?.stringValue || '',
+            shopeeUrl: f.shopeeUrl?.stringValue || '',
+            keywords: (f.keywords?.arrayValue?.values || []).map(v => v.stringValue).filter(Boolean)
+          };
+        }).filter(p => p.title);
+
+        if (docs.length > 0) {
+          liveSuppliesData = docs;
+          renderLiveSuppliesGrid(docs);
+        }
+      } catch (err) {
+        console.log('Live supplies fallback note:', err);
+      }
+    }
+
+    // Auto-load live cloud products on startup
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadLiveSuppliesFromCloud);
+    } else {
+      loadLiveSuppliesFromCloud();
     }
 
     // FAQ Accordion Toggle

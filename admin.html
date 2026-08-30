@@ -1280,7 +1280,7 @@
           </h3>
           <p class="text-xs text-slate-500">Live sync to app Pet Store & Homepage Deals.</p>
         </div>
-        <button onclick="closeProductModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white text-sm">
+        <button type="button" onclick="closeProductModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-white flex items-center justify-center text-sm font-bold transition-all hover:bg-slate-200 dark:hover:bg-slate-700 flex-shrink-0" title="Close modal">
           ✕
         </button>
       </div>
@@ -1342,22 +1342,22 @@
             <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[11px]">
               📷 Product Photo (Upload Image or Paste URL)
             </label>
-            <span id="photoUploadStatus" class="text-[10px] text-brand-600 dark:text-brand-400 font-semibold hidden">
+            <span id="photoUploadStatus" class="text-[10px] text-amber-600 dark:text-amber-400 font-semibold hidden">
               Uploading...
             </span>
           </div>
 
           <!-- Interactive Upload Dropzone & Button -->
-          <div id="productPhotoDropZone" ondragover="handlePhotoDragOver(event)" ondragleave="handlePhotoDragLeave(event)" ondrop="handlePhotoDrop(event)" class="border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-amber-500 rounded-xl p-3 text-center transition-all bg-white dark:bg-slate-900/50 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div id="productPhotoDropZone" ondragover="handlePhotoDragOver(event)" ondragleave="handlePhotoDragLeave(event)" ondrop="handlePhotoDrop(event)" class="border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-amber-500 rounded-xl p-3 transition-all bg-white dark:bg-slate-900/50 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
             
-            <div class="flex items-center gap-3 w-full sm:w-auto">
+            <div class="flex items-center gap-3 min-w-0 flex-1 w-full sm:w-auto">
               <!-- Thumbnail Preview Box -->
-              <div id="modalImagePreviewBox" class="w-14 h-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden flex-shrink-0 relative shadow-inner">
+              <div id="modalImagePreviewBox" class="w-12 h-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden flex-shrink-0 relative shadow-inner">
                 <span id="modalImagePreviewPlaceholder" class="text-slate-400 text-lg">📷</span>
                 <img id="modalImagePreviewImg" class="hidden w-full h-full object-contain" />
               </div>
 
-              <div class="text-left flex-1 min-w-0">
+              <div class="text-left min-w-0 flex-1">
                 <p class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate" id="photoFileNameDisplay">
                   No photo uploaded yet
                 </p>
@@ -1368,14 +1368,14 @@
             </div>
 
             <!-- Upload / Remove Action Buttons -->
-            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <div class="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto justify-end">
               <input type="file" id="modalProductFileInput" accept="image/*" class="hidden" onchange="handleProductFileSelect(event)">
               
-              <button type="button" onclick="document.getElementById('modalProductFileInput').click()" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1 shadow-sm transition-all">
+              <button type="button" onclick="document.getElementById('modalProductFileInput').click()" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1 shadow-sm transition-all flex-shrink-0 whitespace-nowrap">
                 <span>📁 Upload Photo</span>
               </button>
 
-              <button type="button" id="removePhotoBtn" onclick="removeProductPhoto()" class="hidden px-2.5 py-1.5 rounded-lg border border-rose-300 dark:border-rose-800 hover:bg-rose-50 dark:hover:bg-rose-950 text-rose-600 dark:text-rose-400 font-bold text-xs transition-all" title="Remove current photo">
+              <button type="button" id="removePhotoBtn" onclick="removeProductPhoto()" class="hidden px-2.5 py-1.5 rounded-lg border border-rose-300 dark:border-rose-800 hover:bg-rose-50 dark:hover:bg-rose-950 text-rose-600 dark:text-rose-400 font-bold text-xs transition-all flex-shrink-0 whitespace-nowrap" title="Remove current photo">
                 ✕ Remove
               </button>
             </div>

@@ -2762,6 +2762,10 @@
       let formattedTime = '';
       let joinedTimestamp = 0;
       if (joinedDateObj && !isNaN(joinedDateObj.getTime())) {
+        // Sanity guard: If client device was fast-forwarded into the future, cap to current time
+        if (joinedDateObj.getTime() > Date.now() + 60000) {
+          joinedDateObj = new Date();
+        }
         joinedTimestamp = joinedDateObj.getTime();
         formattedDate = joinedDateObj.toLocaleDateString('en-US', {
           month: 'short',

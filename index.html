@@ -1224,6 +1224,219 @@
         border-radius: 999px;
       }
     }
+
+    /* How-To Section Styles */
+    .howto-section {
+      padding: 60px 0 80px 0;
+    }
+    .howto-filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .howto-role-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-muted);
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .howto-role-btn:hover {
+      background: rgba(124, 58, 237, 0.2);
+      color: #FFFFFF;
+      border-color: rgba(167, 139, 250, 0.4);
+      transform: translateY(-1px);
+    }
+    .howto-role-btn.active {
+      background: linear-gradient(135deg, #7C3AED, #9333EA);
+      color: #FFFFFF;
+      border-color: #A78BFA;
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.35);
+    }
+    .howto-search-box {
+      max-width: 580px;
+      margin: 0 auto 36px auto;
+      position: relative;
+    }
+    .howto-search-input {
+      width: 100%;
+      background: rgba(15, 10, 30, 0.7);
+      border: 1px solid rgba(167, 139, 250, 0.3);
+      padding: 13px 20px 13px 44px;
+      border-radius: 14px;
+      color: #FFFFFF;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .howto-search-input:focus {
+      border-color: #A78BFA;
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25);
+    }
+    .howto-search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: #94A3B8;
+      pointer-events: none;
+    }
+    .howto-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 22px;
+      margin-bottom: 36px;
+    }
+    .howto-card {
+      padding: 24px;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      background: rgba(22, 16, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+    .howto-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(167, 139, 250, 0.35);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+    .howto-badge-tag {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 12px;
+      width: fit-content;
+    }
+    .tag-owner { background: rgba(56, 189, 248, 0.15); color: #7DD3FC; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .tag-vet { background: rgba(16, 185, 129, 0.15); color: #6EE7B7; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .tag-groomer { background: rgba(236, 72, 153, 0.15); color: #F472B6; border: 1px solid rgba(236, 72, 153, 0.3); }
+    .tag-store { background: rgba(245, 158, 11, 0.15); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .tag-amber { background: rgba(239, 68, 68, 0.2); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.4); animation: pulseAlert 2s infinite; }
+    @keyframes pulseAlert { 0%, 100% { opacity: 1; } 50% { opacity: 0.75; } }
+
+    .howto-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    .howto-path {
+      font-size: 11px;
+      color: #A78BFA;
+      background: rgba(124, 58, 237, 0.12);
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-family: monospace;
+    }
+    .howto-steps {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .howto-step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13.5px;
+      color: #CBD5E1;
+      line-height: 1.5;
+    }
+    .step-number-dot {
+      background: rgba(167, 139, 250, 0.2);
+      color: #C4B5FD;
+      font-weight: 800;
+      font-size: 11px;
+      min-width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+    .howto-why-box {
+      background: rgba(255, 255, 255, 0.04);
+      border-left: 3px solid #10B981;
+      border-radius: 0 10px 10px 0;
+      padding: 9px 12px;
+      font-size: 12px;
+      color: #94A3B8;
+      line-height: 1.5;
+      margin-top: auto;
+    }
+    .howto-why-box strong {
+      color: #E2E8F0;
+    }
+    .howto-cta-banner {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.25), rgba(236, 72, 153, 0.15));
+      border: 1px solid rgba(167, 139, 250, 0.3);
+      border-radius: 20px;
+      padding: 24px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .howto-cta-text h4 {
+      font-size: 17px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 4px;
+    }
+    .howto-cta-text p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 0;
+    }
+    .howto-cta-btn {
+      background: linear-gradient(135deg, #7C3AED, #9333EA);
+      color: #FFFFFF;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 800;
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      white-space: nowrap;
+    }
+    .howto-cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6);
+    }
   </style>
 </head>
 <body>
@@ -1245,6 +1458,7 @@
       </a>
       <div class="nav-links">
         <a href="#features" class="nav-link">Features</a>
+        <a href="#howto" class="nav-link">How-To Guide 📖</a>
         <a href="#supplies" class="nav-link">Pet Supplies 🛒</a>
         <a href="#medical-suite" class="nav-link">Medical Suite</a>
         <a href="#tools" class="nav-link">Free Tools</a>
@@ -1602,6 +1816,250 @@
             <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">Provide in-app HD video consultations and generate official PRC-compliant digital prescriptions that auto-sync into pet owners' Smart Pillboxes.</p>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- Interactive How-To App Playbook Section -->
+    <section id="howto" class="howto-section">
+      <div class="section-header">
+        <span class="section-tag">📖 Interactive Playbook</span>
+        <h2 class="section-title">How To Use MyFurPet: Step-by-Step Guides</h2>
+        <p class="section-subtitle">Actionable 3-step formulas for pet parents, veterinary clinics, pet spas, and pet stores.</p>
+      </div>
+
+      <!-- Role Filter Switcher -->
+      <div class="howto-filter-bar">
+        <button class="howto-role-btn active" onclick="filterHomeGuides('all', this)">✨ All Guides</button>
+        <button class="howto-role-btn" onclick="filterHomeGuides('owner', this)">🐾 Pet Parents</button>
+        <button class="howto-role-btn" onclick="filterHomeGuides('vet', this)">🏥 Vets &amp; Clinics</button>
+        <button class="howto-role-btn" onclick="filterHomeGuides('groomer', this)">✂️ Groomers</button>
+        <button class="howto-role-btn" onclick="filterHomeGuides('store', this)">🛒 Pet Stores</button>
+      </div>
+
+      <!-- Instant Search Filter -->
+      <div class="howto-search-box">
+        <span class="howto-search-icon">🔍</span>
+        <input type="text" id="home-guide-search" class="howto-search-input" placeholder="Search any guide (e.g. amber alert, rewards vault, booking, smart pillbox, clinic)..." oninput="searchHomeGuides()">
+      </div>
+
+      <!-- Guide Cards Grid -->
+      <div class="howto-grid" id="home-guides-container">
+        <!-- Guide 1: Lost Pet Radar (Amber Alert) -->
+        <div class="howto-card" data-role="owner" data-keywords="lost pet amber alert paws alert radar emergency find dog cat broadcast">
+          <div>
+            <span class="howto-badge-tag tag-amber">🚨 Emergency Action</span>
+            <h3 class="howto-title"><span>📢</span> Broadcast a Lost Pet Amber Alert</h3>
+            <div class="howto-path">Menu ➔ Paws Alert ➔ Broadcast Lost Pet</div>
+            <ul class="howto-steps">
+              <li class="howto-step-item">
+                <span class="step-number-dot">1</span>
+                <span>Open the side menu and select <strong>Paws Alert (Lost Pet Radar)</strong>.</span>
+              </li>
+              <li class="howto-step-item">
+                <span class="step-number-dot">2</span>
+                <span>Choose your pet, upload their latest photo, and mark the last known GPS location.</span>
+              </li>
+              <li class="howto-step-item">
+                <span class="step-number-dot">3</span>
+                <span>Tap <strong>Broadcast Alert</strong> to push an urgent notification to all users &amp; vet clinics within 15 km.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="howto-why-box">
+            <strong>Why This Matters:</strong> The first 2 hours are crucial. Geo-targeted alerts mobilize nearby pet lovers to safely recover 84% of lost pets.
+          </div>
+        </div>
+
+        <!-- Guide 2: Rewards Vault & Accessories -->
+        <div class="howto-card" data-role="owner" data-keywords="rewards vault royal crown avatar accessories pawpoints redeem customize equip">
+          <div>
+            <span class="howto-badge-tag tag-owner">🐾 Pet Care Rewards</span>
+            <h3 class="howto-title"><span>👑</span> Redeem &amp; Equip Avatar Accessories</h3>
+            <div class="howto-path">Profile ➔ PawPoints ➔ Rewards Vault</div>
+            <ul class="howto-steps">
+              <li class="howto-step-item">
+                <span class="step-number-dot">1</span>
+                <span>Earn PawPoints by logging daily meals, vet visits, vaccinations, and medication doses.</span>
+              </li>
+              <li class="howto-step-item">
+                <span class="step-number-dot">2</span>
+                <span>Tap your PawPoints balance in Profile to enter the <strong>Rewards Vault</strong> and redeem items like the <strong>Royal Crown</strong>.</span>
+              </li>
+              <li class="howto-step-item">
+                <span class="step-number-dot">3</span>
+                <span>Open your Pet Profile and equip the unlocked crown or badge to adorn your pet's avatar everywhere.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="howto-why-box">
+            <strong>Why This Matters:</strong> Gamified wellness routines keep pet care engaging while unlocking custom prestige accessories for your companion.
+          </div>
+        </div>
+
+        <!-- Guide 3: Book Appointments -->
+        <div class="howto-card" data-role="owner" data-keywords="book vet appointment grooming schedule calendar find care clinic">
+          <div>
+            <span class="howto-badge-tag tag-owner">🐾 Booking &amp; Care</span>
+            <h3 class="howto-title"><span>📅</span> Book a Vet or Grooming Visit</h3>
+            <div class="howto-path">Find Care ➔ Select Clinic ➔ Book Slot</div>
+            <ul class="howto-steps">
+              <li class="howto-step-item">
+                <span class="step-number-dot">1</span>
+                <span>Open <strong>Find Care</strong> and filter by certified veterinary clinics, mobile vets, or grooming salons.</span>
+              </li>
+              <li class="howto-step-item">
+                <span class="step-number-dot">2</span>
+                <span>Select your preferred date, available time slot, service package, and add relevant health notes.</span>
+              </li>
+              <li class="howto-step-item">
+                <span class="step-number-dot">3</span>
+                <span>Tap <strong>Confirm Booking</strong> to receive real-time status updates and live calendar synchronization.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="howto-why-box">
+            <strong>Why This Matters:</strong> Direct Firestore integration eliminates busy phone lines and gives instant confirmation from clinic staff.
+          </div>
+        </div>
+
+        <!-- Guide 4: Smart Pillbox -->
+        <div class="howto-card" data-role="owner" data-keywords="smart pillbox medication reminder dose rx pills schedule alarm">
+          <div>
+            <span class="howto-badge-tag tag-owner">🐾 Medical Suite</span>
+            <h3 class="howto-title"><span>💊</span> Set Up Smart Pillbox Reminders</h3>
+            <div class="howto-path">Pet Profile ➔ Medical Suite ➔ Smart Pillbox</div>
+            <ul class="howto-steps">
+              <li class="howto-step-item">
+                <span class="step-number-dot">1</span>
+                <span>Navigate to your pet's profile and tap <strong>Smart Pillbox</strong> under the Medical Suite.</span>
+              </li>
+              <li class="howto-step-item">
+                <span class="step-number-dot">2</span>
+                <span>Enter medication details: drug name, dosage (e.g. 1 tablet), recurrence (every 8 hrs), and duration.</span>
+              </li>
+              <li class="howto-step-item">
+                <span class="step-number-dot">3</span>
+                <span>Save to activate scheduled native alarms and log completed administrations with a single tap.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="howto-why-box">
+            <strong>Why This Matters:</strong> Prevents missed doses during antibiotic or chronic treatments, protecting your pet from relapses.
+          </div>
+        </div>
+
+        <!-- Guide 5: Vet Clinic Onboarding -->
+        <div class="howto-card" data-role="vet" data-keywords="vet clinic registration partner dashboard reception calendar patient records">
+          <div>
+            <span class="howto-badge-tag tag-vet">🏥 Veterinary Suite</span>
+            <h3 class="howto-title"><span>🏥</span> Register Clinic &amp; Manage Clients</h3>
+            <div class="howto-path">Profile ➔ Register Business ➔ Vet Portal</div>
+            <ul class="howto-steps">
+              <li class="howto-step-item">
+                <span class="step-number-dot">1</span>
+                <span>Tap <strong>Are You a Vet Clinic or Pet Business?</strong> in Profile to apply with your PRC license.</span>
+              </li>
+              <li class="howto-step-item">
+                <span class="step-number-dot">2</span>
+                <span>Configure clinic operating hours, service rate cards, teleconsult rooms, and on-duty veterinary staff.</span>
+              </li>
+              <li class="howto-step-item">
+                <span class="step-number-dot">3</span>
+                <span>Manage incoming patient bookings with one-tap approvals, rescheduling, and digital check-ins.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="howto-why-box">
+            <strong>Why This Matters:</strong> Modernizes your clinic reception, eliminates no-shows through automated push reminders, and centralizes EMRs.
+          </div>
+        </div>
+
+        <!-- Guide 6: Digital Prescriptions -->
+        <div class="howto-card" data-role="vet" data-keywords="digital rx prescription telehealth prc vet doctor dosage medicine">
+          <div>
+            <span class="howto-badge-tag tag-vet">🏥 Veterinary Suite</span>
+            <h3 class="howto-title"><span>🩺</span> Issue Official Digital Prescriptions</h3>
+            <div class="howto-path">Vet Dashboard ➔ Patient EMR ➔ Create Rx</div>
+            <ul class="howto-steps">
+              <li class="howto-step-item">
+                <span class="step-number-dot">1</span>
+                <span>Open the patient record from your appointment queue and tap <strong>Issue Digital Rx</strong>.</span>
+              </li>
+              <li class="howto-step-item">
+                <span class="step-number-dot">2</span>
+                <span>Enter drug name, dosage instructions, duration, and attach your digital signature &amp; PRC license number.</span>
+              </li>
+              <li class="howto-step-item">
+                <span class="step-number-dot">3</span>
+                <span>Transmit to the pet owner's app — auto-populates their Smart Pillbox with zero re-typing required.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="howto-why-box">
+            <strong>Why This Matters:</strong> Eliminates illegible handwritten slips and gives pet owners instant, error-free dose schedules on their phones.
+          </div>
+        </div>
+
+        <!-- Guide 7: Groomer Service Menu -->
+        <div class="howto-card" data-role="groomer" data-keywords="groomer spa bath haircut service packages queue pickup ready">
+          <div>
+            <span class="howto-badge-tag tag-groomer">✂️ Grooming Spa</span>
+            <h3 class="howto-title"><span>✂️</span> Setup Grooming Menus &amp; Queue</h3>
+            <div class="howto-path">Business Suite ➔ Grooming Services ➔ Rate Card</div>
+            <ul class="howto-steps">
+              <li class="howto-step-item">
+                <span class="step-number-dot">1</span>
+                <span>Create service packages (Basic Bath, Full Styling, De-shedding, Medicated Soak) with transparent rates.</span>
+              </li>
+              <li class="howto-step-item">
+                <span class="step-number-dot">2</span>
+                <span>Define slot durations by pet size (Small, Medium, Giant) to maintain an organized salon schedule.</span>
+              </li>
+              <li class="howto-step-item">
+                <span class="step-number-dot">3</span>
+                <span>Check pets in upon arrival and tap <strong>Ready for Pickup</strong> to send automated notifications to owners.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="howto-why-box">
+            <strong>Why This Matters:</strong> Prevents facility overcrowding and keeps pet parents delighted with real-time status notifications.
+          </div>
+        </div>
+
+        <!-- Guide 8: Pet Store Catalog -->
+        <div class="howto-card" data-role="store" data-keywords="pet store shop supplies inventory products orders pickup delivery">
+          <div>
+            <span class="howto-badge-tag tag-store">🛒 Pet Marketplace</span>
+            <h3 class="howto-title"><span>🛒</span> Publish Products &amp; Receive Orders</h3>
+            <div class="howto-path">Business Suite ➔ Pet Shop ➔ Catalog Manager</div>
+            <ul class="howto-steps">
+              <li class="howto-step-item">
+                <span class="step-number-dot">1</span>
+                <span>List pet food, treats, supplements, collars, or accessories with photos and accurate pricing.</span>
+              </li>
+              <li class="howto-step-item">
+                <span class="step-number-dot">2</span>
+                <span>Set available inventory variants (weights, sizes, flavors) and specify in-store pickup or local delivery.</span>
+              </li>
+              <li class="howto-step-item">
+                <span class="step-number-dot">3</span>
+                <span>Fulfill incoming client orders with instant in-app order updates and customer messaging.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="howto-why-box">
+            <strong>Why This Matters:</strong> Connect directly with local pet owners actively seeking fresh food and wellness essentials nearby.
+          </div>
+        </div>
+      </div>
+
+      <!-- Knowledge Base Banner CTA -->
+      <div class="howto-cta-banner">
+        <div class="howto-cta-text">
+          <h4>📖 Need More In-Depth Guides or Developer Docs?</h4>
+          <p>Explore our complete knowledge base with full step-by-step screenshots, data security sheets, and role FAQs.</p>
+        </div>
+        <a href="howto.html" class="howto-cta-btn">Open Full Knowledge Base ➔</a>
       </div>
     </section>
 
@@ -2315,6 +2773,7 @@
       <div class="footer-links">
         <a href="privacy.html">🔒 Privacy Policy</a>
         <a href="terms.html">📜 Terms of Service</a>
+        <a href="howto.html">📖 App How-To Guide</a>
         <a href="#feedback" class="footer-accent">💡 Suggest a Feature</a>
         <a href="#feedback">🚨 Report a Problem</a>
         <a href="delete-account.html" class="footer-danger">🗑️ Delete Account &amp; Data</a>
@@ -3025,6 +3484,38 @@
     }
 
     document.addEventListener('DOMContentLoaded', initGeoMarketplace);
+
+    // ── Interactive How-To Playbook Filtering ──
+    let currentHomeGuideRole = 'all';
+
+    function filterHomeGuides(role, btn) {
+      currentHomeGuideRole = role;
+      if (btn) {
+        document.querySelectorAll('.howto-role-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      searchHomeGuides();
+    }
+
+    function searchHomeGuides() {
+      const q = (document.getElementById('home-guide-search')?.value || '').toLowerCase().trim();
+      const cards = document.querySelectorAll('#home-guides-container .howto-card');
+
+      cards.forEach(card => {
+        const role = card.getAttribute('data-role');
+        const keywords = (card.getAttribute('data-keywords') || '').toLowerCase();
+        const text = card.textContent.toLowerCase();
+
+        const matchesRole = (currentHomeGuideRole === 'all' || role === currentHomeGuideRole);
+        const matchesQuery = !q || keywords.includes(q) || text.includes(q);
+
+        if (matchesRole && matchesQuery) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
 
     function showToast(msg) {
       const t = document.getElementById('toast');

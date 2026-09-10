@@ -1492,10 +1492,10 @@
             <span>iOS TestFlight App</span>
             <span class="cta-arrow" style="font-weight: 900; font-size: 16px;">➔</span>
           </a>
-          <a href="#beta" class="btn-secondary" id="hero-cta-download">
+          <a href="https://play.google.com/store/apps/details?id=com.myfurpet.app" target="_blank" class="btn-secondary" id="hero-cta-download" style="background: linear-gradient(135deg, #059669, #10B981); color: #FFFFFF; border: none;">
             <span class="cta-bot-icon" style="font-size: 20px;">🤖</span>
-            <span>Android Google Play</span>
-            <span class="btn-badge-free">⚡ FREE</span>
+            <span>Get on Google Play</span>
+            <span class="btn-badge-free" style="background: rgba(255,255,255,0.25); color: #FFF;">⚡ LIVE</span>
           </a>
         </div>
 
@@ -2676,28 +2676,21 @@
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
             <span style="font-size: 32px;">🤖</span>
             <span style="background: rgba(16, 185, 129, 0.2); color: #6EE7B7; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px;">
-              ● PLAY STORE TRACK
+              ● OFFICIALLY LIVE ON GOOGLE PLAY
             </span>
           </div>
           <h3 style="font-size: 22px; font-weight: 800; margin-bottom: 8px;">For Android Users</h3>
-          <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.6;">
-            Join our Google Play tester group to unlock closed-track access and download directly from Google Play.
+          <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;">
+            MyFurPet is officially live on Google Play! Download in 1 tap to access the smart digital health passport, 24/7 AI vet triage, lost pet radar, and 100+ breed clubs.
           </p>
 
-          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
-            <a href="https://groups.google.com/g/myfurpet-testers" target="_blank" class="btn-secondary" style="width: 100%; justify-content: center; padding: 12px; font-size: 14px; background: rgba(255,255,255,0.06);">
-              <span>1️⃣ Step 1: Join Google Play Tester Group (Required)</span>
-            </a>
-            <a href="https://play.google.com/apps/testing/com.myfurpet.app" target="_blank" class="btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 14px; background: linear-gradient(135deg, #059669, #10B981);">
-              <span>2️⃣ Step 2: Opt-In & Download on Play Store</span>
-              <span>➔</span>
-            </a>
-          </div>
+          <a href="https://play.google.com/store/apps/details?id=com.myfurpet.app" target="_blank" class="btn-primary" style="width: 100%; justify-content: center; background: linear-gradient(135deg, #059669, #10B981); margin-bottom: 12px;">
+            <span>👉 Download on Google Play</span>
+            <span>➔</span>
+          </a>
 
-          <div style="display: flex; justify-content: center; gap: 12px; font-size: 12px;">
-            <a href="https://play.google.com/store/apps/details?id=com.myfurpet.app" target="_blank" style="color: #6EE7B7; font-weight: 700; text-decoration: none;">
-              📲 Direct Play Store App Link ➔
-            </a>
+          <div style="font-size: 12px; color: #94A3B8; text-align: center;">
+            ⚡ <em>100% Free on Google Play • Instant 1-tap install.</em>
           </div>
         </div>
       </div>
@@ -2723,7 +2716,7 @@
             <input type="text" id="beta-pet" class="demo-input" placeholder="Pet's Name (e.g. Chiqui)" maxlength="50" required>
             <select id="beta-os" class="demo-input" style="background: #0F172A;" required>
               <option value="ios">🍏 iPhone (Apple TestFlight)</option>
-              <option value="android">🤖 Android (Google Play Track)</option>
+              <option value="android">🤖 Android (Google Play Store - Official)</option>
             </select>
           </div>
           <button type="submit" id="beta-submit-btn" class="btn-primary" style="justify-content: center; width: 100%;">
@@ -3440,7 +3433,7 @@
         const os = document.getElementById('beta-os').value;
         showToast('✓ You have already claimed VIP Access! Redirecting...');
         if (os === 'android') {
-          window.location.href = 'https://groups.google.com/g/myfurpet-testers';
+          window.location.href = 'https://play.google.com/store/apps/details?id=com.myfurpet.app';
         } else {
           window.location.href = 'https://testflight.apple.com/join/g2zwG5Cc';
         }
@@ -3492,9 +3485,9 @@
       showToast(`🎉 Welcome ${cleanName}! VIP Access Granted for ${cleanPet}.`);
 
       if (os === 'android') {
-        submitBtn.innerHTML = '<span>✓ Redirecting to Google Play Group...</span>';
+        submitBtn.innerHTML = '<span>✓ Opening Google Play Store...</span>';
         setTimeout(() => {
-          window.location.href = 'https://groups.google.com/g/myfurpet-testers';
+          window.location.href = 'https://play.google.com/store/apps/details?id=com.myfurpet.app';
         }, 1200);
       } else {
         submitBtn.innerHTML = '<span>✓ Opening Apple TestFlight...</span>';

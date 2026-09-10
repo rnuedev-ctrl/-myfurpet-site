@@ -2641,13 +2641,13 @@
     <!-- App Direct Access & VIP Hub -->
     <section id="beta" style="padding: 20px 0 80px 0;">
       <div class="section-header">
-        <span class="badge-pill" style="margin-bottom: 8px;">🎁 VIP Early-Access Invitation</span>
+        <span class="badge-pill" style="margin-bottom: 8px;">📲 Official App Downloads</span>
         <h2 class="section-title">Get MyFurPet on Your Device</h2>
-        <p class="section-subtitle">Join our active pet parent community on iOS and Android to get instant access and free lifetime VIP status.</p>
+        <p class="section-subtitle">Join thousands of pet parents on iOS and Android with our official app releases.</p>
       </div>
 
       <!-- Platform Download Cards -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 36px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 0;">
         <!-- Card 1: iOS TestFlight -->
         <div class="glass-card" style="padding: 32px; border-color: rgba(59, 130, 246, 0.4); background: linear-gradient(180deg, rgba(30, 58, 138, 0.25) 0%, rgba(15, 23, 42, 0.8) 100%);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
@@ -2693,36 +2693,6 @@
             ⚡ <em>100% Free on Google Play • Instant 1-tap install.</em>
           </div>
         </div>
-      </div>
-
-      <!-- Early Access Registration & Automatic Redirect Form -->
-      <div class="glass-card signup-section" style="margin-bottom: 0;">
-        <h3 style="font-size: 24px; font-weight: 900; margin-bottom: 6px;">Get Early Access & Download MyFurPet</h3>
-        <p style="color: var(--text-muted); font-size: 14px; max-width: 520px; margin: 0 auto;">
-          Enter your name and pet details below to get redirected straight to your installation link!
-        </p>
-
-        <form id="beta-signup-form" class="signup-form" onsubmit="handleBetaSignup(event)">
-          <!-- Anti-Bot Honeypot Trap (Invisible to humans) -->
-          <div style="position: absolute; left: -9999px; top: -9999px; opacity: 0; pointer-events: none;" aria-hidden="true">
-            <input type="text" id="beta-hp" name="website_hp_check" tabindex="-1" autocomplete="off" value="">
-          </div>
-
-          <div class="form-row">
-            <input type="text" id="beta-name" class="demo-input" placeholder="Your Name" maxlength="60" required>
-            <input type="email" id="beta-email" class="demo-input" placeholder="Email Address" maxlength="100" required>
-          </div>
-          <div class="form-row">
-            <input type="text" id="beta-pet" class="demo-input" placeholder="Pet's Name (e.g. Chiqui)" maxlength="50" required>
-            <select id="beta-os" class="demo-input" style="background: #0F172A;" required>
-              <option value="ios">🍏 iPhone (Apple TestFlight)</option>
-              <option value="android">🤖 Android (Google Play Store - Official)</option>
-            </select>
-          </div>
-          <button type="submit" id="beta-submit-btn" class="btn-primary" style="justify-content: center; width: 100%;">
-            <span>🚀 Proceed to Download App</span>
-          </button>
-        </form>
       </div>
     </section>
 

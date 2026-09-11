@@ -1659,8 +1659,9 @@
         if (user) {
           const email = (user.email || '').toLowerCase().trim();
           
-          // Verify superadmin permission against allowlist & database
-          let isSuperAdmin = SUPERADMIN_EMAILS.some(adm => email === adm || email.startsWith('rnuedev'));
+          // Verify superadmin permission against allowlist & database (STRICT EXACT MATCH)
+          const normalizedSuperadminList = SUPERADMIN_EMAILS.map(adm => adm.toLowerCase().trim());
+          let isSuperAdmin = normalizedSuperadminList.includes(email);
           if (!isSuperAdmin) {
             try {
               const sanitizedEmail = email.replace(/[^a-z0-9]/g, '_');
@@ -3088,7 +3089,6 @@
       if (
         rawEmail === 'rnuedev@gmail.com' ||
         rawEmail === 'bob@gmail.com' ||
-        rawEmail.startsWith('rnuedev') ||
         u.id === 'rnuedev_gmail_com' ||
         u.id === 'bob_gmail_com' ||
         u.id === 'rnuedev'

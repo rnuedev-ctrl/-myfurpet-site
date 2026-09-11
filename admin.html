@@ -728,10 +728,14 @@
             <div class="flex flex-wrap items-center gap-3">
               <input type="text" id="userSearchInput" oninput="filterUsersList()" placeholder="🔍 Search name, email, or role..." class="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs w-60 focus:outline-none focus:ring-2 focus:ring-brand-500">
               <select id="userRoleFilter" onchange="filterUsersList()" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold">
-                <option value="ALL">All Roles</option>
-                <option value="VIP">VIP Members</option>
-                <option value="ADMIN">Admins</option>
-                <option value="SUSPENDED">Suspended</option>
+                <option value="ALL">All Roles & Types</option>
+                <option value="SUPERADMIN">👑 Superadmins</option>
+                <option value="ADMIN">🛡️ Admins / Mods</option>
+                <option value="SECURITY">🛡️ Security Researchers</option>
+                <option value="PET_PARENT">🐾 Pet Parents</option>
+                <option value="CLINIC">🏥 Partner Clinics</option>
+                <option value="VIP">👑 VIP Members</option>
+                <option value="SUSPENDED">⛔ Suspended</option>
               </select>
               <select id="userSortSelect" onchange="handleUserSortSelect(this.value)" class="px-3 py-2 rounded-xl border border-brand-300 dark:border-brand-700 bg-brand-50/50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 text-xs font-bold focus:outline-none">
                 <option value="joined_desc">📅 Newest Joined First</option>
@@ -751,15 +755,16 @@
                     <th id="th-sort-name" class="p-4 cursor-pointer hover:text-brand-500 transition-colors" onclick="toggleHeaderSort('name')">User ↕</th>
                     <th class="p-4">Email</th>
                     <th id="th-sort-joined" class="p-4 cursor-pointer hover:text-brand-500 transition-colors" onclick="toggleHeaderSort('joined')">Date & Time Joined 📅 ▼ (Newest)</th>
+                    <th class="p-4">User Type</th>
                     <th id="th-sort-vip" class="p-4 cursor-pointer hover:text-brand-500 transition-colors" onclick="toggleHeaderSort('vip')">VIP Status ↕</th>
-                    <th class="p-4">Role</th>
+                    <th class="p-4">Platform Role</th>
                     <th class="p-4">Account Status</th>
                     <th class="p-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody id="usersTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
                   <tr>
-                    <td colspan="7" class="p-8 text-center text-slate-400">Streaming live users from Cloud Firestore...</td>
+                    <td colspan="8" class="p-8 text-center text-slate-400">Streaming live users from Cloud Firestore...</td>
                   </tr>
                 </tbody>
               </table>
@@ -3073,15 +3078,43 @@
         vipPlanName = '👑 VIP Gold';
       }
 
-      const role = u.role || p.role || (isVip ? 'vip' : 'user');
+      // ── Resolve Authority Role & Community User Type ──
+      let role = (u.role || p.role || '').toLowerCase().trim();
+      if (!role) {
+        if (rawEmail === 'rnuedev@gmail.com') role = 'superadmin';
+        else if (u.isSecurityResearcher || p.isSecurityResearcher) role = 'security_researcher';
+        else if (isVip) role = 'vip';
+        else role = 'user';
+      }
+      if (rawEmail === 'rnuedev@gmail.com') {
+        role = 'superadmin';
+      } else if (u.isSecurityResearcher || p.isSecurityResearcher) {
+        role = 'security_researcher';
+      }
+
       const pets = Array.isArray(u.pets) ? u.pets : [];
       const petSummary = pets.length > 0 ? `🐾 ${pets.map(pet => pet.name ? `${pet.name}${pet.breed ? ` (${pet.breed})` : ''}` : 'Pet').join(', ')}` : '';
       const avatar = p.avatarUrl || u.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(rawName)}&background=7C3AED&color=ffffff&size=64&bold=true`;
 
+      // Determine Community User Type
+      let userType = 'member';
+      let userTypeLabel = '👤 Member';
+      const hasClinic = Array.isArray(clinicsData) && clinicsData.some(c => 
+        (c.contactEmail && c.contactEmail.toLowerCase() === rawEmail) || 
+        (c.ownerId && (c.ownerId === u.id || c.ownerId === rawEmail))
+      );
+      if (hasClinic || u.registeredClinic || p.registeredClinic) {
+        userType = 'clinic';
+        userTypeLabel = '🏥 Partner Clinic';
+      } else if (pets.length > 0) {
+        userType = 'pet_parent';
+        userTypeLabel = `🐾 Pet Parent (${pets.length} ${pets.length === 1 ? 'Pet' : 'Pets'})`;
+      }
+
       // ── Resolve Date & Time Joined (Strict Immutable Registration Timestamps) ──
       let rawJoined = null;
 
-      // 1. Founding Master Accounts (Fixed Immutable Epoch)
+      // 1. Founding Master Accounts (Fixed Immutable Epoch for original founders)
       if (
         rawEmail === 'rnuedev@gmail.com' ||
         rawEmail === 'bob@gmail.com' ||
@@ -3129,36 +3162,18 @@
         }
       }
 
-      // 5. Normalize Early Beta VIP / Founding testers (ignore testing overwrites from today 2026-08-22)
-      const isEarlyBetaTester = (
-        isVip ||
-        u.vipPlan?.includes('early_access') ||
-        p.vipPlan?.includes('early_access') ||
-        u.earlyAccess ||
-        p.earlyAccess ||
-        rawEmail === 'internetville@gmail.com' ||
-        rawEmail.includes('tester')
-      );
-
-      if (rawJoined && typeof rawJoined === 'string' && rawJoined.startsWith('2026-08-22') && isEarlyBetaTester) {
-        let petRegDate = null;
-        if (pets.length > 0) {
-          for (const pet of pets) {
-            if (pet && typeof pet === 'object') {
-              const pDate = pet.createdAt || pet.created_at || pet.dateAdded;
-              if (pDate && !pDate.toString().startsWith('2026-08-22')) {
-                petRegDate = pDate;
-                break;
-              }
-            }
-          }
-        }
-        rawJoined = petRegDate || '2026-08-01T08:00:00.000Z';
+      // 5. If missing explicit creation field, check updatedAt
+      if (!rawJoined) {
+        rawJoined = u.updatedAt || p.updatedAt;
       }
 
-      // 6. Default Fallback for Existing Beta Accounts
+      // 6. Final fallback: Only founders get August 1, other accounts get current registration timestamp
       if (!rawJoined) {
-        rawJoined = '2026-08-01T08:00:00.000Z';
+        if (rawEmail === 'rnuedev@gmail.com' || rawEmail === 'bob@gmail.com') {
+          rawJoined = '2026-08-01T08:00:00.000Z';
+        } else {
+          rawJoined = new Date().toISOString();
+        }
       }
 
       let joinedDateObj = null;
@@ -3248,7 +3263,10 @@
         formattedDate,
         formattedTime,
         joinedTimestamp,
-        isSuspended: !!(u.isSuspended || p.isSuspended)
+        isSuspended: !!(u.isSuspended || p.isSuspended),
+        userType,
+        userTypeLabel,
+        isSecurityResearcher: !!(u.isSecurityResearcher || p.isSecurityResearcher || role === 'security_researcher')
       };
     }
 
@@ -3287,8 +3305,12 @@
         const pets = u.petSummary.toLowerCase();
         const matchesQuery = !q || name.includes(q) || email.includes(q) || role.includes(q) || pets.includes(q);
 
+        if (roleFilter === 'SUPERADMIN') return matchesQuery && u.role === 'superadmin';
+        if (roleFilter === 'ADMIN') return matchesQuery && ['admin', 'moderator'].includes(u.role);
+        if (roleFilter === 'SECURITY') return matchesQuery && (u.role === 'security_researcher' || u.isSecurityResearcher);
+        if (roleFilter === 'PET_PARENT') return matchesQuery && u.userType === 'pet_parent';
+        if (roleFilter === 'CLINIC') return matchesQuery && u.userType === 'clinic';
         if (roleFilter === 'VIP') return matchesQuery && u.isVip;
-        if (roleFilter === 'ADMIN') return matchesQuery && ['admin', 'superadmin'].includes(u.role);
         if (roleFilter === 'SUSPENDED') return matchesQuery && u.isSuspended;
         return matchesQuery;
       });
@@ -3316,7 +3338,7 @@
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">No users match criteria.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-400">No users match criteria.</td></tr>`;
         return;
       }
 
@@ -3337,22 +3359,50 @@
               </div>
               ${u.formattedTime ? `<div class="text-[10px] text-slate-400 font-mono pl-5">⏰ ${u.formattedTime}</div>` : ''}
             </td>
+            <td class="p-4 whitespace-nowrap">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${u.userType === 'clinic' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800' : u.userType === 'pet_parent' ? 'bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300 border border-violet-200 dark:border-violet-800' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}">
+                ${u.userTypeLabel}
+              </span>
+            </td>
             <td class="p-4">
               <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${u.isVip ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-700' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}">
                 ${u.vipPlanName}
               </span>
             </td>
-            <td class="p-4">
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.role === 'superadmin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-400' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}">
-                ${u.role}
-              </span>
+            <td class="p-4 whitespace-nowrap">
+              ${u.role === 'superadmin' ? `
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-sm shadow-purple-500/30">
+                  👑 Superadmin
+                </span>
+              ` : u.role === 'security_researcher' || u.isSecurityResearcher ? `
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-700">
+                  🛡️ Security Researcher
+                </span>
+              ` : u.role === 'admin' ? `
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                  🛡️ Admin
+                </span>
+              ` : u.role === 'moderator' ? `
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300">
+                  🛡️ Moderator
+                </span>
+              ` : `
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                  👤 User
+                </span>
+              `}
             </td>
             <td class="p-4">
               <span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.isSuspended ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'}">
                 ${u.isSuspended ? '⛔ Suspended' : '✓ Active'}
               </span>
             </td>
-            <td class="p-4 text-right space-x-1.5">
+            <td class="p-4 text-right space-x-1.5 whitespace-nowrap">
+              ${u.role !== 'superadmin' ? `
+                <button onclick="toggleSecurityResearcherRole('${u.id}', ${!u.isSecurityResearcher})" class="px-2 py-1 rounded-lg text-[10px] font-bold ${u.isSecurityResearcher ? 'bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 border border-cyan-300' : 'border border-cyan-500 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-950/40'}" title="Award or revoke honorary Security Researcher badge & VIP">
+                  ${u.isSecurityResearcher ? 'Revoke 🛡️' : 'Award 🛡️'}
+                </button>
+              ` : ''}
               <button onclick="toggleUserVip('${u.id}', ${!u.isVip})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border border-amber-300 dark:border-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950 text-amber-600 dark:text-amber-400">
                 ${u.isVip ? 'Revoke VIP' : 'Grant VIP'}
               </button>
@@ -3370,6 +3420,32 @@
 
     function filterUsersList() {
       renderUsers();
+    }
+
+    async function toggleSecurityResearcherRole(userId, grant) {
+      const actionText = grant ? "award the 🛡️ Security Researcher role (includes Lifetime VIP)" : "remove the 🛡️ Security Researcher role from";
+      if (confirm(`Are you sure you want to ${actionText} this user?`)) {
+        try {
+          const payload = {
+            role: grant ? 'security_researcher' : 'user',
+            isSecurityResearcher: !!grant,
+            "profile.role": grant ? 'security_researcher' : 'user',
+            "profile.isSecurityResearcher": !!grant,
+          };
+          if (grant) {
+            payload.isVip = true;
+            payload.isPremium = true;
+            payload.vipPlan = 'lifetime_security_researcher';
+            payload["profile.isVip"] = true;
+            payload["profile.isPremium"] = true;
+            payload["profile.vipPlan"] = 'lifetime_security_researcher';
+          }
+          await window.fbMethods.setDoc(window.fbMethods.doc(window.fbDb, "users", userId), payload, { merge: true });
+          alert(`✅ Successfully ${grant ? 'awarded Security Researcher role & Lifetime VIP' : 'updated role'}!`);
+        } catch (err) {
+          alert("Error updating user role: " + err.message);
+        }
+      }
     }
 
     async function toggleUserVip(userId, grant) {

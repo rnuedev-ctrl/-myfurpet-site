@@ -1459,7 +1459,7 @@
       <div class="nav-links">
         <a href="#features" class="nav-link">Features</a>
         <a href="#howto" class="nav-link">How-To Guide 📖</a>
-        <a href="#supplies" class="nav-link">Pet Supplies 🛒</a>
+        <a href="#supplies" class="nav-link" onclick="toggleSuppliesCollapse(true)">Pet Supplies 🛒</a>
         <a href="#medical-suite" class="nav-link">Medical Suite</a>
         <a href="#tools" class="nav-link">Free Tools</a>
         <a href="#faq" class="nav-link">FAQ</a>
@@ -2334,25 +2334,35 @@
     </section>
 
     <!-- Curated Pet Essentials Showcase -->
-    <section id="supplies" style="padding: 20px 0 60px 0;">
-      <div class="section-header">
+    <section id="supplies" style="padding: 20px 0 50px 0;">
+      <div class="section-header" style="margin-bottom: 24px;">
         <span class="section-tag">Curated Pet Care &amp; Nutrition</span>
         <h2 class="section-title">Verified Pet Essentials &amp; Supplies 🐾🛒</h2>
         <p class="section-subtitle">Doctor-recommended nutrition, grooming, parasite control, and daily essentials for your pets with seamless international delivery.</p>
-      </div>
-
-      <!-- Marketplace Store Selector -->
-      <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
-        <span style="font-size: 13px; font-weight: 700; color: #94A3B8;">Preferred Marketplace:</span>
-        <div style="display: inline-flex; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 999px; padding: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-          <button id="store-btn-shopee" onclick="setMarketplaceStore('shopee')" style="padding: 7px 18px; border-radius: 999px; border: none; font-size: 12px; font-weight: 800; cursor: pointer; background: linear-gradient(135deg, #EE4D2D, #FF5722); color: #FFF; transition: all 0.2s;">
-            🇵🇭 Shopee (PH/SEA)
-          </button>
-          <button id="store-btn-amazon" onclick="setMarketplaceStore('amazon')" style="padding: 7px 18px; border-radius: 999px; border: none; font-size: 12px; font-weight: 800; cursor: pointer; background: transparent; color: #94A3B8; transition: all 0.2s;">
-            🌐 Amazon (Global / US)
+        
+        <!-- Collapsible Toggle Trigger -->
+        <div style="margin-top: 22px; display: flex; justify-content: center;">
+          <button id="suppliesToggleBtn" onclick="toggleSuppliesCollapse()" style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 28px; background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(124, 58, 237, 0.25)); border: 1.5px solid rgba(56, 189, 248, 0.5); border-radius: 999px; color: #FFFFFF; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 20px rgba(56, 189, 248, 0.2); transition: all 0.25s ease;">
+            <span id="suppliesToggleIcon" style="font-size: 16px;">📦</span>
+            <span id="suppliesToggleText">View Curated Pet Supplies &amp; Nutrition (34+ Items) ▾</span>
           </button>
         </div>
       </div>
+
+      <!-- Collapsible Container (Default Collapsed) -->
+      <div id="suppliesCollapseContent" style="display: none;">
+        <!-- Marketplace Store Selector -->
+        <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+          <span style="font-size: 13px; font-weight: 700; color: #94A3B8;">Preferred Marketplace:</span>
+          <div style="display: inline-flex; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 999px; padding: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+            <button id="store-btn-shopee" onclick="setMarketplaceStore('shopee')" style="padding: 7px 18px; border-radius: 999px; border: none; font-size: 12px; font-weight: 800; cursor: pointer; background: linear-gradient(135deg, #EE4D2D, #FF5722); color: #FFF; transition: all 0.2s;">
+              🇵🇭 Shopee (PH/SEA)
+            </button>
+            <button id="store-btn-amazon" onclick="setMarketplaceStore('amazon')" style="padding: 7px 18px; border-radius: 999px; border: none; font-size: 12px; font-weight: 800; cursor: pointer; background: transparent; color: #94A3B8; transition: all 0.2s;">
+              🌐 Amazon (Global / US)
+            </button>
+          </div>
+        </div>
 
       <!-- Live Search & Filter Controls -->
       <div style="max-width: 860px; margin: 0 auto 28px auto; padding: 0 16px;">
@@ -2633,10 +2643,17 @@
               <span>Buy on Shopee</span>
               <span class="btn-arrow" style="font-weight: 900; margin-left: 4px;">➔</span>
             </a>
-          </div>
         </div>
       </div>
-    </section>
+
+      <!-- Bottom Collapse Trigger -->
+      <div style="text-align: center; margin-top: 36px; padding-bottom: 10px;">
+        <button onclick="toggleSuppliesCollapse(false, true)" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 999px; color: #94A3B8; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+          <span>▲ Collapse Pet Supplies</span>
+        </button>
+      </div>
+    </div>
+  </section>
 
     <!-- App Direct Access & VIP Hub -->
     <section id="beta" style="padding: 20px 0 80px 0;">
@@ -3138,6 +3155,41 @@
           }
         }
       });
+    }
+
+    function toggleSuppliesCollapse(forceOpen, scrollToHeader) {
+      const container = document.getElementById('suppliesCollapseContent');
+      const text = document.getElementById('suppliesToggleText');
+      const icon = document.getElementById('suppliesToggleIcon');
+      const btn = document.getElementById('suppliesToggleBtn');
+      if (!container) return;
+
+      const isCurrentlyCollapsed = container.style.display === 'none' || !container.style.display;
+      const shouldOpen = forceOpen !== undefined ? forceOpen : isCurrentlyCollapsed;
+
+      if (shouldOpen) {
+        container.style.display = 'block';
+        if (text) text.innerHTML = 'Hide Curated Pet Supplies &amp; Nutrition ▴';
+        if (icon) icon.textContent = '✕';
+        if (btn) {
+          btn.style.background = 'rgba(15, 23, 42, 0.9)';
+          btn.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+          btn.style.boxShadow = 'none';
+        }
+      } else {
+        container.style.display = 'none';
+        if (text) text.innerHTML = 'View Curated Pet Supplies &amp; Nutrition (34+ Items) ▾';
+        if (icon) icon.textContent = '📦';
+        if (btn) {
+          btn.style.background = 'linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(124, 58, 237, 0.25))';
+          btn.style.borderColor = 'rgba(56, 189, 248, 0.5)';
+          btn.style.boxShadow = '0 4px 20px rgba(56, 189, 248, 0.2)';
+        }
+        if (scrollToHeader) {
+          const header = document.getElementById('supplies');
+          if (header) header.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
     }
 
     function handleSuppliesFilterChange() {

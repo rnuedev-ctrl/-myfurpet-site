@@ -3125,33 +3125,59 @@
         rawJoined = '2026-08-01T08:00:00.000Z';
       }
 
-      // 2. Strict Immutable Creation & Registration Fields (Never use updatedAt, agreedToPrivacyAt, or live timestamps)
+      // 2. Strict Immutable Creation & Registration Fields (Never use updatedAt or dynamic Date.now())
       if (!rawJoined) {
         const immutableCreationFields = [
           u.createdAt, p.createdAt, u.created_at, p.created_at,
+          u.agreedToPrivacyAt, p.agreedToPrivacyAt, u.agreedToTermsAt, p.agreedToTermsAt,
           u.registeredAt, p.registeredAt, u.registered_at, p.registered_at,
           u.joinedAt, p.joinedAt, u.joined_at, p.joined_at,
           u.dateJoined, p.dateJoined, u.registrationDate, p.registrationDate,
           u.creationTime, p.creationTime
         ];
-        rawJoined = immutableCreationFields.find(f => f !== undefined && f !== null && f !== '');
+        const validFields = immutableCreationFields.filter(f => f !== undefined && f !== null && f !== '');
+        // For non-founders, prioritize dates that are NOT the legacy August 1 fallback
+        const nonLegacy = validFields.find(f => !String(f).startsWith('2026-08-01'));
+        if (nonLegacy) {
+          rawJoined = nonLegacy;
+        } else if (validFields.length > 0) {
+          rawJoined = validFields[0];
+        }
       }
 
       // If rawJoined is the legacy bugged August 1 fallback and NOT an original founder:
       if (rawJoined && String(rawJoined).startsWith('2026-08-01') && rawEmail !== 'rnuedev@gmail.com' && rawEmail !== 'bob@gmail.com') {
-        const realTime = u.createTime || p.createTime || u._createTime || u.vipGrantedAt || p.vipGrantedAt || u.updatedAt || p.updatedAt;
-        if (realTime) {
-          rawJoined = realTime;
+        const realCandidate =
+          u.agreedToPrivacyAt || p.agreedToPrivacyAt ||
+          u.agreedToTermsAt || p.agreedToTermsAt ||
+          u.createTime || p.createTime || u._createTime;
+        if (realCandidate && !String(realCandidate).startsWith('2026-08-01')) {
+          rawJoined = realCandidate;
         }
       }
 
-      // 3. Check earliest pet creation / addition timestamp
-      if (!rawJoined && pets.length > 0) {
+      // 3. Check earliest pet creation / addition timestamp (or pet ID embedded timestamp)
+      if ((!rawJoined || (String(rawJoined).startsWith('2026-08-01') && rawEmail !== 'rnuedev@gmail.com' && rawEmail !== 'bob@gmail.com')) && pets.length > 0) {
         for (const pet of pets) {
           if (pet && typeof pet === 'object') {
             const petDate = pet.createdAt || pet.created_at || pet.dateAdded;
-            if (petDate) {
+            if (petDate && !String(petDate).startsWith('2026-08-01')) {
               rawJoined = petDate;
+              break;
+            }
+            if (pet.id && typeof pet.id === 'string') {
+              const petMatch = pet.id.match(/\d{10,13}/);
+              if (petMatch) {
+                let tsNum = Number(petMatch[0]);
+                if (tsNum < 10000000000) tsNum = tsNum * 1000;
+                if (tsNum > 1600000000000 && tsNum < 2500000000000) {
+                  rawJoined = new Date(tsNum).toISOString();
+                  break;
+                }
+              }
+            }
+            if (Array.isArray(pet.weightHistory) && pet.weightHistory.length > 0 && pet.weightHistory[0].date) {
+              rawJoined = pet.weightHistory[0].date;
               break;
             }
           }
@@ -3170,18 +3196,22 @@
         }
       }
 
-      // 5. If missing explicit creation field, check updatedAt
+      // 5. Check if doc ID or user ID contains a unix epoch timestamp (e.g. 1740000000000)
       if (!rawJoined) {
-        rawJoined = u.updatedAt || p.updatedAt;
+        const idMatches = (u.id || '').match(/\d{10,13}/);
+        if (idMatches && idMatches[0]) {
+          let tsNum = Number(idMatches[0]);
+          if (tsNum < 10000000000) tsNum = tsNum * 1000;
+          if (tsNum > 1600000000000 && tsNum < 2500000000000) {
+            rawJoined = new Date(tsNum).toISOString();
+          }
+        }
       }
 
-      // 6. Final fallback: Only founders get August 1, other accounts get current registration timestamp
+      // 6. STRICT IMMUTABLE FALLBACK: Never use updatedAt or dynamic new Date()!
+      // updatedAt changes on every user login, and new Date() changes on every page reload.
       if (!rawJoined) {
-        if (rawEmail === 'rnuedev@gmail.com' || rawEmail === 'bob@gmail.com') {
-          rawJoined = '2026-08-01T08:00:00.000Z';
-        } else {
-          rawJoined = new Date().toISOString();
-        }
+        rawJoined = '2026-08-01T08:00:00.000Z';
       }
 
       let joinedDateObj = null;
@@ -3227,9 +3257,9 @@
       let formattedTime = '';
       let joinedTimestamp = 0;
       if (joinedDateObj && !isNaN(joinedDateObj.getTime())) {
-        // Sanity guard: If client device was fast-forwarded into the future, cap to current time
-        if (joinedDateObj.getTime() > Date.now() + 60000) {
-          joinedDateObj = new Date();
+        // Sanity guard: If timestamp is wildly in the future (> 24h), cap to current time safely
+        if (joinedDateObj.getTime() > Date.now() + 86400000) {
+          joinedDateObj = new Date(Date.now());
         }
         joinedTimestamp = joinedDateObj.getTime();
         formattedDate = joinedDateObj.toLocaleDateString('en-US', {

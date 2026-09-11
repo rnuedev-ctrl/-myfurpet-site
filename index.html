@@ -2886,12 +2886,50 @@
       </div>
     </section>
 
+    <!-- Security Hall of Fame & Responsible Disclosure -->
+    <section id="security-hall-of-fame" style="padding: 20px 0 60px 0;">
+      <div class="glass-card" style="max-width: 860px; margin: 0 auto; padding: 36px 28px; border-radius: 24px; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(59, 130, 246, 0.25); box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+          <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(59, 130, 246, 0.15); display: flex; align-items: center; justify-content: center; font-size: 22px;">🛡️</div>
+          <div>
+            <h3 style="font-size: 22px; font-weight: 800; color: #FFFFFF; margin: 0;">Security Hall of Fame</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin: 2px 0 0 0;">Honoring independent researchers who help protect the MyFurPet community through responsible disclosure.</p>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 24px;">
+          <!-- Contributor Card: Euan Chua -->
+          <div style="padding: 18px 20px; border-radius: 16px; background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: #FFF;">EC</div>
+                <div>
+                  <div style="font-weight: 800; font-size: 15px; color: #FFFFFF;">Euan Chua</div>
+                  <a href="https://github.com/euanchua" target="_blank" rel="noopener" style="font-size: 12px; color: #60A5FA; text-decoration: none; font-weight: 600;">@euanchua ↗</a>
+                </div>
+              </div>
+              <span style="font-size: 11px; font-weight: 700; background: rgba(16, 185, 129, 0.15); color: #34D399; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(16, 185, 129, 0.3);">Verified Patch</span>
+            </div>
+            <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+              Responsibly identified and verified the security patch for Firestore user role permission checks, ensuring robust privilege separation for admin workflows.
+            </p>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+          <span style="font-size: 12px; color: var(--text-muted);">Found a vulnerability? Report responsibly to <code style="color: #93C5FD;">security@myfurpet.com</code> or via our <a href="#feedback" style="color: #60A5FA;">Problem Report Portal</a>.</span>
+          <a href="https://github.com/rnuedev-ctrl/myfurpet/blob/main/SECURITY.md" target="_blank" rel="noopener" style="font-size: 12px; color: #94A3B8; text-decoration: underline;">Read Responsible Disclosure Policy ➔</a>
+        </div>
+      </div>
+    </section>
+
     <!-- Footer -->
     <footer>
       <div class="footer-links">
         <a href="privacy.html">🔒 Privacy Policy</a>
         <a href="terms.html">📜 Terms of Service</a>
         <a href="howto.html">📖 App How-To Guide</a>
+        <a href="#security-hall-of-fame">🛡️ Security Hall of Fame</a>
         <a href="#feedback" class="footer-accent">💡 Suggest a Feature</a>
         <a href="#feedback">🚨 Report a Problem</a>
         <a href="delete-account.html" class="footer-danger">🗑️ Delete Account &amp; Data</a>

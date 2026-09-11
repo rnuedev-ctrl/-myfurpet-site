@@ -19,8 +19,8 @@ We extend our sincere gratitude to the following security researchers and develo
 If you discover a vulnerability or security issue within the MyFurPet mobile app, API endpoints, or website, we invite you to report it to us responsibly before any public disclosure.
 
 ### How to Report a Vulnerability
-- **Email**: `security@myfurpet.com` or via our [Website Problem Report Portal](https://rnuedev-ctrl.github.io/-myfurpet-site/#feedback).
-- **Subject**: `[Security Vulnerability] Short Description`
+- **Report Portal**: Submit details directly via our [Website Problem Report Portal](https://rnuedev-ctrl.github.io/-myfurpet-site/#feedback).
+- **Category**: Select `Other Technical Issue` or `App Glitch`.
 - **Include**:
   - Detailed steps to reproduce the issue (proof-of-concept scripts, screenshots, or network requests).
   - The affected endpoint, platform (iOS, Android, Web), or component.

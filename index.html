@@ -126,31 +126,51 @@
       padding: 0;
     }
 
+    html {
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: var(--bg-dark);
       color: var(--text-main);
       line-height: 1.6;
       overflow-x: hidden;
-      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     h1, h2, h3, h4, .brand-logo {
       font-family: 'Outfit', sans-serif;
     }
 
-    /* Ambient Background Glows */
+    /* Ambient Background Glows - Hardware Accelerated */
     .glow-blob {
       position: fixed;
       border-radius: 50%;
-      filter: blur(120px);
+      filter: blur(90px);
       pointer-events: none;
       z-index: 0;
       opacity: 0.35;
+      transform: translate3d(0, 0, 0);
+      backface-visibility: hidden;
+      will-change: transform;
     }
     .blob-1 { top: -10%; left: -10%; width: 550px; height: 550px; background: radial-gradient(circle, #7C3AED 0%, transparent 70%); }
     .blob-2 { top: 40%; right: -15%; width: 600px; height: 600px; background: radial-gradient(circle, #EC4899 0%, transparent 70%); }
     .blob-3 { bottom: -10%; left: 20%; width: 500px; height: 500px; background: radial-gradient(circle, #3B82F6 0%, transparent 70%); }
+
+    /* Offscreen Rendering Performance Boost */
+    .howto-section,
+    #supplies,
+    #faq,
+    #tools,
+    #feedback,
+    #security-hall-of-fame {
+      content-visibility: auto;
+      contain-intrinsic-size: 1px 700px;
+    }
 
     /* Layout Containers */
     .container {
@@ -1522,6 +1542,28 @@
 
     /* Responsive */
     @media (max-width: 900px) {
+      /* 🚀 Mobile 60-120 FPS Scroll Optimizations */
+      .glow-blob {
+        filter: none !important;
+        opacity: 0.22 !important;
+        will-change: auto;
+      }
+      .glass-card {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(18, 24, 43, 0.94) !important;
+        box-shadow: 0 10px 25px -10px rgba(0, 0, 0, 0.5) !important;
+      }
+      .nav-bar {
+        backdrop-filter: blur(8px) !important;
+        -webkit-backdrop-filter: blur(8px) !important;
+        background: rgba(15, 23, 42, 0.94) !important;
+      }
+      .floating-card, .btn-secondary, .supply-emoji-box {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+
       .hero-section { grid-template-columns: 1fr; text-align: center; }
       .hero-title { font-size: 38px; }
       .hero-cta-group { justify-content: center; }

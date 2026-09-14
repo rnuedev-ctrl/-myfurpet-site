@@ -1255,21 +1255,67 @@
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Left 2 Cols: Inquiries Frequency Table -->
             <div class="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
-              <div class="flex items-center justify-between">
-                <h4 class="font-display font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                  <span>🔥</span> Top User Inquiries & Question Frequency
-                </h4>
-                <span id="pawsAiQuestionsCount" class="text-xs text-slate-400 font-semibold">0 inquiries recorded</span>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-100 dark:border-slate-800">
+                <div>
+                  <h4 class="font-display font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                    <span>🔥</span> Top User Inquiries & Question Frequency
+                  </h4>
+                  <span id="pawsAiQuestionsCount" class="text-xs text-slate-400 font-semibold">0 inquiries recorded</span>
+                </div>
+
+                <!-- Sorting Controls -->
+                <div class="flex items-center flex-wrap gap-2">
+                  <div class="inline-flex rounded-xl p-0.5 bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/60 text-[11px] font-bold">
+                    <button id="pawsAiPillNewest" onclick="setPawsAiSort('newest')" title="Sort by Newest (Last Asked)" class="px-2.5 py-1 rounded-lg transition-all bg-purple-600 text-white shadow-xs font-bold">
+                      ⏱️ Newest
+                    </button>
+                    <button id="pawsAiPillFreq" onclick="setPawsAiSort('frequency_desc')" title="Sort by Highest Frequency" class="px-2.5 py-1 rounded-lg transition-all text-slate-600 dark:text-slate-300 hover:text-purple-600 font-bold">
+                      🔥 Most Asked
+                    </button>
+                    <button id="pawsAiPillAlpha" onclick="setPawsAiSort('question_asc')" title="Sort Alphabetically A-Z" class="px-2.5 py-1 rounded-lg transition-all text-slate-600 dark:text-slate-300 hover:text-purple-600 font-bold">
+                      🔤 A–Z
+                    </button>
+                  </div>
+
+                  <select id="pawsAiSortSelect" onchange="setPawsAiSort(this.value)" class="px-2.5 py-1.5 rounded-xl text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-xs cursor-pointer">
+                    <option value="newest" selected>⏱️ Newest (Last Asked)</option>
+                    <option value="frequency_desc">🔥 Most Frequent</option>
+                    <option value="oldest">⏳ Oldest First</option>
+                    <option value="frequency_asc">📉 Least Frequent</option>
+                    <option value="question_asc">🔤 Question (A–Z)</option>
+                    <option value="question_desc">🔤 Question (Z–A)</option>
+                  </select>
+                </div>
               </div>
 
               <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                   <thead>
-                    <tr class="border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                      <th class="pb-3 pl-2"># Rank</th>
-                      <th class="pb-3">Inquiry Question</th>
-                      <th class="pb-3 text-center">Frequency</th>
-                      <th class="pb-3 text-right pr-2">Last Asked</th>
+                    <tr class="border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-400 uppercase tracking-wider select-none">
+                      <th class="pb-3 pl-2 cursor-pointer hover:text-purple-600 transition-colors" onclick="togglePawsAiColumnSort('rank')" title="Click to sort by rank / frequency">
+                        <div class="flex items-center gap-1">
+                          <span># Rank</span>
+                          <span id="sort-icon-rank" class="text-[10px] text-slate-400">↕</span>
+                        </div>
+                      </th>
+                      <th class="pb-3 cursor-pointer hover:text-purple-600 transition-colors" onclick="togglePawsAiColumnSort('question')" title="Click to sort alphabetically">
+                        <div class="flex items-center gap-1">
+                          <span>Inquiry Question</span>
+                          <span id="sort-icon-question" class="text-[10px] text-slate-400">↕</span>
+                        </div>
+                      </th>
+                      <th class="pb-3 text-center cursor-pointer hover:text-purple-600 transition-colors" onclick="togglePawsAiColumnSort('frequency')" title="Click to sort by inquiry frequency">
+                        <div class="flex items-center justify-center gap-1">
+                          <span>Frequency</span>
+                          <span id="sort-icon-frequency" class="text-[10px] text-slate-400">↕</span>
+                        </div>
+                      </th>
+                      <th class="pb-3 text-right pr-2 cursor-pointer hover:text-purple-600 transition-colors" onclick="togglePawsAiColumnSort('lastAsked')" title="Click to sort by newest / oldest">
+                        <div class="flex items-center justify-end gap-1">
+                          <span>Last Asked</span>
+                          <span id="sort-icon-lastAsked" class="text-[10px] text-purple-600 font-bold">▼</span>
+                        </div>
+                      </th>
                     </tr>
                   </thead>
                   <tbody id="pawsAiTableBody" class="text-xs divide-y divide-slate-100 dark:divide-slate-800">
@@ -4265,8 +4311,81 @@
       const countHeader = document.getElementById('pawsAiQuestionsCount');
       if (countHeader) countHeader.innerText = `${uniqueTopics} distinct clinical topics (${totalInquiries} total asks)`;
 
+      updatePawsAiSortUI();
       filterPawsAiTable();
       renderPawsAiDemandList();
+    }
+
+    let pawsAiSortColumn = 'newest';
+
+    function getInquiryTimestamp(item) {
+      if (!item) return 0;
+      const val = item.lastAskedAt || item.updatedAt || item.createdAt;
+      if (!val) return 0;
+      if (typeof val === 'number') return val;
+      if (typeof val.toDate === 'function') return val.toDate().getTime();
+      if (val.seconds) return val.seconds * 1000;
+      const parsed = Date.parse(val);
+      return isNaN(parsed) ? 0 : parsed;
+    }
+
+    function setPawsAiSort(sortType) {
+      pawsAiSortColumn = sortType;
+      const select = document.getElementById('pawsAiSortSelect');
+      if (select && select.value !== sortType) {
+        select.value = sortType;
+      }
+      updatePawsAiSortUI();
+      filterPawsAiTable();
+    }
+
+    function togglePawsAiColumnSort(col) {
+      if (col === 'lastAsked') {
+        setPawsAiSort(pawsAiSortColumn === 'newest' ? 'oldest' : 'newest');
+      } else if (col === 'frequency') {
+        setPawsAiSort(pawsAiSortColumn === 'frequency_desc' ? 'frequency_asc' : 'frequency_desc');
+      } else if (col === 'question') {
+        setPawsAiSort(pawsAiSortColumn === 'question_asc' ? 'question_desc' : 'question_asc');
+      } else if (col === 'rank') {
+        setPawsAiSort(pawsAiSortColumn === 'frequency_desc' ? 'frequency_asc' : 'frequency_desc');
+      }
+    }
+
+    function updatePawsAiSortUI() {
+      // Update quick sort pill styles
+      const pillNewest = document.getElementById('pawsAiPillNewest');
+      const pillFreq = document.getElementById('pawsAiPillFreq');
+      const pillAlpha = document.getElementById('pawsAiPillAlpha');
+
+      const activeClass = 'px-2.5 py-1 rounded-lg transition-all bg-purple-600 text-white shadow-xs font-bold';
+      const inactiveClass = 'px-2.5 py-1 rounded-lg transition-all text-slate-600 dark:text-slate-300 hover:text-purple-600 font-bold';
+
+      if (pillNewest) pillNewest.className = (pawsAiSortColumn === 'newest' || pawsAiSortColumn === 'oldest') ? activeClass : inactiveClass;
+      if (pillFreq) pillFreq.className = (pawsAiSortColumn === 'frequency_desc' || pawsAiSortColumn === 'frequency_asc') ? activeClass : inactiveClass;
+      if (pillAlpha) pillAlpha.className = (pawsAiSortColumn === 'question_asc' || pawsAiSortColumn === 'question_desc') ? activeClass : inactiveClass;
+
+      // Update column header icons
+      const icons = {
+        rank: document.getElementById('sort-icon-rank'),
+        question: document.getElementById('sort-icon-question'),
+        frequency: document.getElementById('sort-icon-frequency'),
+        lastAsked: document.getElementById('sort-icon-lastAsked'),
+      };
+
+      if (icons.rank) icons.rank.innerHTML = pawsAiSortColumn === 'frequency_desc' ? '▼' : pawsAiSortColumn === 'frequency_asc' ? '▲' : '↕';
+      if (icons.question) icons.question.innerHTML = pawsAiSortColumn === 'question_asc' ? '▲' : pawsAiSortColumn === 'question_desc' ? '▼' : '↕';
+      if (icons.frequency) icons.frequency.innerHTML = pawsAiSortColumn === 'frequency_desc' ? '▼' : pawsAiSortColumn === 'frequency_asc' ? '▲' : '↕';
+      if (icons.lastAsked) icons.lastAsked.innerHTML = pawsAiSortColumn === 'newest' ? '▼' : pawsAiSortColumn === 'oldest' ? '▲' : '↕';
+
+      ['rank', 'question', 'frequency', 'lastAsked'].forEach(key => {
+        if (icons[key]) {
+          const isActive = (key === 'lastAsked' && (pawsAiSortColumn === 'newest' || pawsAiSortColumn === 'oldest')) ||
+                           (key === 'frequency' && (pawsAiSortColumn === 'frequency_desc' || pawsAiSortColumn === 'frequency_asc')) ||
+                           (key === 'question' && (pawsAiSortColumn === 'question_asc' || pawsAiSortColumn === 'question_desc')) ||
+                           (key === 'rank' && (pawsAiSortColumn === 'frequency_desc' || pawsAiSortColumn === 'frequency_asc'));
+          icons[key].className = `text-[10px] ${isActive ? 'text-purple-600 dark:text-purple-400 font-black' : 'text-slate-400'}`;
+        }
+      });
     }
 
     function filterPawsAiTable() {
@@ -4274,8 +4393,36 @@
       const tbody = document.getElementById('pawsAiTableBody');
       if (!tbody) return;
 
-      const sorted = [...pawsAiAnalyticsData].sort((a, b) => (Number(b.count) || 0) - (Number(a.count) || 0));
-      const filtered = searchInput ? sorted.filter(item => (item.question || '').toLowerCase().includes(searchInput)) : sorted;
+      // Filter by search query
+      let filtered = searchInput
+        ? pawsAiAnalyticsData.filter(item => (item.question || '').toLowerCase().includes(searchInput))
+        : [...pawsAiAnalyticsData];
+
+      // Sort items based on active sort criteria
+      filtered.sort((a, b) => {
+        if (pawsAiSortColumn === 'newest') {
+          const timeA = getInquiryTimestamp(a);
+          const timeB = getInquiryTimestamp(b);
+          if (timeB !== timeA) return timeB - timeA;
+          return (Number(b.count) || 0) - (Number(a.count) || 0);
+        } else if (pawsAiSortColumn === 'oldest') {
+          const timeA = getInquiryTimestamp(a);
+          const timeB = getInquiryTimestamp(b);
+          if (timeA !== timeB) return timeA - timeB;
+          return (Number(a.count) || 0) - (Number(b.count) || 0);
+        } else if (pawsAiSortColumn === 'frequency_asc') {
+          return (Number(a.count) || 0) - (Number(b.count) || 0);
+        } else if (pawsAiSortColumn === 'question_asc') {
+          return (a.question || '').localeCompare(b.question || '');
+        } else if (pawsAiSortColumn === 'question_desc') {
+          return (b.question || '').localeCompare(a.question || '');
+        } else {
+          // 'frequency_desc' default
+          const diff = (Number(b.count) || 0) - (Number(a.count) || 0);
+          if (diff !== 0) return diff;
+          return getInquiryTimestamp(b) - getInquiryTimestamp(a);
+        }
+      });
 
       if (filtered.length === 0) {
         tbody.innerHTML = `
@@ -4290,21 +4437,35 @@
 
       const maxCount = Math.max(...filtered.map(i => Number(i.count) || 1), 1);
 
+      // Volume rank map for badge display
+      const volumeRankMap = new Map();
+      [...pawsAiAnalyticsData]
+        .sort((a, b) => (Number(b.count) || 0) - (Number(a.count) || 0))
+        .forEach((it, idx) => volumeRankMap.set(it.id || it.question, idx + 1));
+
       tbody.innerHTML = filtered.map((item, idx) => {
         const count = Number(item.count) || 1;
         const percent = Math.min(100, Math.round((count / maxCount) * 100));
-        const lastAsked = item.lastAskedAt ? new Date(item.lastAskedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recently';
-        const rankColor = idx === 0 ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-400' : idx === 1 ? 'bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-300' : idx === 2 ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400';
+        const ts = getInquiryTimestamp(item);
+        const lastAsked = ts ? new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recently';
+
+        const volRank = volumeRankMap.get(item.id || item.question) || (idx + 1);
+        const rankColor = idx === 0 ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-400' : idx === 1 ? 'bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-300' : idx === 2 ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400';
+
+        // When sorted by newest, show a modern recent indicator badge
+        const badgeMarkup = pawsAiSortColumn === 'newest' && idx === 0
+          ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400">⏱️ #1</span>`
+          : `<span class="px-2 py-0.5 rounded-md text-[10px] font-black ${rankColor}">#${idx + 1}</span>`;
 
         return `
           <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-            <td class="py-3 pl-2">
-              <span class="px-2 py-0.5 rounded-md text-[10px] font-black ${rankColor}">#${idx + 1}</span>
+            <td class="py-3 pl-2 whitespace-nowrap">
+              ${badgeMarkup}
             </td>
-            <td class="py-3">
-              <p class="font-bold text-slate-900 dark:text-white">${escapeHtml(item.question || 'Pet Inquiry')}</p>
+            <td class="py-3 pr-4">
+              <p class="font-bold text-slate-900 dark:text-white leading-snug">${escapeHtml(item.question || 'Pet Inquiry')}</p>
             </td>
-            <td class="py-3 text-center">
+            <td class="py-3 text-center whitespace-nowrap">
               <div class="flex items-center justify-center gap-2">
                 <div class="w-16 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
                   <div class="h-full bg-purple-600 rounded-full" style="width: ${percent}%"></div>
@@ -4312,7 +4473,7 @@
                 <span class="font-black text-purple-600 dark:text-purple-400 font-mono">${count}x</span>
               </div>
             </td>
-            <td class="py-3 text-right pr-2 text-slate-400 text-[11px] font-mono">
+            <td class="py-3 text-right pr-2 text-slate-400 dark:text-slate-400 text-[11px] font-mono whitespace-nowrap">
               ${lastAsked}
             </td>
           </tr>

@@ -2691,6 +2691,13 @@
         }
         cityMap[key].usersCount++;
         if (checkUserIsVip(u)) cityMap[key].vipCount++;
+        if (!cityMap[key].sampleNames) cityMap[key].sampleNames = [];
+        const resolved = resolveAdminUser(u);
+        if (resolved.name && resolved.name !== 'Pet Parent' && !cityMap[key].sampleNames.includes(resolved.name)) {
+          if (cityMap[key].sampleNames.length < 3) {
+            cityMap[key].sampleNames.push(resolved.name);
+          }
+        }
       });
 
       // Convert to array and calculate attributes
@@ -2754,9 +2761,16 @@
           <td class="p-4 text-slate-600 dark:text-slate-300 font-medium">
             ${escapeHtml(item.countryName)}
           </td>
-          <td class="p-4 font-bold text-slate-900 dark:text-white">
-            ${item.usersCount.toLocaleString()}
-            <span class="text-[10px] text-purple-600 dark:text-purple-400 font-semibold ml-1">(${item.vipCount} VIP)</span>
+          <td class="p-4">
+            <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+              <span>${item.usersCount.toLocaleString()} Pet Parents</span>
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400">${item.vipCount} VIP</span>
+            </div>
+            ${item.sampleNames && item.sampleNames.length > 0 ? `
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate max-w-[200px]" title="${escapeHtml(item.sampleNames.join(', '))}">
+                👤 ${escapeHtml(item.sampleNames.join(', '))}
+              </p>
+            ` : ''}
           </td>
           <td class="p-4 font-semibold text-slate-800 dark:text-slate-200">
             ${item.preferredStore}
@@ -2848,69 +2862,124 @@
 
       const events = [];
 
-      // Extract real user accounts with full names and complete emails
-      const sortedUsers = [...(usersData || [])];
-      
-      const realEventsPool = [
-        { action: 'Ran PawsBreed Scanner for Golden Retriever', icon: '🐶', channel: 'Vision AI' },
-        { action: 'Scanned ingredient label on PawsNutrition Scanner', icon: '🥗', channel: 'Food Safety' },
-        { action: 'Clicked Shopee Flea & Tick Treatment from Home Deals Strip', icon: '🧡', channel: 'Shopee PH' },
-        { action: 'Started outdoor GPS Walk Tracker (3.2 km recorded)', icon: '🗺️', channel: 'Walk Tracker' },
-        { action: 'Scanned vet clinic receipt on Expense Tracker OCR', icon: '🧾', channel: 'Receipt OCR' },
-        { action: 'Asked PawsAI: "What dosage of dewormer for a 5kg puppy?"', icon: '🤖', channel: 'PawsAI Consult' },
-        { action: 'Added Rabies Vaccination reminder to Preventive Calendar', icon: '💉', channel: 'Health Calendar' },
-        { action: 'Logged monthly pet expense in Spends & Budgeting', icon: '💰', channel: 'Budget Tracker' },
-        { action: 'Clicked Buy on Amazon for Stainless Steel Pet Fountain', icon: '🛒', channel: 'Amazon Global' },
-        { action: 'Completed "Sit & Stay" training milestone on Pet Training Planner', icon: '🎓', channel: 'Training Planner' }
-      ];
+      // 1. Real Registered Users Activity from Firestore
+      if (Array.isArray(usersData) && usersData.length > 0) {
+        const resolvedUsers = usersData.map(resolveAdminUser).filter(u => u.email && u.email.includes('@'));
+        // Sort by joinedTimestamp descending (newest first)
+        resolvedUsers.sort((a, b) => (b.joinedTimestamp || 0) - (a.joinedTimestamp || 0));
 
-      sortedUsers.slice(0, 12).forEach((u, i) => {
-        const { countryCode, cityName } = resolveRecordCountryAndCity(u);
-        const meta = COUNTRY_META[countryCode] || COUNTRY_META.OTHER;
-        const email = u.email || 'user@myfurpet.com';
-        
-        // Resolve full readable user name
-        let userName = u.displayName || u.name || u.fullName;
-        if (!userName && email.includes('@')) {
-          const rawName = email.split('@')[0].replace(/[._-]/g, ' ');
-          userName = rawName.replace(/\b\w/g, c => c.toUpperCase());
-        }
-        if (!userName) userName = 'Pet Parent';
+        resolvedUsers.slice(0, 10).forEach(u => {
+          const rawDoc = usersData.find(d => d.id === u.id) || {};
+          const { countryCode, cityName } = resolveRecordCountryAndCity(rawDoc);
+          const meta = COUNTRY_META[countryCode] || COUNTRY_META.OTHER;
 
-        const tool = realEventsPool[i % realEventsPool.length];
-        const minutesAgo = (i * 4) + 2;
+          let actionTitle = 'Registered Pet Parent Account';
+          let actionIcon = '🐾';
+          let channel = 'User Joined';
 
-        events.push({
-          userName,
-          email,
-          city: cityName,
-          flag: meta.flag,
-          action: tool.action,
-          icon: tool.icon,
-          channel: tool.channel,
-          time: `${minutesAgo}m ago`
+          if (u.petSummary) {
+            actionTitle = `Registered pet: ${u.petSummary}`;
+            actionIcon = '🐶';
+            channel = 'Pet Profile';
+          } else if (u.isVip) {
+            actionTitle = `Active on ${u.vipPlanName}`;
+            actionIcon = '👑';
+            channel = 'VIP Member';
+          }
+
+          events.push({
+            userName: u.name || 'Pet Parent',
+            email: u.email,
+            city: cityName,
+            flag: meta.flag,
+            action: actionTitle,
+            icon: actionIcon,
+            channel: channel,
+            timestamp: u.joinedTimestamp || Date.now(),
+            time: u.formattedDate ? `${u.formattedDate} ${u.formattedTime || ''}` : 'Recently'
+          });
         });
-      });
+      }
+
+      // 2. Real Clinic Lead Audit Transactions from Firestore
+      if (Array.isArray(leadAuditData) && leadAuditData.length > 0) {
+        leadAuditData.slice(0, 5).forEach(l => {
+          events.push({
+            userName: l.customerName || 'Customer',
+            email: (l.customerEmail && l.customerEmail.includes('@')) ? l.customerEmail : '',
+            city: l.clinicCity || 'Metro Manila',
+            flag: '🏥',
+            action: `${l.actionType === 'call' ? 'Called' : 'Contacted'} ${l.clinicName || 'Clinic'}: ${l.details || 'Appointment inquiry'}`,
+            icon: '📞',
+            channel: 'Clinic Lead',
+            timestamp: l.timestamp ? new Date(l.timestamp).getTime() : Date.now(),
+            time: l.timestamp ? new Date(l.timestamp).toLocaleDateString() : 'Recent'
+          });
+        });
+      }
+
+      // 3. Real Clinical PawsAI Inquiries from Firestore
+      if (Array.isArray(pawsAiAnalyticsData) && pawsAiAnalyticsData.length > 0) {
+        const topQuestions = [...pawsAiAnalyticsData].sort((a, b) => (Number(b.count) || 0) - (Number(a.count) || 0));
+        topQuestions.slice(0, 5).forEach(q => {
+          events.push({
+            userName: 'PawsAI Clinical Triage',
+            email: '',
+            city: 'Clinical Analytics',
+            flag: '🩺',
+            action: `Inquiry: "${q.question || 'Pet Health Consultation'}"`,
+            icon: '🤖',
+            channel: 'PawsAI Inquiry',
+            timestamp: q.lastAskedAt ? new Date(q.lastAskedAt).getTime() : Date.now(),
+            time: `${q.count || 1} queries`
+          });
+        });
+      }
+
+      // 4. Real SOS Lost Pet Alerts from Firestore
+      if (Array.isArray(sosData) && sosData.length > 0) {
+        sosData.slice(0, 3).forEach(s => {
+          events.push({
+            userName: s.contactName || s.ownerName || 'Pet Parent',
+            email: s.contactPhone || s.contactEmail || 'SOS Broadcast',
+            city: s.city || s.lastSeenAddress || 'Philippines',
+            flag: '🚨',
+            action: `Lost Pet SOS: ${s.petName || 'Pet'} (${s.petBreed || 'Missing'})`,
+            icon: '🚨',
+            channel: 'PawAlert SOS',
+            timestamp: s.createdAt ? new Date(s.createdAt).getTime() : Date.now(),
+            time: 'SOS Alert'
+          });
+        });
+      }
+
+      // Sort all combined real events by timestamp descending
+      events.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
       if (events.length === 0) {
         feed.innerHTML = `
           <div class="p-6 text-center text-slate-400 text-xs">
-            Waiting for live user telemetry stream...
+            No live activity recorded yet in Cloud Firestore.
           </div>
         `;
         return;
       }
 
-      feed.innerHTML = events.map(ev => `
+      feed.innerHTML = events.slice(0, 15).map(ev => `
         <div class="p-3.5 rounded-xl border border-slate-100 dark:border-slate-800/80 bg-slate-50/60 dark:bg-slate-800/40 flex items-center justify-between gap-3 text-xs hover:border-purple-300 dark:hover:border-purple-800/60 transition-colors">
           <div class="flex items-center gap-3 min-w-0">
-            <span class="text-lg p-2 rounded-xl bg-white dark:bg-slate-700 shadow-2xs flex-shrink-0">${ev.icon}</span>
+            <div class="w-9 h-9 rounded-xl bg-purple-100 dark:bg-purple-950/80 border border-purple-200 dark:border-purple-800/60 flex items-center justify-center text-base flex-shrink-0">
+              ${ev.icon}
+            </div>
             <div class="min-w-0">
-              <p class="font-bold text-slate-900 dark:text-white truncate text-xs sm:text-[13px]">${ev.action}</p>
-              <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1.5 mt-0.5 flex-wrap">
-                <span class="font-bold text-purple-600 dark:text-purple-400">👤 ${escapeHtml(ev.userName)}</span>
-                <span class="font-mono text-slate-600 dark:text-slate-300 font-semibold">(${escapeHtml(ev.email)})</span>
-                <span class="text-slate-300 dark:text-slate-600">•</span>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-extrabold text-slate-900 dark:text-white text-xs sm:text-[13px] flex items-center gap-1">
+                  👤 ${escapeHtml(ev.userName)}
+                </span>
+                ${ev.email ? `<span class="font-mono text-purple-600 dark:text-purple-400 font-semibold text-[11px]">(${escapeHtml(ev.email)})</span>` : ''}
+              </div>
+              <p class="text-xs text-slate-700 dark:text-slate-300 font-medium mt-0.5 truncate">${escapeHtml(ev.action)}</p>
+              <div class="text-[10px] text-slate-400 dark:text-slate-500 font-medium flex items-center gap-1.5 mt-0.5">
                 <span>${ev.flag} ${escapeHtml(ev.city)}</span>
               </div>
             </div>
@@ -4474,8 +4543,26 @@
     // ── User Schema Resolver Helper ──
     function resolveAdminUser(u) {
       const p = u.profile || u.user || {};
-      let rawName = p.name || u.name || p.displayName || u.displayName || '';
-      let rawEmail = p.email || u.email || (u.id.includes('@') ? u.id.replace(/_/g, '.') : '');
+      let rawName = (p.name || u.name || p.displayName || u.displayName || p.fullName || u.fullName || '').trim();
+      let rawEmail = (p.email || u.email || p.userEmail || u.userEmail || '').trim();
+      
+      if (!rawEmail && u.id && typeof u.id === 'string') {
+        if (u.id.includes('_gmail_com')) {
+          rawEmail = u.id.replace(/_gmail_com$/, '@gmail.com').replace(/_/g, '.');
+        } else if (u.id.includes('_yahoo_com')) {
+          rawEmail = u.id.replace(/_yahoo_com$/, '@yahoo.com').replace(/_/g, '.');
+        } else if (u.id.includes('_privaterelay_appleid_com')) {
+          rawEmail = u.id.replace(/_privaterelay_appleid_com$/, '@privaterelay.appleid.com');
+        } else if (u.id.includes('@')) {
+          rawEmail = u.id;
+        }
+      }
+
+      if (!rawName && rawEmail && rawEmail.includes('@')) {
+        const prefix = rawEmail.split('@')[0].replace(/[._-]/g, ' ');
+        rawName = prefix.replace(/\b\w/g, c => c.toUpperCase());
+      }
+      if (!rawName) rawName = 'Pet Parent';
       
       if (!rawName && rawEmail && rawEmail.includes('@')) {
         rawName = rawEmail.split('@')[0];

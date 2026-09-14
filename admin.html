@@ -241,28 +241,39 @@
   <!-- ========================================================================= -->
   <!-- 🖥️ MAIN MASTER CONTROL SUITE APPLICATION -->
   <!-- ========================================================================= -->
-  <div id="adminApp" class="flex-1 flex flex-col md:flex-row overflow-hidden opacity-0 pointer-events-none transition-opacity duration-300">
+  <div id="adminApp" class="flex-1 flex flex-col md:flex-row overflow-hidden opacity-0 pointer-events-none transition-opacity duration-300 relative">
 
-    <!-- ── LEFT SIDEBAR NAVIGATION ── -->
-    <aside class="w-full md:w-64 lg:w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col flex-shrink-0 z-20">
+    <!-- Backdrop for Mobile Sidebar Drawer -->
+    <div id="sidebarBackdrop" onclick="closeMobileSidebar()" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 hidden md:hidden transition-opacity duration-300"></div>
+
+    <!-- ── LEFT SIDEBAR NAVIGATION (Desktop Fixed, Mobile Slide-Out Drawer) ── -->
+    <aside id="sidebarNav" class="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col flex-shrink-0 transform -translate-x-full md:translate-x-0 md:static md:w-64 lg:w-72 transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none">
       <!-- Brand Header -->
-      <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <img src="assets/icon.png" alt="MyFurPet Logo" class="w-9 h-9 rounded-xl shadow-md border border-brand-500/20 object-cover">
+      <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <!-- Clickable Brand Logo linking to Landing Page -->
+        <a href="index.html" title="Return to MyFurPet Landing Page" class="flex items-center gap-3 group transition-transform active:scale-95 text-left">
+          <img src="assets/icon.png" alt="MyFurPet Logo" class="w-9 h-9 rounded-xl shadow-md border border-brand-500/20 object-cover group-hover:scale-105 transition-transform">
           <div>
-            <h1 class="font-display font-black text-lg tracking-tight text-slate-900 dark:text-white leading-tight">
+            <h1 class="font-display font-black text-lg tracking-tight text-slate-900 dark:text-white leading-tight flex items-center gap-1.5">
               MyFurPet
+              <span class="text-xs text-brand-500 group-hover:translate-x-0.5 transition-transform" title="Go to Website">↗</span>
             </h1>
             <div class="flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               <span class="text-[10px] font-bold tracking-wider text-brand-600 dark:text-brand-400 uppercase">Master Suite</span>
             </div>
           </div>
-        </div>
+        </a>
 
-        <button onclick="toggleDarkMode()" title="Toggle Dark/Light Mode" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm">
-          🌓
-        </button>
+        <div class="flex items-center gap-1.5">
+          <button onclick="toggleDarkMode()" title="Toggle Dark/Light Mode" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm">
+            🌓
+          </button>
+          <!-- Close Mobile Drawer Button -->
+          <button onclick="closeMobileSidebar()" title="Close Menu" class="md:hidden p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm font-bold">
+            ✕
+          </button>
+        </div>
       </div>
 
       <!-- Navigation Tabs -->
@@ -377,25 +388,46 @@
     <main class="flex-1 flex flex-col min-w-0 overflow-y-auto custom-scrollbar">
       
       <!-- Top Action Bar -->
-      <header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-10">
-        <div class="flex items-center gap-3">
-          <h2 id="currentSectionTitle" class="text-base font-extrabold font-display tracking-tight text-slate-900 dark:text-white">
+      <header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-3.5 sm:px-6 flex items-center justify-between sticky top-0 z-20">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <!-- Mobile Hamburger Toggle Button -->
+          <button id="mobileSidebarToggle" onclick="toggleMobileSidebar()" aria-label="Open Navigation Menu" title="Open Navigation Menu" class="md:hidden p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-base font-bold flex items-center justify-center shadow-sm active:scale-95 flex-shrink-0">
+            ☰
+          </button>
+          
+          <!-- Mobile Clickable Logo -->
+          <a href="index.html" title="Return to MyFurPet Landing Page" class="md:hidden flex items-center flex-shrink-0 active:scale-95 transition-transform">
+            <img src="assets/icon.png" alt="MyFurPet" class="w-7 h-7 rounded-lg shadow-sm border border-brand-500/20 object-cover">
+          </a>
+
+          <h2 id="currentSectionTitle" class="text-sm sm:text-base font-extrabold font-display tracking-tight text-slate-900 dark:text-white truncate">
             Executive Overview
           </h2>
-          <span id="liveSyncStatus" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 flex items-center gap-1.5">
+          <span id="liveSyncStatus" class="hidden sm:flex px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 items-center gap-1.5 flex-shrink-0">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Live Firestore Streaming
           </span>
         </div>
 
-        <div class="flex items-center gap-3">
-          <button onclick="refreshAllData()" class="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm">
-            <span>↺ Refresh</span>
+        <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <button onclick="refreshAllData()" class="px-2.5 sm:px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm">
+            <span>↺</span> <span class="hidden sm:inline">Refresh</span>
           </button>
-          <button onclick="exportFullAdminReportCSV()" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-md shadow-brand-600/20">
-            <span>📥 Export CSV</span>
+          <button onclick="exportFullAdminReportCSV()" class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-md shadow-brand-600/20">
+            <span>📥</span> <span class="hidden sm:inline">Export CSV</span>
           </button>
         </div>
       </header>
+
+      <!-- Mobile Quick Access Horizontal Tabs Bar (md:hidden) -->
+      <div class="md:hidden px-3.5 py-2 bg-slate-100/90 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 overflow-x-auto flex items-center gap-2 custom-scrollbar">
+        <button onclick="switchTab('overview')" class="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-sm active:scale-95">📊 Overview</button>
+        <button onclick="switchTab('users')" class="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-sm active:scale-95">👥 Users</button>
+        <button onclick="switchTab('clinics')" class="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-sm active:scale-95">🏥 Clinics</button>
+        <button onclick="switchTab('financials')" class="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-sm active:scale-95">💰 Revenue</button>
+        <button onclick="switchTab('affiliate_hub')" class="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-sm active:scale-95">🛍️ Shopee Hub</button>
+        <button onclick="switchTab('errors')" class="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-sm active:scale-95">⚠️ Errors</button>
+        <button onclick="toggleMobileSidebar()" class="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-600 text-white shadow-sm active:scale-95">☰ More (15+)</button>
+      </div>
 
       <!-- Tab Panels Container (Widescreen Fluid Layout) -->
       <div class="p-4 sm:p-6 space-y-6 w-full max-w-[1920px] mx-auto">
@@ -1802,6 +1834,35 @@
       document.documentElement.classList.remove('dark');
     }
 
+    // ── Mobile Sidebar Drawer Controller ──
+    function toggleMobileSidebar() {
+      const sidebar = document.getElementById('sidebarNav');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      if (!sidebar || !backdrop) return;
+      
+      const isClosed = sidebar.classList.contains('-translate-x-full');
+      if (isClosed) {
+        sidebar.classList.remove('-translate-x-full');
+        backdrop.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden', 'md:overflow-auto');
+      } else {
+        closeMobileSidebar();
+      }
+    }
+
+    function closeMobileSidebar() {
+      const sidebar = document.getElementById('sidebarNav');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      if (sidebar) sidebar.classList.add('-translate-x-full');
+      if (backdrop) backdrop.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden', 'md:overflow-auto');
+    }
+
+    // Dismiss drawer on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeMobileSidebar();
+    });
+
     // ── Tab Switching ──
     function switchTab(tabId) {
       document.querySelectorAll('section[id^="panel-"]').forEach(el => el.classList.add('hidden'));
@@ -1837,6 +1898,11 @@
         settings: 'Master Settings'
       };
       document.getElementById('currentSectionTitle').innerText = titles[tabId] || 'Master Suite';
+
+      // Auto-close mobile sidebar on tab switch
+      if (window.innerWidth < 768) {
+        closeMobileSidebar();
+      }
     }
 
     // ── Auth Gate Controller ──

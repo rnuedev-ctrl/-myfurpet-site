@@ -300,6 +300,12 @@
           <span id="badge-products-count" class="ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400">...</span>
         </button>
 
+        <button onclick="switchTab('pawsai')" id="tab-pawsai" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
+          <span class="text-base">🤖</span>
+          <span>PawsAI Analytics</span>
+          <span id="badge-pawsai-count" class="ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400">0</span>
+        </button>
+
         <button onclick="switchTab('referrals')" id="tab-referrals" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
           <span class="text-base">🔗</span>
           <span>Referral Commissions</span>
@@ -327,8 +333,14 @@
           <span id="badge-reports-count" class="ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400">0</span>
         </button>
 
-        <button onclick="switchTab('reports_suggestions')" id="tab-reports_suggestions" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
+        <button onclick="switchTab('features')" id="tab-features" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
           <span class="text-base">💡</span>
+          <span>Feature Ideas & Roadmap</span>
+          <span id="badge-features-count" class="ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400">0</span>
+        </button>
+
+        <button onclick="switchTab('reports_suggestions')" id="tab-reports_suggestions" class="tab-btn w-full px-3.5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-3 transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60">
+          <span class="text-base">🐞</span>
           <span>Problems & Feedback</span>
         </button>
 
@@ -1138,39 +1150,199 @@
         </section>
 
         <!-- =============================================================== -->
-        <!-- 10. PROBLEMS & SUGGESTIONS PANEL -->
+        <!-- 6. PAWSAI ANALYTICS & QUERY INTELLIGENCE PANEL -->
+        <!-- =============================================================== -->
+        <section id="panel-pawsai" class="hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 class="text-lg font-black font-display tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                <span>🤖</span> PawsAI Clinical Query Intelligence
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Real-time veterinary query trends, user symptom inquiries, and unmet pet product demand.
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="text" id="pawsAiSearchInput" oninput="filterPawsAiTable()" placeholder="🔍 Search inquiries..." class="px-3.5 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 w-48 sm:w-64">
+              <button onclick="renderPawsAiAnalytics()" class="px-3 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 font-bold text-xs border border-purple-200 dark:border-purple-800/50 hover:bg-purple-100 transition-all flex items-center gap-1.5">
+                <span>🔄</span> Refresh
+              </button>
+            </div>
+          </div>
+
+          <!-- KPI Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total User Inquiries</span>
+                <span class="p-2 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 text-sm">💬</span>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span id="kpi-pawsai-total-inquiries" class="text-3xl font-black font-display text-slate-900 dark:text-white">0</span>
+                <span class="text-xs text-purple-500 font-bold">Total queries</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-2">Aggregate PawsAI health & care questions</p>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Unique Topics Tracked</span>
+                <span class="p-2 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-sm">🧠</span>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span id="kpi-pawsai-unique-topics" class="text-3xl font-black font-display text-slate-900 dark:text-white">0</span>
+                <span class="text-xs text-blue-500 font-bold">Distinct intents</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-2">Grouped semantic questions</p>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Top Concern Category</span>
+                <span class="p-2 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-400 text-sm">🩺</span>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span id="kpi-pawsai-top-topic" class="text-lg font-black font-display text-slate-900 dark:text-white truncate">Toxicity & Foods</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-2">Highest inquiry volume</p>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Unmet Product Searches</span>
+                <span class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 text-sm">🛍️</span>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span id="kpi-pawsai-unmet-demand" class="text-3xl font-black font-display text-slate-900 dark:text-white">0</span>
+                <span class="text-xs text-emerald-500 font-bold">Monetization leads</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-2">Products users searched for</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left 2 Cols: Inquiries Frequency Table -->
+            <div class="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+              <div class="flex items-center justify-between">
+                <h4 class="font-display font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                  <span>🔥</span> Top User Inquiries & Question Frequency
+                </h4>
+                <span id="pawsAiQuestionsCount" class="text-xs text-slate-400 font-semibold">0 inquiries recorded</span>
+              </div>
+
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                      <th class="pb-3 pl-2"># Rank</th>
+                      <th class="pb-3">Inquiry Question</th>
+                      <th class="pb-3 text-center">Frequency</th>
+                      <th class="pb-3 text-right pr-2">Last Asked</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pawsAiTableBody" class="text-xs divide-y divide-slate-100 dark:divide-slate-800">
+                    <tr><td colspan="4" class="py-6 text-center text-slate-400">Loading PawsAI analytics from Cloud Firestore...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Right 1 Col: Unmet Product Demand & Monetization -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+              <div>
+                <h4 class="font-display font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                  <span>🛍️</span> High-Intent Product Demand
+                </h4>
+                <p class="text-[11px] text-slate-400 mt-1">
+                  Supplies pet parents asked for in PawsAI. Click to list directly in your Shopee/Affiliate Hub.
+                </p>
+              </div>
+
+              <div id="pawsAiDemandList" class="space-y-3 max-h-[500px] overflow-y-auto custom-scrollbar">
+                <p class="text-xs text-slate-400">Loading demand insights...</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- 7. FEATURE IDEAS & PRODUCT ROADMAP PANEL -->
+        <!-- =============================================================== -->
+        <section id="panel-features" class="hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 class="text-lg font-black font-display tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                <span>💡</span> Feature Ideas & Product Roadmap
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                User-submitted suggestions, upvoted community requests, and planned release backlog.
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <select id="featureCategoryFilter" onchange="filterFeaturesBoard()" class="px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-bold focus:outline-none">
+                <option value="ALL">All Categories</option>
+                <option value="🐕 Pet Health">🐕 Pet Health</option>
+                <option value="📍 Vet Booking">📍 Vet Booking</option>
+                <option value="🏃 Activity">🏃 Activity</option>
+                <option value="📸 Community">📸 Community</option>
+                <option value="🔔 Reminders">🔔 Reminders</option>
+                <option value="💡 Creative">💡 Creative Idea</option>
+              </select>
+              <button onclick="renderFeatureSuggestions()" class="px-3 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 font-bold text-xs border border-amber-200 dark:border-amber-800/50 hover:bg-amber-100 transition-all flex items-center gap-1.5">
+                <span>🔄</span> Refresh
+              </button>
+            </div>
+          </div>
+
+          <!-- Status Filter Tabs -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar">
+            <button onclick="setFeatureStatusFilter('ALL')" id="feat-filter-ALL" class="feat-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-brand-600 text-white shadow-sm">
+              All Ideas (<span id="count-feat-all">0</span>)
+            </button>
+            <button onclick="setFeatureStatusFilter('PENDING')" id="feat-filter-PENDING" class="feat-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200">
+              Pending Review ⏳ (<span id="count-feat-pending">0</span>)
+            </button>
+            <button onclick="setFeatureStatusFilter('PLANNED')" id="feat-filter-PLANNED" class="feat-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200">
+              Planned 📌 (<span id="count-feat-planned">0</span>)
+            </button>
+            <button onclick="setFeatureStatusFilter('IN_DEVELOPMENT')" id="feat-filter-IN_DEVELOPMENT" class="feat-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200">
+              In Development 🚀 (<span id="count-feat-indev">0</span>)
+            </button>
+            <button onclick="setFeatureStatusFilter('COMPLETED')" id="feat-filter-COMPLETED" class="feat-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200">
+              Completed ✅ (<span id="count-feat-completed">0</span>)
+            </button>
+            <button onclick="setFeatureStatusFilter('DISMISSED')" id="feat-filter-DISMISSED" class="feat-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200">
+              Dismissed ✕ (<span id="count-feat-dismissed">0</span>)
+            </button>
+          </div>
+
+          <!-- Feature Cards Grid -->
+          <div id="featuresBoardContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <p class="text-xs text-slate-400 col-span-3 py-10 text-center">Loading feature ideas from Cloud Firestore...</p>
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- 8. PROBLEMS & FEEDBACK (USER BUG REPORTS) PANEL -->
         <!-- =============================================================== -->
         <section id="panel-reports_suggestions" class="hidden space-y-6">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-lg font-black font-display tracking-tight text-slate-900 dark:text-white">
-                User Problem Reports & Feature Suggestions
+              <h3 class="text-lg font-black font-display tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                <span>🐞</span> User Problem & Bug Reports
               </h3>
               <p class="text-xs text-slate-500 dark:text-slate-400">
-                Triage user-submitted bug tickets and prioritize popular feature requests.
+                Triage user-submitted tickets, app crash reports, and issue tickets.
               </p>
             </div>
+            <button onclick="renderProblemReports()" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs hover:bg-slate-200 transition-all flex items-center gap-1.5">
+              <span>🔄</span> Refresh
+            </button>
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Bug Reports -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
-              <h4 class="font-display font-bold text-sm text-slate-900 dark:text-white mb-3">
-                🐛 User Problem Reports
-              </h4>
-              <div id="userProblemsList" class="space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
-                <p class="text-xs text-slate-400">Loading problem reports...</p>
-              </div>
-            </div>
-
-            <!-- Feature Suggestions -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
-              <h4 class="font-display font-bold text-sm text-slate-900 dark:text-white mb-3">
-                💡 Feature Suggestions & Requests
-              </h4>
-              <div id="featureSuggestionsList" class="space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
-                <p class="text-xs text-slate-400">Loading feature suggestions...</p>
-              </div>
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
+            <div id="userProblemsList" class="space-y-3 max-h-[600px] overflow-y-auto custom-scrollbar">
+              <p class="text-xs text-slate-400">Loading problem reports...</p>
             </div>
           </div>
         </section>
@@ -1592,11 +1764,24 @@
     let referralsData = [];
     let problemReportsData = [];
     let featureSuggestionsData = [];
+    let pawsAiAnalyticsData = [];
+    let featureStatusFilter = 'ALL';
+    let featureCategoryFilter = 'ALL';
     let financialTransactions = [];
     let productsData = [];
     let demandData = [];
     let demandFilter = 'all';
     window.activeCuratingDemandId = null;
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
 
     const SUPERADMIN_EMAILS = [
       'rnuedev@gmail.com'
@@ -1641,12 +1826,14 @@
         users: 'Users & VIP Controls',
         clinics: 'Partner Clinics & Vets',
         affiliate_hub: 'Shopee & Affiliate Hub',
+        pawsai: 'PawsAI Query Intelligence & Clinical Analytics',
         referrals: 'Referral Commissions',
         errors: 'Critical Error Logs',
         lead_audit: 'Lead Audit Logs',
         sos: 'PawAlert SOS Desk',
         moderation: 'Content Moderation',
-        reports_suggestions: 'Problems & Feedback',
+        features: 'Feature Ideas & Product Roadmap',
+        reports_suggestions: 'User Bug Reports & Support Tickets',
         settings: 'Master Settings'
       };
       document.getElementById('currentSectionTitle').innerText = titles[tabId] || 'Master Suite';
@@ -1846,13 +2033,38 @@
         renderProblemReports();
       }, (err) => console.log("Problem reports notice:", err));
 
-      // 9. PawsAI Product Demand Stream
-      onSnapshot(collection(db, "pawsai_product_demand"), (snapshot) => {
-        demandData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderDemandInsights();
-      }, (err) => console.log("Product demand notice:", err));
+      // 9. PawsAI Clinical Analytics Stream
+      try {
+        onSnapshot(collection(db, "pawsai_analytics"), (snapshot) => {
+          pawsAiAnalyticsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          renderPawsAiAnalytics();
+        }, (err) => console.log("PawsAI analytics notice:", err));
+      } catch (_) {}
 
-      // 9. Feature Suggestions Stream
+      // 10. PawsAI Product Demand Stream
+      try {
+        onSnapshot(collection(db, "pawsai_product_demand"), (snapshot) => {
+          const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          if (items.length > 0) {
+            demandData = items;
+            renderDemandInsights();
+            renderPawsAiDemandList();
+          }
+        }, (err) => console.log("Product demand notice:", err));
+      } catch (_) {}
+
+      try {
+        onSnapshot(collection(db, "dynamic_product_demand"), (snapshot) => {
+          const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          if (items.length > 0) {
+            demandData = items;
+            renderDemandInsights();
+            renderPawsAiDemandList();
+          }
+        }, (err) => console.log("Dynamic product demand notice:", err));
+      } catch (_) {}
+
+      // 11. Feature Suggestions Stream
       onSnapshot(collection(db, "feature_suggestions"), (snapshot) => {
         featureSuggestionsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderFeatureSuggestions();
@@ -3960,24 +4172,277 @@
       await window.fbMethods.updateDoc(window.fbMethods.doc(window.fbDb, "user_problem_reports", id), { status: 'RESOLVED' });
     }
 
-    function renderFeatureSuggestions() {
-      const c = document.getElementById('featureSuggestionsList');
-      if (featureSuggestionsData.length === 0) {
-        c.innerHTML = `<p class="text-xs text-slate-400">No feature suggestions submitted yet.</p>`;
+    // ── PawsAI Analytics & Query Intelligence ──
+    function renderPawsAiAnalytics() {
+      const totalInquiries = pawsAiAnalyticsData.reduce((sum, item) => sum + (Number(item.count) || 1), 0);
+      const uniqueTopics = pawsAiAnalyticsData.length;
+      
+      const kpiTotal = document.getElementById('kpi-pawsai-total-inquiries');
+      if (kpiTotal) kpiTotal.innerText = totalInquiries;
+
+      const kpiUnique = document.getElementById('kpi-pawsai-unique-topics');
+      if (kpiUnique) kpiUnique.innerText = uniqueTopics;
+
+      const badgeCount = document.getElementById('badge-pawsai-count');
+      if (badgeCount) badgeCount.innerText = totalInquiries;
+
+      const badgeUnmet = document.getElementById('kpi-pawsai-unmet-demand');
+      if (badgeUnmet) badgeUnmet.innerText = demandData.length;
+
+      // Find top topic / question
+      const sorted = [...pawsAiAnalyticsData].sort((a, b) => (Number(b.count) || 0) - (Number(a.count) || 0));
+      const kpiTop = document.getElementById('kpi-pawsai-top-topic');
+      if (kpiTop) {
+        kpiTop.innerText = sorted[0]?.question ? (sorted[0].question.length > 26 ? sorted[0].question.slice(0, 26) + '...' : sorted[0].question) : 'Toxicity & Diets';
+      }
+
+      const countHeader = document.getElementById('pawsAiQuestionsCount');
+      if (countHeader) countHeader.innerText = `${uniqueTopics} distinct clinical topics (${totalInquiries} total asks)`;
+
+      filterPawsAiTable();
+      renderPawsAiDemandList();
+    }
+
+    function filterPawsAiTable() {
+      const searchInput = document.getElementById('pawsAiSearchInput')?.value.toLowerCase().trim() || '';
+      const tbody = document.getElementById('pawsAiTableBody');
+      if (!tbody) return;
+
+      const sorted = [...pawsAiAnalyticsData].sort((a, b) => (Number(b.count) || 0) - (Number(a.count) || 0));
+      const filtered = searchInput ? sorted.filter(item => (item.question || '').toLowerCase().includes(searchInput)) : sorted;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="p-8 text-center text-slate-400">
+              ${searchInput ? 'No questions matching search filter.' : 'No PawsAI questions recorded yet. Try asking questions in the mobile app!'}
+            </td>
+          </tr>
+        `;
         return;
       }
-      c.innerHTML = featureSuggestionsData.map(f => `
-        <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 flex items-start justify-between gap-3">
-          <div>
-            <div class="flex items-center gap-2">
-              <p class="text-xs font-bold text-slate-900 dark:text-white">${f.title || 'Feature Idea'}</p>
-              <span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-brand-100 text-brand-700">▲ ${f.upvotes || 1}</span>
+
+      const maxCount = Math.max(...filtered.map(i => Number(i.count) || 1), 1);
+
+      tbody.innerHTML = filtered.map((item, idx) => {
+        const count = Number(item.count) || 1;
+        const percent = Math.min(100, Math.round((count / maxCount) * 100));
+        const lastAsked = item.lastAskedAt ? new Date(item.lastAskedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recently';
+        const rankColor = idx === 0 ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-400' : idx === 1 ? 'bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-300' : idx === 2 ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400';
+
+        return `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+            <td class="py-3 pl-2">
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-black ${rankColor}">#${idx + 1}</span>
+            </td>
+            <td class="py-3">
+              <p class="font-bold text-slate-900 dark:text-white">${escapeHtml(item.question || 'Pet Inquiry')}</p>
+            </td>
+            <td class="py-3 text-center">
+              <div class="flex items-center justify-center gap-2">
+                <div class="w-16 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                  <div class="h-full bg-purple-600 rounded-full" style="width: ${percent}%"></div>
+                </div>
+                <span class="font-black text-purple-600 dark:text-purple-400 font-mono">${count}x</span>
+              </div>
+            </td>
+            <td class="py-3 text-right pr-2 text-slate-400 text-[11px] font-mono">
+              ${lastAsked}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderPawsAiDemandList() {
+      const container = document.getElementById('pawsAiDemandList');
+      if (!container) return;
+
+      if (!demandData || demandData.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">No unmet product demands tracked yet.</p>`;
+        return;
+      }
+
+      container.innerHTML = demandData.slice(0, 10).map(d => {
+        const query = d.searchedQuery || d.query || d.title || 'Pet Item';
+        const count = d.demandCount || d.count || 1;
+        return `
+          <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-xs font-bold text-slate-900 dark:text-white truncate">${escapeHtml(query)}</p>
+              <p class="text-[10px] text-purple-600 dark:text-purple-400 font-semibold">${count} pet parents searched</p>
             </div>
-            <p class="text-[11px] text-slate-500 mt-1">${f.description || ''}</p>
+            <button onclick="prefillAffiliateProduct('${escapeHtml(query)}')" class="px-2.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-[10px] font-black flex-shrink-0 shadow-sm transition-all">
+              + Monetize
+            </button>
           </div>
-          <span class="text-[10px] font-bold text-brand-600">${f.status || 'NEW'}</span>
-        </div>
-      `).join('');
+        `;
+      }).join('');
+    }
+
+    function prefillAffiliateProduct(title) {
+      switchTab('affiliate_hub');
+      const titleInput = document.getElementById('newProdTitle');
+      if (titleInput) {
+        titleInput.value = title;
+        titleInput.focus();
+      }
+    }
+
+    // ── Feature Ideas & Roadmap Hub ──
+    function setFeatureStatusFilter(status) {
+      featureStatusFilter = status;
+      document.querySelectorAll('.feat-filter-btn').forEach(btn => {
+        btn.classList.remove('bg-brand-600', 'text-white', 'shadow-sm');
+        btn.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-400');
+      });
+      const activeBtn = document.getElementById('feat-filter-' + status);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-400');
+        activeBtn.classList.add('bg-brand-600', 'text-white', 'shadow-sm');
+      }
+      renderFeatureSuggestions();
+    }
+
+    function filterFeaturesBoard() {
+      const sel = document.getElementById('featureCategoryFilter');
+      if (sel) featureCategoryFilter = sel.value;
+      renderFeatureSuggestions();
+    }
+
+    async function updateFeatureStatus(id, newStatus) {
+      if (!id || !newStatus) return;
+      try {
+        await window.fbMethods.updateDoc(window.fbMethods.doc(window.fbDb, "feature_suggestions", id), {
+          status: newStatus,
+          updatedAt: new Date().toISOString(),
+          reviewedBy: currentAdminUser?.email || 'admin'
+        });
+      } catch (e) {
+        alert("Error updating feature status: " + e.message);
+      }
+    }
+
+    function renderFeatureSuggestions() {
+      const container = document.getElementById('featuresBoardContainer');
+      const badgeCount = document.getElementById('badge-features-count');
+      
+      const pendingCount = featureSuggestionsData.filter(f => !f.status || f.status === 'PENDING').length;
+      if (badgeCount) badgeCount.innerText = pendingCount;
+
+      // Update filter tab counts
+      const elAll = document.getElementById('count-feat-all');
+      if (elAll) elAll.innerText = featureSuggestionsData.length;
+      const elPending = document.getElementById('count-feat-pending');
+      if (elPending) elPending.innerText = pendingCount;
+      const elPlanned = document.getElementById('count-feat-planned');
+      if (elPlanned) elPlanned.innerText = featureSuggestionsData.filter(f => f.status === 'PLANNED').length;
+      const elInDev = document.getElementById('count-feat-indev');
+      if (elInDev) elInDev.innerText = featureSuggestionsData.filter(f => f.status === 'IN_DEVELOPMENT').length;
+      const elComp = document.getElementById('count-feat-completed');
+      if (elComp) elComp.innerText = featureSuggestionsData.filter(f => f.status === 'COMPLETED').length;
+      const elDism = document.getElementById('count-feat-dismissed');
+      if (elDism) elDism.innerText = featureSuggestionsData.filter(f => f.status === 'DISMISSED').length;
+
+      if (!container) return;
+
+      let filtered = [...featureSuggestionsData];
+
+      // Status filter
+      if (featureStatusFilter !== 'ALL') {
+        filtered = filtered.filter(f => (f.status || 'PENDING') === featureStatusFilter);
+      }
+
+      // Category filter
+      if (featureCategoryFilter !== 'ALL') {
+        filtered = filtered.filter(f => (f.category || '').includes(featureCategoryFilter));
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-12 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+            <p class="text-3xl mb-2">💡</p>
+            <p class="text-sm font-bold text-slate-800 dark:text-slate-200">No feature ideas in this filter</p>
+            <p class="text-xs text-slate-400 mt-1">Users can submit suggestions directly inside the mobile app's profile screen.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(f => {
+        const status = f.status || 'PENDING';
+        const impact = f.impactLevel || 'High Impact';
+        const impactBadge = impact === 'Must-Have Game Changer' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border-purple-200' : impact === 'High Impact' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border-amber-200' : 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border-blue-200';
+        const statusBadge = status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : status === 'IN_DEVELOPMENT' ? 'bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300' : status === 'PLANNED' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' : status === 'DISMISSED' ? 'bg-slate-100 text-slate-500' : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300';
+
+        const submitDate = f.timestamp ? new Date(f.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently';
+
+        return `
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col justify-between space-y-4 hover:border-brand-500/50 transition-all">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border ${impactBadge}">
+                  ${escapeHtml(impact)}
+                </span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-black ${statusBadge}">
+                  ${escapeHtml(status)}
+                </span>
+              </div>
+
+              <h4 class="text-sm font-black font-display text-slate-900 dark:text-white">${escapeHtml(f.title || 'Feature Suggestion')}</h4>
+              
+              <div class="flex items-center gap-1 text-[11px] font-semibold text-purple-600 dark:text-purple-400 mt-1 mb-2">
+                <span>📁</span>
+                <span>${escapeHtml(f.category || 'General Idea')}</span>
+              </div>
+
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${escapeHtml(f.description || '')}</p>
+
+              ${f.screenshotUrl ? `
+                <div class="mt-3">
+                  <a href="${f.screenshotUrl}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-brand-600 hover:text-brand-700 underline">
+                    <span>🖼️</span> View Attached Screenshot
+                  </a>
+                </div>
+              ` : ''}
+            </div>
+
+            <!-- Submitter Details & Action Workflow Buttons -->
+            <div class="pt-3 border-t border-slate-100 dark:border-slate-800/80 space-y-3">
+              <div class="text-[10px] text-slate-400 flex items-center justify-between">
+                <span>👤 ${escapeHtml(f.userName || 'Pet Parent')} (${escapeHtml(f.userEmail || '')})</span>
+                <span>${submitDate}</span>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                ${status !== 'PLANNED' ? `
+                  <button onclick="updateFeatureStatus('${f.id}', 'PLANNED')" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-all">
+                    📌 Plan
+                  </button>
+                ` : ''}
+
+                ${status !== 'IN_DEVELOPMENT' ? `
+                  <button onclick="updateFeatureStatus('${f.id}', 'IN_DEVELOPMENT')" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 transition-all">
+                    🚀 In Dev
+                  </button>
+                ` : ''}
+
+                ${status !== 'COMPLETED' ? `
+                  <button onclick="updateFeatureStatus('${f.id}', 'COMPLETED')" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition-all">
+                    ✅ Complete
+                  </button>
+                ` : ''}
+
+                ${status !== 'DISMISSED' ? `
+                  <button onclick="updateFeatureStatus('${f.id}', 'DISMISSED')" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-500 hover:bg-slate-200 transition-all">
+                    ✕ Dismiss
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     // ── Save Master Settings ──

@@ -2370,7 +2370,8 @@
     ];
 
     // ── Helper to resolve real users and their geo locations for collapsible feature cards ──
-    function getFeatureEngagedUsers(featureKey, count = 4) {
+    function getFeatureEngagedUsers(featureKey, eventCount = 0, count = 4) {
+      if (!eventCount || eventCount <= 0) return [];
       if (!Array.isArray(usersData) || usersData.length === 0) return [];
       
       const resolved = usersData.map(u => {
@@ -2575,7 +2576,7 @@
           chartLabels.push(p.title);
           chartData.push(filterMode === 'AMAZON' ? pAmazon : placementClicks);
 
-          const engagedUsers = getFeatureEngagedUsers(p.title, 4);
+          const engagedUsers = placementClicks > 0 ? getFeatureEngagedUsers(p.title, placementClicks, 4) : [];
           const drawerId = `drawer-placement-${idx}`;
 
           const card = document.createElement('div');
@@ -2607,13 +2608,20 @@
                     <span>🛒 Amazon:</span> <strong>${pAmazon}</strong>
                   </span>
                 </div>
-                <button type="button" onclick="toggleCardDrawer('${drawerId}', this)" class="flex-shrink-0 text-[10px] font-bold px-2 py-1 rounded-md bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 flex items-center gap-1 transition-all cursor-pointer">
-                  <span>Users & Geo</span>
-                  <span class="drawer-arrow inline-block transition-transform duration-200 text-[8.5px]">▼</span>
-                </button>
+                ${placementClicks > 0 ? `
+                  <button type="button" onclick="toggleCardDrawer('${drawerId}', this)" class="flex-shrink-0 text-[10px] font-bold px-2 py-1 rounded-md bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 flex items-center gap-1 transition-all cursor-pointer">
+                    <span>Users & Geo</span>
+                    <span class="drawer-arrow inline-block transition-transform duration-200 text-[8.5px]">▼</span>
+                  </button>
+                ` : `
+                  <span class="flex-shrink-0 text-[9.5px] font-semibold text-slate-400 dark:text-slate-500 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">
+                    No Clicks Yet
+                  </span>
+                `}
               </div>
 
-              <!-- Collapsible Users & Geo Drawer -->
+              <!-- Collapsible Users & Geo Drawer (Only if placementClicks > 0) -->
+              ${placementClicks > 0 ? `
               <div id="${drawerId}" class="hidden mt-2.5 pt-2.5 border-t border-slate-200 dark:border-slate-700/60 space-y-1.5">
                 <div class="flex items-center justify-between text-[10.5px] font-bold text-slate-500 dark:text-slate-400 mb-1">
                   <span>📍 Active Pet Parents Registered</span>
@@ -2646,6 +2654,7 @@
                   </div>
                 `).join('')}
               </div>
+              ` : ''}
             </div>
           `;
           placementsContainer.appendChild(card);
@@ -2741,7 +2750,7 @@
             countLabel = '0 logged';
           }
 
-          const engagedUsers = getFeatureEngagedUsers(sc.name, 4);
+          const engagedUsers = count > 0 ? getFeatureEngagedUsers(sc.name, count, 4) : [];
           const drawerId = `drawer-scanner-${idx}`;
 
           const row = document.createElement('div');
@@ -2763,10 +2772,16 @@
                   <span class="text-xs font-black ${count > 0 ? 'text-purple-600 dark:text-purple-400' : 'text-slate-400'} block">${countLabel}</span>
                   <span class="text-[10px] text-slate-400 block font-medium">${count > 0 ? `${sharePct}% share` : 'Ready in App'}</span>
                 </div>
-                <button type="button" onclick="toggleCardDrawer('${drawerId}', this)" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 flex items-center gap-1 transition-all cursor-pointer">
-                  <span>Users & Geo</span>
-                  <span class="drawer-arrow inline-block transition-transform duration-200 text-[8.5px]">▼</span>
-                </button>
+                ${count > 0 ? `
+                  <button type="button" onclick="toggleCardDrawer('${drawerId}', this)" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 flex items-center gap-1 transition-all cursor-pointer">
+                    <span>Users & Geo</span>
+                    <span class="drawer-arrow inline-block transition-transform duration-200 text-[8.5px]">▼</span>
+                  </button>
+                ` : `
+                  <span class="text-[9.5px] font-semibold text-slate-400 dark:text-slate-500 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">
+                    Awaiting Scans
+                  </span>
+                `}
               </div>
             </div>
             <!-- Progress Bar -->
@@ -2774,10 +2789,11 @@
               <div class="bg-gradient-to-r from-purple-500 to-indigo-500 h-full rounded-full" style="width: ${Math.max(sharePct, count > 0 ? 10 : 2)}%"></div>
             </div>
 
-            <!-- Collapsible Users & Geo Drawer -->
+            <!-- Collapsible Users & Geo Drawer (Only if count > 0) -->
+            ${count > 0 ? `
             <div id="${drawerId}" class="hidden mt-2.5 pt-2 border-t border-slate-200 dark:border-slate-700/60 space-y-1.5">
               <div class="flex items-center justify-between text-[10.5px] font-bold text-slate-500 dark:text-slate-400 mb-1">
-                <span>📍 Scanner Capable Pet Parents</span>
+                <span>📍 Scanner Users (${countLabel})</span>
                 <span class="text-[9.5px] font-semibold text-purple-600 dark:text-purple-400">${engagedUsers.length} Active Users</span>
               </div>
               ${engagedUsers.map(u => `
@@ -2807,6 +2823,7 @@
                 </div>
               `).join('')}
             </div>
+            ` : ''}
           `;
           scannersContainer.appendChild(row);
         });
@@ -2842,7 +2859,7 @@
             pct = 0;
           }
 
-          const engagedUsers = getFeatureEngagedUsers(u.name, 4);
+          const engagedUsers = countVal > 0 ? getFeatureEngagedUsers(u.name, countVal, 4) : [];
           const drawerId = `drawer-utility-${idx}`;
 
           const row = document.createElement('div');
@@ -2861,10 +2878,16 @@
                   <span class="text-xs font-black ${countVal > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'} block">${countLabel}</span>
                   <span class="text-[10px] text-slate-400 block font-medium">${countVal > 0 ? 'Live in App' : 'Standby'}</span>
                 </div>
-                <button type="button" onclick="toggleCardDrawer('${drawerId}', this)" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 flex items-center gap-1 transition-all cursor-pointer">
-                  <span>Users & Geo</span>
-                  <span class="drawer-arrow inline-block transition-transform duration-200 text-[8.5px]">▼</span>
-                </button>
+                ${countVal > 0 ? `
+                  <button type="button" onclick="toggleCardDrawer('${drawerId}', this)" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 flex items-center gap-1 transition-all cursor-pointer">
+                    <span>Users & Geo</span>
+                    <span class="drawer-arrow inline-block transition-transform duration-200 text-[8.5px]">▼</span>
+                  </button>
+                ` : `
+                  <span class="text-[9.5px] font-semibold text-slate-400 dark:text-slate-500 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">
+                    Standby (0 Logged)
+                  </span>
+                `}
               </div>
             </div>
             <!-- Progress Bar -->
@@ -2872,7 +2895,8 @@
               <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full" style="width: ${Math.max(pct, 2)}%"></div>
             </div>
 
-            <!-- Collapsible Users & Geo Drawer -->
+            <!-- Collapsible Users & Geo Drawer (Only if countVal > 0) -->
+            ${countVal > 0 ? `
             <div id="${drawerId}" class="hidden mt-2.5 pt-2 border-t border-slate-200 dark:border-slate-700/60 space-y-1.5">
               <div class="flex items-center justify-between text-[10.5px] font-bold text-slate-500 dark:text-slate-400 mb-1">
                 <span>📍 Tracker Users & Geo Footprint</span>
@@ -2905,6 +2929,7 @@
                 </div>
               `).join('')}
             </div>
+            ` : ''}
           `;
           utilitiesContainer.appendChild(row);
         });

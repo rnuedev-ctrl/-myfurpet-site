@@ -2440,6 +2440,27 @@
       }
     };
 
+    window.toggleGeoClusterDrawer = function(drawerId, rowEl) {
+      const drawer = document.getElementById(drawerId);
+      if (!drawer) return;
+      const isHidden = drawer.classList.contains('hidden');
+      if (isHidden) {
+        drawer.classList.remove('hidden');
+        if (rowEl) {
+          const arrow = rowEl.querySelector('.geo-drawer-arrow');
+          if (arrow) arrow.style.transform = 'rotate(90deg)';
+          rowEl.classList.add('bg-purple-50/50', 'dark:bg-slate-800/80');
+        }
+      } else {
+        drawer.classList.add('hidden');
+        if (rowEl) {
+          const arrow = rowEl.querySelector('.geo-drawer-arrow');
+          if (arrow) arrow.style.transform = 'rotate(0deg)';
+          rowEl.classList.remove('bg-purple-50/50', 'dark:bg-slate-800/80');
+        }
+      }
+    };
+
     function renderFeatureIntelligence() {
       // 1. Gather baseline data
       const totalUsers = (usersData && usersData.length) ? usersData.length : 1;
@@ -2886,13 +2907,27 @@
             flag: meta.flag,
             isDomestic: meta.isDomestic,
             usersCount: 0,
-            vipCount: 0
+            vipCount: 0,
+            users: []
           };
         }
         cityMap[key].usersCount++;
-        if (checkUserIsVip(u)) cityMap[key].vipCount++;
-        if (!cityMap[key].sampleNames) cityMap[key].sampleNames = [];
+        const isVip = checkUserIsVip(u);
+        if (isVip) cityMap[key].vipCount++;
+
         const resolved = resolveAdminUser(u);
+        const rawLoc = (u.location || u.profile?.location || u.address || u.profile?.address || u.city || u.profile?.city || '').toString().trim();
+        cityMap[key].users.push({
+          ...resolved,
+          isVip,
+          rawLocation: rawLoc,
+          cityName,
+          countryName: meta.name,
+          flag: meta.flag,
+          rawUser: u
+        });
+
+        if (!cityMap[key].sampleNames) cityMap[key].sampleNames = [];
         if (resolved.name && resolved.name !== 'Pet Parent' && !cityMap[key].sampleNames.includes(resolved.name)) {
           if (cityMap[key].sampleNames.length < 3) {
             cityMap[key].sampleNames.push(resolved.name);
@@ -2952,40 +2987,107 @@
         return;
       }
 
-      tbody.innerHTML = filtered.map(item => `
-        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-          <td class="p-4 font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <span>${item.flag}</span>
-            <span>${escapeHtml(item.cityName)}</span>
-          </td>
-          <td class="p-4 text-slate-600 dark:text-slate-300 font-medium">
-            ${escapeHtml(item.countryName)}
-          </td>
-          <td class="p-4">
-            <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-              <span>${item.usersCount.toLocaleString()} Pet Parents</span>
-              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400">${item.vipCount} VIP</span>
-            </div>
-            ${item.sampleNames && item.sampleNames.length > 0 ? `
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate max-w-[200px]" title="${escapeHtml(item.sampleNames.join(', '))}">
-                👤 ${escapeHtml(item.sampleNames.join(', '))}
-              </p>
-            ` : ''}
-          </td>
-          <td class="p-4 font-semibold text-slate-800 dark:text-slate-200">
-            ${item.preferredStore}
-          </td>
-          <td class="p-4 text-slate-700 dark:text-slate-300 font-medium">
-            ${item.topFeature}
-          </td>
-          <td class="p-4 font-bold text-amber-600 dark:text-amber-400">
-            ${item.estClicks.toLocaleString()} taps
-          </td>
-          <td class="p-4 text-slate-500 font-bold">
-            ${item.platformShare}%
-          </td>
-        </tr>
-      `).join('');
+      tbody.innerHTML = filtered.map((item, idx) => {
+        const drawerId = `geo-cluster-drawer-${idx}`;
+        const usersList = item.users || [];
+        return `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors cursor-pointer group select-none" onclick="toggleGeoClusterDrawer('${drawerId}', this)">
+            <td class="p-4 font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <span class="geo-drawer-arrow inline-block transition-transform duration-200 text-[10px] text-slate-400 group-hover:text-purple-500 font-mono">▶</span>
+              <span class="text-base">${item.flag}</span>
+              <span class="text-xs sm:text-sm font-black">${escapeHtml(item.cityName)}</span>
+            </td>
+            <td class="p-4 text-slate-600 dark:text-slate-300 font-medium text-xs">
+              ${escapeHtml(item.countryName)}
+            </td>
+            <td class="p-4">
+              <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                <span>${item.usersCount.toLocaleString()} Pet Parents</span>
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400">${item.vipCount} VIP</span>
+              </div>
+              <div class="flex items-center gap-1.5 mt-1">
+                <span class="text-[11px] font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1 group-hover:underline">
+                  <span>Show all ${usersList.length} users</span>
+                  <span class="text-[9px]">▼</span>
+                </span>
+                ${item.sampleNames && item.sampleNames.length > 0 ? `
+                  <span class="text-[10.5px] text-slate-400 truncate max-w-[150px]" title="${escapeHtml(item.sampleNames.join(', '))}">
+                    (${escapeHtml(item.sampleNames.join(', '))})
+                  </span>
+                ` : ''}
+              </div>
+            </td>
+            <td class="p-4 font-semibold text-slate-800 dark:text-slate-200 text-xs">
+              ${item.preferredStore}
+            </td>
+            <td class="p-4 text-slate-700 dark:text-slate-300 font-medium text-xs">
+              ${item.topFeature}
+            </td>
+            <td class="p-4 font-bold text-amber-600 dark:text-amber-400 text-xs">
+              ${item.estClicks.toLocaleString()} taps
+            </td>
+            <td class="p-4 text-slate-500 font-bold text-xs">
+              ${item.platformShare}%
+            </td>
+          </tr>
+          <!-- Collapsible Sub-Row for All Users in this Regional Cluster -->
+          <tr id="${drawerId}" class="hidden bg-slate-50/80 dark:bg-slate-900/90 border-y border-slate-200 dark:border-slate-800">
+            <td colspan="7" class="p-4 sm:p-5">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800 flex-wrap gap-2">
+                  <div class="flex items-center gap-2">
+                    <span class="text-base">${item.flag}</span>
+                    <h5 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
+                      All Registered Pet Parents in ${escapeHtml(item.cityName)} (${usersList.length})
+                    </h5>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400">
+                      ${item.vipCount} VIP Account${item.vipCount === 1 ? '' : 's'}
+                    </span>
+                  </div>
+                  <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium flex items-center gap-2">
+                    <span>Direct Cloud Firestore Records</span>
+                    <span>•</span>
+                    <span class="font-mono text-purple-600 dark:text-purple-400">${item.platformShare}% Regional Share</span>
+                  </div>
+                </div>
+
+                <!-- User Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-[480px] overflow-y-auto pr-1">
+                  ${usersList.map(u => `
+                    <div class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-start justify-between gap-2 shadow-2xs hover:border-purple-400 dark:hover:border-purple-600 transition-all">
+                      <div class="min-w-0 flex items-start gap-2.5">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 text-white flex items-center justify-center font-black text-xs flex-shrink-0 shadow-xs mt-0.5">
+                          ${escapeHtml((u.name || 'P').charAt(0).toUpperCase())}
+                        </div>
+                        <div class="min-w-0">
+                          <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="font-bold text-slate-900 dark:text-white truncate text-xs">${escapeHtml(u.name)}</span>
+                            ${u.isVip ? '<span class="text-[8px] font-black px-1.5 py-0.2 rounded bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 border border-amber-300 dark:border-amber-800">VIP</span>' : ''}
+                          </div>
+                          <p class="font-mono text-[10.5px] text-slate-500 dark:text-slate-400 truncate max-w-[210px] select-all mt-0.5" title="${escapeHtml(u.email)}">${escapeHtml(u.email)}</p>
+                          ${u.petSummary ? `
+                            <p class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold truncate mt-1 flex items-center gap-1">
+                              <span>🐾</span> <span class="truncate max-w-[190px]">${escapeHtml(u.petSummary)}</span>
+                            </p>
+                          ` : '<p class="text-[10px] text-slate-400 mt-1">Verified Pet Parent</p>'}
+                        </div>
+                      </div>
+                      <div class="text-right flex-shrink-0 flex flex-col items-end">
+                        <span class="text-[9.5px] font-mono px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 mb-1 max-w-[130px] truncate" title="${escapeHtml(u.rawLocation || item.cityName)}">
+                          📍 ${escapeHtml(u.rawLocation || item.cityName)}
+                        </span>
+                        <span class="text-[9px] text-slate-400 font-medium">
+                          ${u.formattedDate || 'Joined'}
+                        </span>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
     function renderIntelKeywords() {
@@ -6134,7 +6236,9 @@
     const PHILIPPINE_CITY_DICTIONARY = [
       // NCR Individual Cities
       { match: ['quezon city', 'qc', 'diliman', 'novaliches', 'cubao', 'katipunan'], city: 'Quezon City', region: 'Metro Manila' },
-      { match: ['makati', 'ayala', 'bel-air', 'poblacion'], city: 'Makati', region: 'Metro Manila' },
+      { match: ['makati', 'ayala', 'bel-air', 'san lorenzo', 'magallanes', 'salcedo', 'legazpi village'], city: 'Makati', region: 'Metro Manila' },
+      { match: ['sorsogon', 'castilla', 'bacon', 'bulan', 'gubat', 'matnog', 'irosin', 'casiguran', 'juban'], city: 'Sorsogon (City / Castilla)', region: 'Bicol Region' },
+      { match: ['metro manila', 'ncr', 'national capital region'], city: 'Metro Manila (NCR)', region: 'Metro Manila' },
       { match: ['taguig', 'bgc', 'bonifacio', 'fort bonifacio', 'market market'], city: 'Taguig (BGC)', region: 'Metro Manila' },
       { match: ['pasig', 'ortigas', 'kapitolyo'], city: 'Pasig', region: 'Metro Manila' },
       { match: ['mandaluyong', 'wack-wack', 'shaw'], city: 'Mandaluyong', region: 'Metro Manila' },
@@ -6340,8 +6444,12 @@
 
         if (/\b(quezon city|qc|diliman|novaliches|cubao|katipunan)\b/i.test(lowerAddr)) {
           cityName = 'Quezon City';
-        } else if (/\b(makati|ayala|bel-air|poblacion)\b/i.test(lowerAddr)) {
+        } else if (/\b(makati|ayala|bel-air|san lorenzo|magallanes|salcedo|legazpi village)\b/i.test(lowerAddr)) {
           cityName = 'Makati';
+        } else if (/\b(sorsogon|castilla|bacon|bulan|gubat|matnog|irosin|casiguran|juban)\b/i.test(lowerAddr)) {
+          cityName = 'Sorsogon (City / Castilla)';
+        } else if (/\b(metro manila|ncr|national capital region)\b/i.test(lowerAddr)) {
+          cityName = 'Metro Manila (NCR)';
         } else if (/\b(taguig|bgc|bonifacio|fort bonifacio|market market)\b/i.test(lowerAddr)) {
           cityName = 'Taguig (BGC)';
         } else if (/\b(pasig|ortigas|kapitolyo)\b/i.test(lowerAddr)) {

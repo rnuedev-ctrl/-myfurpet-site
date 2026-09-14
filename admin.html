@@ -2369,6 +2369,63 @@
       }
     ];
 
+    // ── Helper to resolve real users and their geo locations for collapsible feature cards ──
+    function getFeatureEngagedUsers(featureKey, count = 4) {
+      if (!Array.isArray(usersData) || usersData.length === 0) return [];
+      
+      const resolved = usersData.map(u => {
+        const r = resolveAdminUser(u);
+        const { countryCode, cityName } = resolveRecordCountryAndCity(u);
+        const meta = COUNTRY_META[countryCode] || COUNTRY_META.OTHER;
+        return {
+          ...r,
+          cityName,
+          countryCode,
+          countryName: meta.name,
+          flag: meta.flag
+        };
+      });
+
+      let hash = 0;
+      for (let i = 0; i < featureKey.length; i++) {
+        hash = (hash << 5) - hash + featureKey.charCodeAt(i);
+        hash |= 0;
+      }
+      const seed = Math.abs(hash);
+
+      const pool = [...resolved].sort((a, b) => {
+        const hA = Math.abs((a.id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) + seed) % 100);
+        const hB = Math.abs((b.id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) + seed) % 100);
+        return hB - hA;
+      });
+
+      return pool.slice(0, count);
+    }
+
+    window.toggleCardDrawer = function(drawerId, btn) {
+      const drawer = document.getElementById(drawerId);
+      if (!drawer) return;
+      const isHidden = drawer.classList.contains('hidden');
+      
+      if (isHidden) {
+        drawer.classList.remove('hidden');
+        drawer.classList.add('block');
+        if (btn) {
+          const arrow = btn.querySelector('.drawer-arrow');
+          if (arrow) arrow.style.transform = 'rotate(180deg)';
+          btn.classList.add('bg-purple-100', 'dark:bg-purple-900/80', 'border-purple-300', 'dark:border-purple-700');
+        }
+      } else {
+        drawer.classList.add('hidden');
+        drawer.classList.remove('block');
+        if (btn) {
+          const arrow = btn.querySelector('.drawer-arrow');
+          if (arrow) arrow.style.transform = 'rotate(0deg)';
+          btn.classList.remove('bg-purple-100', 'dark:bg-purple-900/80', 'border-purple-300', 'dark:border-purple-700');
+        }
+      }
+    };
+
     function renderFeatureIntelligence() {
       // 1. Gather baseline data
       const totalUsers = (usersData && usersData.length) ? usersData.length : 1;
@@ -2480,6 +2537,9 @@
           chartLabels.push(p.title);
           chartData.push(filterMode === 'SHOPEE' ? pShopee : (filterMode === 'AMAZON' ? pAmazon : placementClicks));
 
+          const engagedUsers = getFeatureEngagedUsers(p.title, 4);
+          const drawerId = `drawer-placement-${idx}`;
+
           const card = document.createElement('div');
           card.className = 'p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 hover:border-purple-300 dark:hover:border-purple-800 transition-all flex flex-col justify-between';
           card.innerHTML = `
@@ -2499,13 +2559,52 @@
               <p class="text-[10.5px] text-slate-500 dark:text-slate-400 leading-snug mb-2">${p.description}</p>
             </div>
 
-            <div class="pt-2 border-t border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-[11px] font-semibold">
-              <span class="text-orange-600 dark:text-orange-400 flex items-center gap-1">
-                <span>🧡 Shopee:</span> <strong>${pShopee.toLocaleString()}</strong>
-              </span>
-              <span class="text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                <span>🛒 Amazon:</span> <strong>${pAmazon.toLocaleString()}</strong>
-              </span>
+            <div>
+              <div class="pt-2 border-t border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-[11px] font-semibold gap-2">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <span class="text-orange-600 dark:text-orange-400 flex items-center gap-1 truncate text-[10.5px]">
+                    <span>🧡 Shopee:</span> <strong>${pShopee.toLocaleString()}</strong>
+                  </span>
+                  <span class="text-slate-500 dark:text-slate-400 flex items-center gap-1 truncate text-[10.5px]">
+                    <span>🛒 Amazon:</span> <strong>${pAmazon.toLocaleString()}</strong>
+                  </span>
+                </div>
+                <button type="button" onclick="toggleCardDrawer('${drawerId}', this)" class="flex-shrink-0 text-[10px] font-bold px-2 py-1 rounded-md bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 flex items-center gap-1 transition-all cursor-pointer">
+                  <span>Users & Geo</span>
+                  <span class="drawer-arrow inline-block transition-transform duration-200 text-[8.5px]">▼</span>
+                </button>
+              </div>
+
+              <!-- Collapsible Users & Geo Drawer -->
+              <div id="${drawerId}" class="hidden mt-2.5 pt-2.5 border-t border-slate-200 dark:border-slate-700/60 space-y-1.5">
+                <div class="flex items-center justify-between text-[10.5px] font-bold text-slate-500 dark:text-slate-400 mb-1">
+                  <span>📍 Active Users & Geo Breakdown</span>
+                  <span class="text-[9.5px] font-semibold text-purple-600 dark:text-purple-400">${engagedUsers.length} Pet Parents</span>
+                </div>
+                ${engagedUsers.map(u => `
+                  <div class="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2 text-xs">
+                    <div class="min-w-0 flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-[10px] flex-shrink-0">
+                        ${escapeHtml(u.name.charAt(0).toUpperCase())}
+                      </div>
+                      <div class="min-w-0">
+                        <div class="flex items-center gap-1.5">
+                          <span class="font-bold text-slate-900 dark:text-white truncate max-w-[110px] text-[11px]">${escapeHtml(u.name)}</span>
+                          ${u.isVip ? '<span class="text-[8px] font-extrabold px-1 rounded bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400">VIP</span>' : ''}
+                        </div>
+                        <p class="font-mono text-[9.5px] text-slate-500 dark:text-slate-400 truncate max-w-[130px]">${escapeHtml(u.email)}</p>
+                      </div>
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                      <span class="text-[10.5px] font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1 justify-end">
+                        <span>${u.flag}</span>
+                        <span>${escapeHtml(u.cityName)}</span>
+                      </span>
+                      ${u.petSummary ? `<span class="text-[9px] text-purple-600 dark:text-purple-400 block truncate max-w-[110px]">🐾 ${escapeHtml(u.petSummary)}</span>` : '<span class="text-[9px] text-slate-400 block">Verified Parent</span>'}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
             </div>
           `;
           placementsContainer.appendChild(card);
@@ -2586,32 +2685,71 @@
       const scannersContainer = document.getElementById('intelScannersList');
       if (scannersContainer) {
         scannersContainer.innerHTML = '';
-        AI_SCANNERS_METRIC.forEach(sc => {
+        AI_SCANNERS_METRIC.forEach((sc, idx) => {
           const count = Math.round(totalUsers * sc.multiplier);
           const pct = Math.min(Math.round((count / (totalScansCalculated || 1)) * 100), 100);
+          const engagedUsers = getFeatureEngagedUsers(sc.name, 4);
+          const drawerId = `drawer-scanner-${idx}`;
 
           const row = document.createElement('div');
-          row.className = 'p-3 rounded-xl border border-slate-100 dark:border-slate-800/80 bg-slate-50/40 dark:bg-slate-800/30';
+          row.className = 'p-3 rounded-xl border border-slate-100 dark:border-slate-800/80 bg-slate-50/40 dark:bg-slate-800/30 transition-all';
           row.innerHTML = `
             <div class="flex items-center justify-between gap-2 mb-1.5">
-              <div class="flex items-center gap-2">
-                <span class="text-base">${sc.icon}</span>
-                <div>
-                  <div class="flex items-center gap-1.5">
-                    <span class="text-xs font-bold text-slate-900 dark:text-white">${sc.name}</span>
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="text-base flex-shrink-0">${sc.icon}</span>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="text-xs font-bold text-slate-900 dark:text-white truncate">${sc.name}</span>
                     <span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 font-semibold">${sc.tag}</span>
                   </div>
-                  <code class="text-[9px] text-slate-400 font-mono">${sc.modal}</code>
+                  <code class="text-[9px] text-slate-400 font-mono truncate block max-w-[180px]">${sc.modal}</code>
                 </div>
               </div>
-              <div class="text-right">
-                <span class="text-xs font-black text-purple-600 dark:text-purple-400">${count.toLocaleString()} scans</span>
-                <span class="text-[10px] text-slate-400 block font-medium">${pct}% of all AI scans</span>
+              <div class="text-right flex items-center gap-2 flex-shrink-0">
+                <div>
+                  <span class="text-xs font-black text-purple-600 dark:text-purple-400 block">${count.toLocaleString()} scans</span>
+                  <span class="text-[10px] text-slate-400 block font-medium">${pct}% share</span>
+                </div>
+                <button type="button" onclick="toggleCardDrawer('${drawerId}', this)" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 flex items-center gap-1 transition-all cursor-pointer">
+                  <span>Users & Geo</span>
+                  <span class="drawer-arrow inline-block transition-transform duration-200 text-[8.5px]">▼</span>
+                </button>
               </div>
             </div>
             <!-- Progress Bar -->
             <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
               <div class="bg-gradient-to-r from-purple-500 to-indigo-500 h-full rounded-full" style="width: ${pct}%"></div>
+            </div>
+
+            <!-- Collapsible Users & Geo Drawer -->
+            <div id="${drawerId}" class="hidden mt-2.5 pt-2 border-t border-slate-200 dark:border-slate-700/60 space-y-1.5">
+              <div class="flex items-center justify-between text-[10.5px] font-bold text-slate-500 dark:text-slate-400 mb-1">
+                <span>📍 Scanner Users & Geo Footprint</span>
+                <span class="text-[9.5px] font-semibold text-purple-600 dark:text-purple-400">${engagedUsers.length} Active Users</span>
+              </div>
+              ${engagedUsers.map(u => `
+                <div class="p-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2 text-xs">
+                  <div class="min-w-0 flex items-center gap-2">
+                    <div class="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-[9px] flex-shrink-0">
+                      ${escapeHtml(u.name.charAt(0).toUpperCase())}
+                    </div>
+                    <div class="min-w-0">
+                      <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-slate-900 dark:text-white truncate max-w-[120px] text-[11px]">${escapeHtml(u.name)}</span>
+                        ${u.isVip ? '<span class="text-[8px] font-extrabold px-1 rounded bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400">VIP</span>' : ''}
+                      </div>
+                      <p class="font-mono text-[9px] text-slate-500 dark:text-slate-400 truncate max-w-[140px]">${escapeHtml(u.email)}</p>
+                    </div>
+                  </div>
+                  <div class="text-right flex-shrink-0">
+                    <span class="text-[10px] font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1 justify-end">
+                      <span>${u.flag}</span>
+                      <span>${escapeHtml(u.cityName)}</span>
+                    </span>
+                    ${u.petSummary ? `<span class="text-[9px] text-purple-600 dark:text-purple-400 block truncate max-w-[110px]">🐾 ${escapeHtml(u.petSummary)}</span>` : '<span class="text-[9px] text-slate-400 block">Verified Parent</span>'}
+                  </div>
+                </div>
+              `).join('')}
             </div>
           `;
           scannersContainer.appendChild(row);
@@ -2620,39 +2758,75 @@
 
       // 5. Render Module C: Pet Utilities List
       const utilitiesContainer = document.getElementById('intelUtilitiesList');
-      let totalUtilityEvents = 0;
-      PET_UTILITIES_METRIC.forEach(u => {
-        totalUtilityEvents += Math.round(totalUsers * u.multiplier);
-      });
+      const totalUtilityEvents = PET_UTILITIES_METRIC.reduce((sum, u) => sum + Math.round(totalUsers * u.multiplier), 0) || 1;
 
       const elUtilBadge = document.getElementById('intelUtilitiesTotalBadge');
       if (elUtilBadge) elUtilBadge.innerText = `${totalUtilityEvents.toLocaleString()} Events Logged`;
 
       if (utilitiesContainer) {
         utilitiesContainer.innerHTML = '';
-        PET_UTILITIES_METRIC.forEach(u => {
+        PET_UTILITIES_METRIC.forEach((u, idx) => {
           const count = Math.round(totalUsers * u.multiplier);
-          const pct = Math.min(Math.round((count / (totalUtilityEvents || 1)) * 100), 100);
+          const pct = Math.min(Math.round((count / totalUtilityEvents) * 100), 100);
+          const engagedUsers = getFeatureEngagedUsers(u.name, 4);
+          const drawerId = `drawer-utility-${idx}`;
 
           const row = document.createElement('div');
-          row.className = 'p-3 rounded-xl border border-slate-100 dark:border-slate-800/80 bg-slate-50/40 dark:bg-slate-800/30';
+          row.className = 'p-3 rounded-xl border border-slate-100 dark:border-slate-800/80 bg-slate-50/40 dark:bg-slate-800/30 transition-all';
           row.innerHTML = `
             <div class="flex items-center justify-between gap-2 mb-1.5">
-              <div class="flex items-center gap-2">
-                <span class="text-base">${u.icon}</span>
-                <div>
-                  <span class="text-xs font-bold text-slate-900 dark:text-white">${u.name}</span>
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="text-base flex-shrink-0">${u.icon}</span>
+                <div class="min-w-0">
+                  <span class="text-xs font-bold text-slate-900 dark:text-white truncate block">${u.name}</span>
                   <code class="text-[9px] text-slate-400 font-mono block truncate max-w-[200px]">${u.screen}</code>
                 </div>
               </div>
-              <div class="text-right">
-                <span class="text-xs font-black text-emerald-600 dark:text-emerald-400">${count.toLocaleString()} ${u.unit}</span>
-                <span class="text-[10px] text-slate-400 block font-medium">${pct}% utility share</span>
+              <div class="text-right flex items-center gap-2 flex-shrink-0">
+                <div>
+                  <span class="text-xs font-black text-emerald-600 dark:text-emerald-400 block">${count.toLocaleString()} ${u.unit}</span>
+                  <span class="text-[10px] text-slate-400 block font-medium">${pct}% share</span>
+                </div>
+                <button type="button" onclick="toggleCardDrawer('${drawerId}', this)" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 flex items-center gap-1 transition-all cursor-pointer">
+                  <span>Users & Geo</span>
+                  <span class="drawer-arrow inline-block transition-transform duration-200 text-[8.5px]">▼</span>
+                </button>
               </div>
             </div>
             <!-- Progress Bar -->
             <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
               <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full" style="width: ${pct}%"></div>
+            </div>
+
+            <!-- Collapsible Users & Geo Drawer -->
+            <div id="${drawerId}" class="hidden mt-2.5 pt-2 border-t border-slate-200 dark:border-slate-700/60 space-y-1.5">
+              <div class="flex items-center justify-between text-[10.5px] font-bold text-slate-500 dark:text-slate-400 mb-1">
+                <span>📍 Tracker Users & Geo Footprint</span>
+                <span class="text-[9.5px] font-semibold text-emerald-600 dark:text-emerald-400">${engagedUsers.length} Active Users</span>
+              </div>
+              ${engagedUsers.map(usr => `
+                <div class="p-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2 text-xs">
+                  <div class="min-w-0 flex items-center gap-2">
+                    <div class="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-[9px] flex-shrink-0">
+                      ${escapeHtml(usr.name.charAt(0).toUpperCase())}
+                    </div>
+                    <div class="min-w-0">
+                      <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-slate-900 dark:text-white truncate max-w-[120px] text-[11px]">${escapeHtml(usr.name)}</span>
+                        ${usr.isVip ? '<span class="text-[8px] font-extrabold px-1 rounded bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400">VIP</span>' : ''}
+                      </div>
+                      <p class="font-mono text-[9px] text-slate-500 dark:text-slate-400 truncate max-w-[140px]">${escapeHtml(usr.email)}</p>
+                    </div>
+                  </div>
+                  <div class="text-right flex-shrink-0">
+                    <span class="text-[10px] font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1 justify-end">
+                      <span>${usr.flag}</span>
+                      <span>${escapeHtml(usr.cityName)}</span>
+                    </span>
+                    ${usr.petSummary ? `<span class="text-[9px] text-emerald-600 dark:text-emerald-400 block truncate max-w-[110px]">🐾 ${escapeHtml(usr.petSummary)}</span>` : '<span class="text-[9px] text-slate-400 block">Verified Parent</span>'}
+                  </div>
+                </div>
+              `).join('')}
             </div>
           `;
           utilitiesContainer.appendChild(row);

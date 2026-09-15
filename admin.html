@@ -763,7 +763,7 @@
           </div>
 
           <!-- Executive KPI Strip -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             
             <!-- KPI 1: Total Commerce Clicks -->
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm relative overflow-hidden">
@@ -820,6 +820,24 @@
                 <span class="text-xs text-emerald-500 font-bold" id="kpi-intel-geo-countries">0 Countries</span>
               </div>
               <p class="text-[11px] text-slate-400 mt-2" id="kpi-intel-top-hub">Top Metro: Calculating...</p>
+            </div>
+
+            <!-- KPI 5: Device Platform & Hardware Telemetry -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Device Telemetry</span>
+                <span class="p-2 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 text-sm">📱</span>
+              </div>
+              <div class="flex items-center justify-between text-xs font-black mb-1.5">
+                <span id="kpi-intel-android-pct" class="text-emerald-600 dark:text-emerald-400">🤖 Android: 0%</span>
+                <span id="kpi-intel-ios-pct" class="text-slate-700 dark:text-slate-300">🍏 iOS: 0%</span>
+              </div>
+              <!-- Dual Progress Bar -->
+              <div class="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden flex">
+                <div id="kpi-intel-android-bar" class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full transition-all duration-500" style="width: 50%"></div>
+                <div id="kpi-intel-ios-bar" class="bg-slate-500 dark:bg-slate-400 h-full transition-all duration-500" style="width: 50%"></div>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-2 truncate" id="kpi-intel-device-sub">Platform & Hardware Split</p>
             </div>
 
           </div>
@@ -1070,6 +1088,12 @@
                 <option value="VIP">👑 VIP Members</option>
                 <option value="SUSPENDED">⛔ Suspended</option>
               </select>
+              <select id="userDeviceFilter" onchange="filterUsersList()" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:outline-none">
+                <option value="ALL">📱 All Devices</option>
+                <option value="ANDROID">🤖 Android (Google / Samsung)</option>
+                <option value="IOS">🍏 iOS (Apple iPhone/iPad)</option>
+                <option value="PENDING">⏳ Pending Sync</option>
+              </select>
               <select id="userSortSelect" onchange="handleUserSortSelect(this.value)" class="px-3 py-2 rounded-xl border border-brand-300 dark:border-brand-700 bg-brand-50/50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 text-xs font-bold focus:outline-none">
                 <option value="joined_desc">📅 Newest Joined First</option>
                 <option value="joined_asc">📅 Oldest Joined First</option>
@@ -1087,6 +1111,7 @@
                   <tr>
                     <th id="th-sort-name" class="py-3 px-3 whitespace-nowrap cursor-pointer hover:text-brand-500 transition-colors" onclick="toggleHeaderSort('name')">User ↕</th>
                     <th class="py-3 px-3 whitespace-nowrap">Email</th>
+                    <th class="py-3 px-3 whitespace-nowrap">Device / Hardware Model</th>
                     <th id="th-sort-joined" class="py-3 px-3 whitespace-nowrap cursor-pointer hover:text-brand-500 transition-colors" onclick="toggleHeaderSort('joined')">Date & Time Joined 📅 ▼</th>
                     <th class="py-3 px-3 whitespace-nowrap">User Type</th>
                     <th id="th-sort-vip" class="py-3 px-3 whitespace-nowrap cursor-pointer hover:text-brand-500 transition-colors" onclick="toggleHeaderSort('vip')">VIP Status ↕</th>
@@ -1097,7 +1122,7 @@
                 </thead>
                 <tbody id="usersTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
                   <tr>
-                    <td colspan="8" class="p-8 text-center text-slate-400">Streaming live users from Cloud Firestore...</td>
+                    <td colspan="9" class="p-8 text-center text-slate-400">Streaming live users from Cloud Firestore...</td>
                   </tr>
                 </tbody>
               </table>
@@ -2605,6 +2630,51 @@
       const elTopHub = document.getElementById('kpi-intel-top-hub');
       if (elTopHub) elTopHub.innerText = sortedCities.length > 0 ? `Top Metro: ${topMetroName} (${sortedCities[0][1]} users)` : 'Top Metro: None yet';
 
+      // ── REAL DEVICE & HARDWARE TELEMETRY ──
+      let devAndroidCount = 0;
+      let devIosCount = 0;
+      let devPendingCount = 0;
+      const hardwareCounts = {};
+
+      (usersData || []).forEach(u => {
+        const d = resolveUserDevice(u);
+        if (d.platform === 'android') devAndroidCount++;
+        else if (d.platform === 'ios') devIosCount++;
+        else devPendingCount++;
+
+        if (d.model && d.model !== 'Awaiting device sync' && d.model !== 'Apple Device') {
+          hardwareCounts[d.model] = (hardwareCounts[d.model] || 0) + 1;
+        }
+      });
+
+      const totalIdentified = devAndroidCount + devIosCount;
+      const androidDevPct = totalIdentified > 0 ? Math.round((devAndroidCount / totalIdentified) * 100) : 0;
+      const iosDevPct = totalIdentified > 0 ? (100 - androidDevPct) : 0;
+
+      const elAndroidPct = document.getElementById('kpi-intel-android-pct');
+      if (elAndroidPct) elAndroidPct.innerText = `🤖 Android: ${androidDevPct}% (${devAndroidCount})`;
+
+      const elIosPct = document.getElementById('kpi-intel-ios-pct');
+      if (elIosPct) elIosPct.innerText = `🍏 iOS: ${iosDevPct}% (${devIosCount})`;
+
+      const elAndroidBar = document.getElementById('kpi-intel-android-bar');
+      if (elAndroidBar) elAndroidBar.style.width = `${totalIdentified > 0 ? androidDevPct : 50}%`;
+
+      const elIosBar = document.getElementById('kpi-intel-ios-bar');
+      if (elIosBar) elIosBar.style.width = `${totalIdentified > 0 ? iosDevPct : 50}%`;
+
+      const sortedHardware = Object.entries(hardwareCounts).sort((a, b) => b[1] - a[1]);
+      const elDeviceSub = document.getElementById('kpi-intel-device-sub');
+      if (elDeviceSub) {
+        if (sortedHardware.length > 0) {
+          elDeviceSub.innerText = `Top Model: ${sortedHardware[0][0]} (${sortedHardware[0][1]} devices)`;
+        } else if (totalIdentified > 0) {
+          elDeviceSub.innerText = `${devAndroidCount} Android vs ${devIosCount} iOS accounts`;
+        } else {
+          elDeviceSub.innerText = `${devPendingCount} accounts awaiting first mobile sync`;
+        }
+      }
+
       // 3. Render Module B: Placements Breakdown
       const placementsContainer = document.getElementById('intelPlacementsGrid');
       const chartLabels = [];
@@ -2719,6 +2789,7 @@
                         <div class="flex items-center gap-1.5 flex-wrap">
                           <span class="font-bold text-slate-900 dark:text-white truncate max-w-[110px] text-[11px]">${escapeHtml(u.name)}</span>
                           ${u.isVip ? '<span class="text-[8px] font-extrabold px-1 rounded bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400">VIP</span>' : ''}
+                          ${u.device ? `<span class="text-[8px] font-bold px-1.5 py-0.2 rounded ${u.device.badgeClass}">${u.device.icon} ${escapeHtml(u.device.label)}</span>` : ''}
                         </div>
                         <p class="font-mono text-[9.5px] text-slate-500 dark:text-slate-400 truncate max-w-[130px]">${escapeHtml(u.email)}</p>
                       </div>
@@ -2730,7 +2801,8 @@
                       <div class="flex items-center gap-1 text-[10px] font-semibold text-slate-700 dark:text-slate-300">
                         <span>${u.flag}</span>
                         <span>${escapeHtml(u.cityName)}</span>
-                        ${u.petSummary ? `<span class="text-[9px] text-purple-600 dark:text-purple-400 max-w-[95px] truncate">• 🐾 ${escapeHtml(u.petSummary)}</span>` : ''}
+                        ${u.device && u.device.model ? `<span class="text-[9px] text-slate-400 font-mono truncate max-w-[90px]" title="${escapeHtml(u.device.model)}">• ${escapeHtml(u.device.model)}</span>` : ''}
+                        ${u.petSummary ? `<span class="text-[9px] text-purple-600 dark:text-purple-400 max-w-[80px] truncate">• 🐾 ${escapeHtml(u.petSummary)}</span>` : ''}
                       </div>
                     </div>
                   </div>
@@ -2893,9 +2965,10 @@
                       ${escapeHtml(u.name.charAt(0).toUpperCase())}
                     </div>
                     <div class="min-w-0">
-                      <div class="flex items-center gap-1.5">
+                      <div class="flex items-center gap-1.5 flex-wrap">
                         <span class="font-bold text-slate-900 dark:text-white truncate max-w-[110px] text-[11px]">${escapeHtml(u.name)}</span>
                         ${u.isVip ? '<span class="text-[8px] font-extrabold px-1 rounded bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400">VIP</span>' : ''}
+                        ${u.device ? `<span class="text-[8px] font-bold px-1.5 py-0.2 rounded ${u.device.badgeClass}">${u.device.icon} ${escapeHtml(u.device.label)}</span>` : ''}
                       </div>
                       <p class="font-mono text-[9px] text-slate-500 dark:text-slate-400 truncate max-w-[130px]">${escapeHtml(u.email)}</p>
                     </div>
@@ -2907,7 +2980,8 @@
                     <div class="flex items-center gap-1 text-[10px] font-semibold text-slate-700 dark:text-slate-300">
                       <span>${u.flag}</span>
                       <span>${escapeHtml(u.cityName)}</span>
-                      ${u.petSummary ? `<span class="text-[9px] text-purple-600 dark:text-purple-400 max-w-[95px] truncate">• 🐾 ${escapeHtml(u.petSummary)}</span>` : ''}
+                      ${u.device && u.device.model ? `<span class="text-[9px] text-slate-400 font-mono truncate max-w-[90px]" title="${escapeHtml(u.device.model)}">• ${escapeHtml(u.device.model)}</span>` : ''}
+                      ${u.petSummary ? `<span class="text-[9px] text-purple-600 dark:text-purple-400 max-w-[80px] truncate">• 🐾 ${escapeHtml(u.petSummary)}</span>` : ''}
                     </div>
                   </div>
                 </div>
@@ -2994,9 +3068,10 @@
                       ${escapeHtml(usr.name.charAt(0).toUpperCase())}
                     </div>
                     <div class="min-w-0">
-                      <div class="flex items-center gap-1.5">
+                      <div class="flex items-center gap-1.5 flex-wrap">
                         <span class="font-bold text-slate-900 dark:text-white truncate max-w-[120px] text-[11px]">${escapeHtml(usr.name)}</span>
                         ${usr.isVip ? '<span class="text-[8px] font-extrabold px-1 rounded bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400">VIP</span>' : ''}
+                        ${usr.device ? `<span class="text-[8px] font-bold px-1.5 py-0.2 rounded ${usr.device.badgeClass}">${usr.device.icon} ${escapeHtml(usr.device.label)}</span>` : ''}
                       </div>
                       <p class="font-mono text-[9px] text-slate-500 dark:text-slate-400 truncate max-w-[140px]">${escapeHtml(usr.email)}</p>
                     </div>
@@ -3008,7 +3083,8 @@
                     <div class="flex items-center gap-1 text-[10px] font-semibold text-slate-700 dark:text-slate-300">
                       <span>${usr.flag}</span>
                       <span>${escapeHtml(usr.cityName)}</span>
-                      ${usr.petSummary ? `<span class="text-[9px] text-emerald-600 dark:text-emerald-400 max-w-[95px] truncate">• 🐾 ${escapeHtml(usr.petSummary)}</span>` : ''}
+                      ${usr.device && usr.device.model ? `<span class="text-[9px] text-slate-400 font-mono truncate max-w-[90px]" title="${escapeHtml(usr.device.model)}">• ${escapeHtml(usr.device.model)}</span>` : ''}
+                      ${usr.petSummary ? `<span class="text-[9px] text-emerald-600 dark:text-emerald-400 max-w-[80px] truncate">• 🐾 ${escapeHtml(usr.petSummary)}</span>` : ''}
                     </div>
                   </div>
                 </div>
@@ -3503,6 +3579,34 @@
       (intelGeoDataCache || []).forEach(g => {
         rows.push([g.cityName, g.countryName, g.usersCount, g.preferredStore, g.topFeature, g.petsCount || 0, g.platformShare + '%']);
       });
+      rows.push([]);
+
+      rows.push(['--- SECTION 5: DEVICE PLATFORM & HARDWARE MODELS ---']);
+      rows.push(['Metric / Hardware Model', 'Count', 'Share / Status']);
+      let devAnd = 0, devApple = 0, devPend = 0;
+      const hwCounts = {};
+      (usersData || []).forEach(rawU => {
+        const d = resolveUserDevice(rawU);
+        if (d.platform === 'android') devAnd++;
+        else if (d.platform === 'ios') devApple++;
+        else devPend++;
+        if (d.model && d.model !== 'Pending Sync') {
+          hwCounts[d.model] = (hwCounts[d.model] || 0) + 1;
+        }
+      });
+      const totIdent = devAnd + devApple;
+      rows.push(['Android Platform Users', devAnd, totIdent > 0 ? Math.round((devAnd / totIdent) * 100) + '%' : '0%']);
+      rows.push(['iOS Platform Users', devApple, totIdent > 0 ? Math.round((devApple / totIdent) * 100) + '%' : '0%']);
+      rows.push(['Pending Device Sync', devPend, usersData?.length > 0 ? Math.round((devPend / usersData.length) * 100) + '%' : '0%']);
+      rows.push(['--- Top Hardware Models ---', '', '']);
+      const sortedHw = Object.entries(hwCounts).sort((a, b) => b[1] - a[1]);
+      if (sortedHw.length > 0) {
+        sortedHw.forEach(([mod, cnt]) => {
+          rows.push([mod, `${cnt} user(s)`, 'Active Hardware']);
+        });
+      } else {
+        rows.push(['Awaiting Live Device Sync', '0', 'Pending live app telemetry']);
+      }
 
       const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(e => e.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
       const encodedUri = encodeURI(csvContent);
@@ -5087,6 +5191,96 @@
       if (vipH) vipH.innerText = userSortMode === 'vip_first' ? 'VIP Status 👑 ▼ (VIP First)' : 'VIP Status ↕';
     }
 
+    // ── Genuine Device & Hardware Model Resolver ──
+    function resolveUserDevice(u) {
+      if (!u) return { platform: 'pending', label: 'Pending Sync', model: 'Awaiting device sync', osVersion: '', icon: '📱', badgeClass: 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500' };
+
+      const dev = u.device || u.profile?.device || {};
+      const rawEmail = (u.email || u.profile?.email || '').toLowerCase();
+      const rawId = (u.id || '').toLowerCase();
+
+      // 1. Explicit genuine device object saved from mobile app
+      if (dev && (dev.platform || dev.model || dev.brand)) {
+        const plat = (dev.platform || '').toLowerCase();
+        const isIos = plat === 'ios' || /iphone|ipad/i.test(dev.model || '');
+        const isAndroid = plat === 'android';
+        const modelName = (dev.model || dev.brand || (isIos ? 'iPhone' : 'Android Device')).trim();
+
+        if (isIos) {
+          return {
+            platform: 'ios',
+            label: 'iOS',
+            model: modelName,
+            osVersion: dev.osVersion || '',
+            icon: '🍏',
+            badgeClass: 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700'
+          };
+        } else if (isAndroid) {
+          return {
+            platform: 'android',
+            label: 'Android',
+            model: modelName,
+            osVersion: dev.osVersion || '',
+            icon: '🤖',
+            badgeClass: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
+          };
+        }
+        return {
+          platform: 'web',
+          label: 'Web / Other',
+          model: modelName,
+          osVersion: dev.osVersion || '',
+          icon: '🌐',
+          badgeClass: 'bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-400 border border-sky-200 dark:border-sky-800'
+        };
+      }
+
+      // 2. Check feature_events telemetry logged by this user
+      if (Array.isArray(featureEventsData) && featureEventsData.length > 0) {
+        const ev = featureEventsData.find(e => (e.userId && (e.userId === u.id || e.userId === u.uid)) || (e.userEmail && e.userEmail.toLowerCase() === rawEmail));
+        if (ev && (ev.platform || ev.deviceModel)) {
+          const isIos = ev.platform === 'ios';
+          const isAndroid = ev.platform === 'android';
+          return {
+            platform: ev.platform || 'unknown',
+            label: isIos ? 'iOS' : (isAndroid ? 'Android' : 'Mobile'),
+            model: ev.deviceModel || (isIos ? 'iPhone' : 'Android Device'),
+            osVersion: ev.osVersion || '',
+            icon: isIos ? '🍏' : (isAndroid ? '🤖' : '📱'),
+            badgeClass: isIos
+              ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700'
+              : 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
+          };
+        }
+      }
+
+      // 3. Apple Sign-In Authentication Signature (100% verified iOS)
+      if (
+        rawEmail.includes('@privaterelay.appleid.com') ||
+        rawId.includes('_privaterelay_appleid_com') ||
+        rawId.startsWith('apple_')
+      ) {
+        return {
+          platform: 'ios',
+          label: 'iOS',
+          model: 'Apple Device',
+          osVersion: '',
+          icon: '🍏',
+          badgeClass: 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700'
+        };
+      }
+
+      // 4. Pending / Awaiting first sync
+      return {
+        platform: 'pending',
+        label: 'Pending Sync',
+        model: 'Awaiting device sync',
+        osVersion: '',
+        icon: '📱',
+        badgeClass: 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500'
+      };
+    }
+
     // ── User Schema Resolver Helper ──
     function resolveAdminUser(u) {
       const p = u.profile || u.user || {};
@@ -5370,7 +5564,8 @@
         isSuspended: !!(u.isSuspended || p.isSuspended),
         userType,
         userTypeLabel,
-        isSecurityResearcher: !!(u.isSecurityResearcher || p.isSecurityResearcher || role === 'security_researcher')
+        isSecurityResearcher: !!(u.isSecurityResearcher || p.isSecurityResearcher || role === 'security_researcher'),
+        device: resolveUserDevice(u)
       };
     }
 
@@ -5406,6 +5601,7 @@
       const tbody = document.getElementById('usersTableBody');
       const q = (document.getElementById('userSearchInput')?.value || '').toLowerCase().trim();
       const roleFilter = document.getElementById('userRoleFilter')?.value || 'ALL';
+      const deviceFilter = document.getElementById('userDeviceFilter')?.value || 'ALL';
 
       let resolvedList = usersData.map(resolveAdminUser);
 
@@ -5414,7 +5610,13 @@
         const email = u.email.toLowerCase();
         const role = u.role.toLowerCase();
         const pets = u.petSummary.toLowerCase();
-        const matchesQuery = !q || name.includes(q) || email.includes(q) || role.includes(q) || pets.includes(q);
+        const devModel = (u.device?.model || '').toLowerCase();
+        const devLabel = (u.device?.label || '').toLowerCase();
+        const matchesQuery = !q || name.includes(q) || email.includes(q) || role.includes(q) || pets.includes(q) || devModel.includes(q) || devLabel.includes(q);
+
+        if (deviceFilter === 'ANDROID' && u.device?.platform !== 'android') return false;
+        if (deviceFilter === 'IOS' && u.device?.platform !== 'ios') return false;
+        if (deviceFilter === 'PENDING' && u.device?.platform !== 'pending') return false;
 
         if (roleFilter === 'SUPERADMIN') return matchesQuery && u.role === 'superadmin';
         if (roleFilter === 'ADMIN') return matchesQuery && ['admin', 'moderator'].includes(u.role);
@@ -5449,7 +5651,7 @@
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-400">No users match criteria.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400">No users match criteria.</td></tr>`;
         return;
       }
 
@@ -5464,6 +5666,15 @@
               </div>
             </td>
             <td class="py-3 px-3 font-mono text-slate-600 dark:text-slate-300 text-xs">${u.email}</td>
+            <td class="py-3 px-3 whitespace-nowrap">
+              <div class="flex items-center gap-1.5">
+                <span class="text-sm flex-shrink-0">${u.device.icon}</span>
+                <div class="min-w-0">
+                  <span class="font-bold text-slate-900 dark:text-white text-xs">${escapeHtml(u.device.label)}</span>
+                  <span class="text-[10px] text-slate-400 font-mono block truncate max-w-[130px]">${escapeHtml(u.device.model)}</span>
+                </div>
+              </div>
+            </td>
             <td class="py-3 px-3 whitespace-nowrap">
               <div class="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                 <span>🗓️</span> ${u.formattedDate}
@@ -7149,9 +7360,13 @@
 
     // ── CSV Exporters ──
     function exportFullAdminReportCSV() {
-      let csv = "ID,Name,Email,VIP,Role,Status\n";
-      usersData.forEach(u => {
-        csv += `"${u.id}","${u.name || ''}","${u.email || ''}","${u.isVip ? 'YES' : 'NO'}","${u.role || 'user'}","${u.isSuspended ? 'SUSPENDED' : 'ACTIVE'}"\n`;
+      let csv = "ID,Name,Email,VIP,Role,Status,Device_Platform,Device_Model,OS_Version\n";
+      usersData.forEach(rawU => {
+        const u = resolveAdminUser(rawU);
+        const devPlatform = u.device?.label || 'Pending Sync';
+        const devModel = u.device?.model || 'Pending Sync';
+        const devOs = u.device?.osVersion || 'N/A';
+        csv += `"${u.id}","${u.name || ''}","${u.email || ''}","${u.isVip ? 'YES' : 'NO'}","${u.role || 'user'}","${u.isSuspended ? 'SUSPENDED' : 'ACTIVE'}","${devPlatform}","${devModel}","${devOs}"\n`;
       });
       downloadCSV(csv, "myfurpet_users_report.csv");
     }

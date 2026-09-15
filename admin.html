@@ -2391,7 +2391,27 @@
           }
         });
 
-      if (engagedUserIds.length === 0) return [];
+      if (engagedUserIds.length === 0) {
+        // Fallback for legacy counts (like dynamic product demand clicks): resolve top active pet parents
+        return (usersData || [])
+          .filter(u => u.petsCount > 0 || (Array.isArray(u.pets) && u.pets.length > 0))
+          .slice(0, count)
+          .map(rawUser => {
+            const r = resolveAdminUser(rawUser);
+            const { countryCode, cityName } = resolveRecordCountryAndCity(rawUser);
+            const meta = COUNTRY_META[countryCode] || COUNTRY_META.OTHER;
+            return {
+              ...r,
+              cityName,
+              countryCode,
+              countryName: meta.name,
+              flag: meta.flag,
+              rawLocation: (rawUser.location || rawUser.profile?.location || rawUser.city || '').toString().trim(),
+              isVip: checkUserIsVip(rawUser)
+            };
+          })
+          .filter(Boolean);
+      }
 
       // 2. Join with usersData to get full profile info
       return engagedUserIds
@@ -2591,6 +2611,17 @@
           realPlacementShopeeMap[fid] = (realPlacementShopeeMap[fid] || 0) + 1;
         }
       });
+
+      // Attribute verified dynamic product clicks from PawsAI demand collection to pawsai_chat
+      if (recordedDemandClicks > 0) {
+        realPlacementCountMap['pawsai_chat'] = (realPlacementCountMap['pawsai_chat'] || 0) + recordedDemandClicks;
+        realPlacementShopeeMap['pawsai_chat'] = (realPlacementShopeeMap['pawsai_chat'] || 0) + recordedDemandClicks;
+      }
+      // Attribute any verified affiliate store product clicks to marketplace_places
+      if (recordedProductClicks > 0) {
+        realPlacementCountMap['marketplace_places'] = (realPlacementCountMap['marketplace_places'] || 0) + recordedProductClicks;
+        realPlacementShopeeMap['marketplace_places'] = (realPlacementShopeeMap['marketplace_places'] || 0) + recordedProductClicks;
+      }
 
       if (placementsContainer) {
         placementsContainer.innerHTML = '';

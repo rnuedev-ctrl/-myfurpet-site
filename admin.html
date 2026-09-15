@@ -1598,6 +1598,7 @@
                     <option value="frequency_asc">📉 Least Frequent</option>
                     <option value="question_asc">🔤 Question (A–Z)</option>
                     <option value="question_desc">🔤 Question (Z–A)</option>
+                    <option value="user_asc">👤 Pet Parent (A–Z)</option>
                   </select>
                 </div>
               </div>
@@ -1618,6 +1619,12 @@
                           <span id="sort-icon-question" class="text-[10px] text-slate-400">↕</span>
                         </div>
                       </th>
+                      <th class="pb-3 px-2 cursor-pointer hover:text-purple-600 transition-colors whitespace-nowrap" onclick="togglePawsAiColumnSort('user')" title="Click to sort by Pet Parent name">
+                        <div class="flex items-center gap-1">
+                          <span>Pet Parent</span>
+                          <span id="sort-icon-user" class="text-[10px] text-slate-400">↕</span>
+                        </div>
+                      </th>
                       <th class="pb-3 text-center cursor-pointer hover:text-purple-600 transition-colors" onclick="togglePawsAiColumnSort('frequency')" title="Click to sort by inquiry frequency">
                         <div class="flex items-center justify-center gap-1">
                           <span>Frequency</span>
@@ -1633,7 +1640,7 @@
                     </tr>
                   </thead>
                   <tbody id="pawsAiTableBody" class="text-xs divide-y divide-slate-100 dark:divide-slate-800">
-                    <tr><td colspan="4" class="py-6 text-center text-slate-400">Loading PawsAI analytics from Cloud Firestore...</td></tr>
+                    <tr><td colspan="5" class="py-6 text-center text-slate-400">Loading PawsAI analytics from Cloud Firestore...</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -6319,6 +6326,60 @@
       filterPawsAiTable();
     }
 
+    function resolveInquiryUser(item) {
+      if (!item) return { name: 'Pet Parent', avatar: '🐾', petName: '' };
+
+      // 1. Direct explicit user attached to the analytics doc
+      const directName = item.userName || item.askedBy || item.user;
+      if (directName && typeof directName === 'string') {
+        return {
+          name: directName,
+          avatar: directName.charAt(0).toUpperCase(),
+          petName: item.petName || ''
+        };
+      }
+      if (item.userId && Array.isArray(usersData)) {
+        const u = usersData.find(x => x && (x.id === item.userId || x.uid === item.userId));
+        if (u) {
+          const name = u.name || u.profile?.name || u.email || 'Pet Parent';
+          return {
+            name,
+            avatar: name.charAt(0).toUpperCase(),
+            petName: item.petName || ''
+          };
+        }
+      }
+
+      // 2. Correlate by pet mentioned in inquiry question text
+      const q = (item.question || '').toLowerCase();
+      if (Array.isArray(usersData) && q) {
+        for (const u of usersData) {
+          if (!u) continue;
+          const pets = Array.isArray(u.pets) ? u.pets : [];
+          for (const p of pets) {
+            if (p && p.name && p.name.length >= 3) {
+              const regex = new RegExp('\\b' + p.name.toLowerCase() + '\\b', 'i');
+              if (regex.test(q)) {
+                const name = u.name || u.profile?.name || u.email || 'Pet Parent';
+                return {
+                  name,
+                  avatar: name.charAt(0).toUpperCase(),
+                  petName: p.name
+                };
+              }
+            }
+          }
+        }
+      }
+
+      // 3. Fallback for general inquiries
+      return {
+        name: 'Pet Parent',
+        avatar: '🐾',
+        petName: ''
+      };
+    }
+
     function togglePawsAiColumnSort(col) {
       if (col === 'lastAsked') {
         setPawsAiSort(pawsAiSortColumn === 'newest' ? 'oldest' : 'newest');
@@ -6326,6 +6387,8 @@
         setPawsAiSort(pawsAiSortColumn === 'frequency_desc' ? 'frequency_asc' : 'frequency_desc');
       } else if (col === 'question') {
         setPawsAiSort(pawsAiSortColumn === 'question_asc' ? 'question_desc' : 'question_asc');
+      } else if (col === 'user') {
+        setPawsAiSort(pawsAiSortColumn === 'user_asc' ? 'user_desc' : 'user_asc');
       } else if (col === 'rank') {
         setPawsAiSort(pawsAiSortColumn === 'frequency_desc' ? 'frequency_asc' : 'frequency_desc');
       }
@@ -6348,20 +6411,23 @@
       const icons = {
         rank: document.getElementById('sort-icon-rank'),
         question: document.getElementById('sort-icon-question'),
+        user: document.getElementById('sort-icon-user'),
         frequency: document.getElementById('sort-icon-frequency'),
         lastAsked: document.getElementById('sort-icon-lastAsked'),
       };
 
       if (icons.rank) icons.rank.innerHTML = pawsAiSortColumn === 'frequency_desc' ? '▼' : pawsAiSortColumn === 'frequency_asc' ? '▲' : '↕';
       if (icons.question) icons.question.innerHTML = pawsAiSortColumn === 'question_asc' ? '▲' : pawsAiSortColumn === 'question_desc' ? '▼' : '↕';
+      if (icons.user) icons.user.innerHTML = pawsAiSortColumn === 'user_asc' ? '▲' : pawsAiSortColumn === 'user_desc' ? '▼' : '↕';
       if (icons.frequency) icons.frequency.innerHTML = pawsAiSortColumn === 'frequency_desc' ? '▼' : pawsAiSortColumn === 'frequency_asc' ? '▲' : '↕';
       if (icons.lastAsked) icons.lastAsked.innerHTML = pawsAiSortColumn === 'newest' ? '▼' : pawsAiSortColumn === 'oldest' ? '▲' : '↕';
 
-      ['rank', 'question', 'frequency', 'lastAsked'].forEach(key => {
+      ['rank', 'question', 'user', 'frequency', 'lastAsked'].forEach(key => {
         if (icons[key]) {
           const isActive = (key === 'lastAsked' && (pawsAiSortColumn === 'newest' || pawsAiSortColumn === 'oldest')) ||
                            (key === 'frequency' && (pawsAiSortColumn === 'frequency_desc' || pawsAiSortColumn === 'frequency_asc')) ||
                            (key === 'question' && (pawsAiSortColumn === 'question_asc' || pawsAiSortColumn === 'question_desc')) ||
+                           (key === 'user' && (pawsAiSortColumn === 'user_asc' || pawsAiSortColumn === 'user_desc')) ||
                            (key === 'rank' && (pawsAiSortColumn === 'frequency_desc' || pawsAiSortColumn === 'frequency_asc'));
           icons[key].className = `text-[10px] ${isActive ? 'text-purple-600 dark:text-purple-400 font-black' : 'text-slate-400'}`;
         }
@@ -6396,6 +6462,10 @@
           return (a.question || '').localeCompare(b.question || '');
         } else if (pawsAiSortColumn === 'question_desc') {
           return (b.question || '').localeCompare(a.question || '');
+        } else if (pawsAiSortColumn === 'user_asc') {
+          return resolveInquiryUser(a).name.localeCompare(resolveInquiryUser(b).name);
+        } else if (pawsAiSortColumn === 'user_desc') {
+          return resolveInquiryUser(b).name.localeCompare(resolveInquiryUser(a).name);
         } else {
           // 'frequency_desc' default
           const diff = (Number(b.count) || 0) - (Number(a.count) || 0);
@@ -6407,7 +6477,7 @@
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="4" class="p-8 text-center text-slate-400">
+            <td colspan="5" class="p-8 text-center text-slate-400">
               ${searchInput ? 'No questions matching search filter.' : 'No PawsAI questions recorded yet. Try asking questions in the mobile app!'}
             </td>
           </tr>
@@ -6437,13 +6507,26 @@
           ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400">⏱️ #1</span>`
           : `<span class="px-2 py-0.5 rounded-md text-[10px] font-black ${rankColor}">#${idx + 1}</span>`;
 
+        const userRes = resolveInquiryUser(item);
+
         return `
           <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
             <td class="py-3 pl-2 whitespace-nowrap">
               ${badgeMarkup}
             </td>
-            <td class="py-3 pr-4">
+            <td class="py-3 pr-3 min-w-[220px]">
               <p class="font-bold text-slate-900 dark:text-white leading-snug">${escapeHtml(item.question || 'Pet Inquiry')}</p>
+            </td>
+            <td class="py-3 px-2 whitespace-nowrap">
+              <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-[10px] flex-shrink-0">
+                  ${escapeHtml(userRes.avatar)}
+                </div>
+                <div class="min-w-0">
+                  <span class="font-bold text-slate-900 dark:text-white block text-xs truncate max-w-[120px]">${escapeHtml(userRes.name)}</span>
+                  ${userRes.petName ? `<span class="text-[9.5px] text-purple-600 dark:text-purple-400 font-medium block truncate max-w-[120px]">🐾 ${escapeHtml(userRes.petName)}</span>` : `<span class="text-[9.5px] text-slate-400 block">Pet Parent</span>`}
+                </div>
+              </div>
             </td>
             <td class="py-3 text-center whitespace-nowrap">
               <div class="flex items-center justify-center gap-2">

@@ -2591,19 +2591,19 @@
         : 'Awaiting Live Scans';
 
       // Geo Footprint
-      const activeCitiesCount = Object.keys(cityMap).length || 1;
-      const activeCountriesCount = Object.keys(countryMap).length || 1;
+      const activeCitiesCount = Object.keys(cityMap).length;
+      const activeCountriesCount = Object.keys(countryMap).length;
       const sortedCities = Object.entries(cityMap).sort((a, b) => b[1] - a[1]);
-      const topMetroName = sortedCities.length > 0 ? sortedCities[0][0] : 'Metro Manila';
+      const topMetroName = sortedCities.length > 0 ? sortedCities[0][0] : 'None yet';
 
       const elGeoCities = document.getElementById('kpi-intel-geo-cities');
-      if (elGeoCities) elGeoCities.innerText = activeCitiesCount.toLocaleString() + ' Cities';
+      if (elGeoCities) elGeoCities.innerText = activeCitiesCount > 0 ? `${activeCitiesCount.toLocaleString()} Cities` : '0 Cities';
 
       const elGeoCountries = document.getElementById('kpi-intel-geo-countries');
-      if (elGeoCountries) elGeoCountries.innerText = `${activeCountriesCount} Countries`;
+      if (elGeoCountries) elGeoCountries.innerText = activeCountriesCount > 0 ? `${activeCountriesCount} Countries` : '0 Countries';
 
       const elTopHub = document.getElementById('kpi-intel-top-hub');
-      if (elTopHub) elTopHub.innerText = `Top Metro: ${topMetroName} (${sortedCities[0] ? sortedCities[0][1] : 0} users)`;
+      if (elTopHub) elTopHub.innerText = sortedCities.length > 0 ? `Top Metro: ${topMetroName} (${sortedCities[0][1]} users)` : 'Top Metro: None yet';
 
       // 3. Render Module B: Placements Breakdown
       const placementsContainer = document.getElementById('intelPlacementsGrid');
@@ -3080,12 +3080,32 @@
         const platformShare = ((item.usersCount / totalUsers) * 100).toFixed(1);
         const preferredStore = item.isDomestic ? '🧡 Shopee PH' : '🛒 Amazon Global';
         
-        // Dynamic assigned favorite feature based on size
-        let topFeature = '🐶 PawsBreed Scanner';
-        if (item.usersCount > 10) topFeature = '🗺️ GPS Walk Tracker';
-        else if (item.usersCount > 5) topFeature = '🥗 Food Scanner';
-        else if (item.isDomestic) topFeature = '🤖 PawsAI Triage';
-        else topFeature = '💉 Vaccine OCR';
+        // ── Genuine Top Feature from Real Firestore feature_events ──
+        const regionalUserIds = new Set((item.users || []).map(u => u.id || u.rawUser?.id || u.rawUser?.uid).filter(Boolean));
+        const regionalEmails = new Set((item.users || []).map(u => (u.email || u.rawUser?.email || '').toLowerCase()).filter(Boolean));
+        
+        const regionalFeatureCounts = {};
+        (featureEventsData || []).forEach(ev => {
+          const matchUser = (ev.userId && regionalUserIds.has(ev.userId)) || 
+                            (ev.userEmail && regionalEmails.has(ev.userEmail.toLowerCase())) ||
+                            (ev.cityName && ev.cityName.toLowerCase() === item.cityName.toLowerCase());
+          if (matchUser && ev.featureId) {
+            regionalFeatureCounts[ev.featureId] = (regionalFeatureCounts[ev.featureId] || 0) + 1;
+          }
+        });
+
+        const sortedRegionalFeatures = Object.entries(regionalFeatureCounts).sort((a, b) => b[1] - a[1]);
+        let topFeature = 'Awaiting feature telemetry';
+        if (sortedRegionalFeatures.length > 0) {
+          const topFid = sortedRegionalFeatures[0][0];
+          const foundPlacement = APP_SCREEN_PLACEMENTS.find(p => p.id === topFid);
+          const foundScanner = AI_SCANNERS_METRIC.find(s => s.id === topFid);
+          const foundUtility = PET_UTILITIES_METRIC.find(u => u.id === topFid);
+          if (foundPlacement) topFeature = `${foundPlacement.icon} ${foundPlacement.title}`;
+          else if (foundScanner) topFeature = `${foundScanner.icon} ${foundScanner.name}`;
+          else if (foundUtility) topFeature = `${foundUtility.icon} ${foundUtility.name}`;
+          else topFeature = `⚡ ${topFid}`;
+        }
 
         // Count real registered pets for this regional cluster
         let petsCount = 0;
@@ -3348,7 +3368,7 @@
           events.push({
             userName: l.customerName || 'Customer',
             email: (l.customerEmail && l.customerEmail.includes('@')) ? l.customerEmail : '',
-            city: l.clinicCity || 'Metro Manila',
+            city: l.clinicCity || l.city || 'Philippines',
             flag: '🏥',
             action: `${l.actionType === 'call' ? 'Called' : 'Contacted'} ${l.clinicName || 'Clinic'}: ${l.details || 'Appointment inquiry'}`,
             icon: '📞',
@@ -3850,7 +3870,7 @@
               referrer: `${r.userName || 'Pet Parent'} (${r.userId})`,
               code: r.referralCode || 'N/A',
               referredUser: `${inv.userName || 'Invited Parent'} (${inv.userId})`,
-              reward: `${r.pawsAiTokensEarned || 45} PawsAI Tokens`,
+              reward: `${Number(r.pawsAiTokensEarned) || 0} PawsAI Tokens`,
               date: inv.joinedAt || 'Recent',
               status: inv.status || 'REGISTERED'
             });
@@ -6034,7 +6054,7 @@
       const sorted = [...pawsAiAnalyticsData].sort((a, b) => (Number(b.count) || 0) - (Number(a.count) || 0));
       const kpiTop = document.getElementById('kpi-pawsai-top-topic');
       if (kpiTop) {
-        kpiTop.innerText = sorted[0]?.question ? (sorted[0].question.length > 26 ? sorted[0].question.slice(0, 26) + '...' : sorted[0].question) : 'Toxicity & Diets';
+        kpiTop.innerText = sorted[0]?.question ? (sorted[0].question.length > 26 ? sorted[0].question.slice(0, 26) + '...' : sorted[0].question) : 'Awaiting inquiries';
       }
 
       const countHeader = document.getElementById('pawsAiQuestionsCount');

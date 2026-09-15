@@ -903,7 +903,7 @@
               <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
                 <div>
                   <h4 class="font-display font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                    <span>🔬</span> AI & Vision Scanners (7 Capabilities)
+                    <span>🔬</span> AI & Vision Scanners (8 Capabilities)
                   </h4>
                   <p class="text-xs text-slate-400">Camera vision & OCR medical digitizer tool usage</p>
                 </div>
@@ -2272,6 +2272,14 @@
 
     const AI_SCANNERS_METRIC = [
       {
+        id: 'pawsai_chat',
+        name: 'PawsAI 24/7 Clinical Symptom Triage',
+        modal: 'PawsAIScreen.tsx',
+        icon: '✨',
+        tag: 'Clinical Triage AI',
+        description: '24/7 Veterinary triage, clinical symptom analysis, urgency scoring, and first-aid guidance.'
+      },
+      {
         id: 'pawsbreed',
         name: 'PawsBreed Camera Identifier',
         modal: 'PetBreedScannerModal.tsx',
@@ -2421,6 +2429,20 @@
           }
         });
 
+      // Special join for PawsAI Clinical Triage queries
+      if (featureId === 'pawsai_chat' && Array.isArray(pawsAiAnalyticsData)) {
+        pawsAiAnalyticsData
+          .slice()
+          .sort((a, b) => (Date.parse(b.lastAskedAt || 0) || 0) - (Date.parse(a.lastAskedAt || 0) || 0))
+          .forEach(item => {
+            const key = (item.userId && item.userId !== 'anonymous') ? item.userId : (item.userEmail || item.userName || '');
+            if (key && !seenIds.has(key)) {
+              seenIds.add(key);
+              engagedUserKeys.push({ userId: item.userId, userEmail: item.userEmail, userName: item.userName, petName: item.petName });
+            }
+          });
+      }
+
       // 2. Join with usersData to get full profile info
       let matchedUsers = [];
       if (engagedUserKeys.length > 0) {
@@ -2429,7 +2451,8 @@
           .map(k => {
             const rawUser = usersData.find(u => 
               (k.userId && (u.id === k.userId || u.uid === k.userId)) ||
-              (k.userEmail && (u.email === k.userEmail || (u.profile && u.profile.email === k.userEmail) || u.id === k.userEmail))
+              (k.userEmail && (u.email === k.userEmail || (u.profile && u.profile.email === k.userEmail) || u.id === k.userEmail)) ||
+              (k.userName && (u.name === k.userName || (u.profile && u.profile.name === k.userName)))
             );
             if (!rawUser) return null;
             const r = resolveAdminUser(rawUser);
@@ -2437,6 +2460,7 @@
             const meta = COUNTRY_META[countryCode] || COUNTRY_META.OTHER;
             return {
               ...r,
+              petSummary: k.petName || r.petSummary,
               cityName,
               countryCode,
               countryName: meta.name,
@@ -3565,6 +3589,9 @@
       const csvRealTriageSessions = Array.isArray(pawsAiAnalyticsData) && pawsAiAnalyticsData.length > 0
         ? pawsAiAnalyticsData.reduce((sum, item) => sum + (Number(item.count) || 1), 0)
         : 0; // No fallback — 0 means 0
+      if (csvRealTriageSessions > 0) {
+        csvScannerMap['pawsai_chat'] = csvRealTriageSessions;
+      }
 
       rows.push(['--- SECTION 2: AI & VISION SCANNERS UTILIZATION ---']);
       rows.push(['Scanner Capability', 'Modal / File', 'Technology Tag', 'Real Scans (Firestore)']);

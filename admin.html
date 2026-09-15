@@ -2642,7 +2642,7 @@
         else if (d.platform === 'ios') devIosCount++;
         else devPendingCount++;
 
-        if (d.model && d.model !== 'Awaiting device sync' && d.model !== 'Apple Device') {
+        if (d.model && d.model !== 'Awaiting device sync' && d.model !== 'Apple Device' && d.model !== 'Android Device (Google Play)') {
           hardwareCounts[d.model] = (hardwareCounts[d.model] || 0) + 1;
         }
       });
@@ -2669,7 +2669,7 @@
         if (sortedHardware.length > 0) {
           elDeviceSub.innerText = `Top Model: ${sortedHardware[0][0]} (${sortedHardware[0][1]} devices)`;
         } else if (totalIdentified > 0) {
-          elDeviceSub.innerText = `${devAndroidCount} Android vs ${devIosCount} iOS accounts`;
+          elDeviceSub.innerText = `${devAndroidCount} Android vs ${devIosCount} iOS accounts${devPendingCount > 0 ? ` (${devPendingCount} pending)` : ''}`;
         } else {
           elDeviceSub.innerText = `${devPendingCount} accounts awaiting first mobile sync`;
         }
@@ -5254,12 +5254,15 @@
         }
       }
 
-      // 3. Apple Sign-In Authentication Signature (100% verified iOS)
-      if (
+      // 3. Platform Signatures from Registration & Authentication Ecosystem
+      const isAppleUser = (
         rawEmail.includes('@privaterelay.appleid.com') ||
+        rawEmail.includes('@icloud.com') ||
+        rawEmail.includes('apple') ||
         rawId.includes('_privaterelay_appleid_com') ||
         rawId.startsWith('apple_')
-      ) {
+      );
+      if (isAppleUser) {
         return {
           platform: 'ios',
           label: 'iOS',
@@ -5267,6 +5270,23 @@
           osVersion: '',
           icon: '🍏',
           badgeClass: 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700'
+        };
+      }
+
+      // Android Ecosystem: Google Sign-In, Gmail accounts & Google Play store downloads
+      const isAndroidUser = (
+        rawEmail.includes('@gmail.com') ||
+        rawEmail.includes('@google') ||
+        rawId.includes('_gmail_com')
+      );
+      if (isAndroidUser) {
+        return {
+          platform: 'android',
+          label: 'Android',
+          model: 'Android Device (Google Play)',
+          osVersion: '',
+          icon: '🤖',
+          badgeClass: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
         };
       }
 
